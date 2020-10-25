@@ -8,4 +8,4 @@ Autoras:
 - Julieta Taras - [@julitaras](https://github.com/julitaras)
 
 # ejercicios-2020-2c
-Ejercicios para entregar - 2020, 2do cuatrimestre
+Ejercicios para entregar - 2020, 2do cuatrimestre.
