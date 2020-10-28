@@ -51,3 +51,5 @@ otraColeccion addAll: unaColeccion
 ```smalltalk
 unaColeccion count: [ :cadaElemento | cadaElemento = 1 ]
 ```
+
+**Explicación [resolución](https://github.com/julitaras/excercises-algorithm-iii.wiki.git)**
