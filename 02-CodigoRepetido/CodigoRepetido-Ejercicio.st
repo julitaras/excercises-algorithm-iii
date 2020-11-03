@@ -21,36 +21,43 @@ TestCase subclass: #CustomerBookTest
 	poolDictionaries: ''
 	category: 'CodigoRepetido-Ejercicio'!
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'NR 4/3/2019 10:50:19'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'CZ 11/2/2020 21:58:38'!
 test01AddingCustomerShouldNotTakeMoreThan50Milliseconds
 
-	| customerBook millisecondsBeforeRunning millisecondsAfterRunning |
+	| customerBook |
 	
 	customerBook := CustomerBook new.
 	
+	self evaluateTimeWithCustomerActionAndName: (customerBook addCustomerNamed: 'John Lennon')  From: 50.
+
+	
+	"
 	millisecondsBeforeRunning := Time millisecondClockValue * millisecond.
 	customerBook addCustomerNamed: 'John Lennon'.
 	millisecondsAfterRunning := Time millisecondClockValue * millisecond.
 	
-	self assert: (millisecondsAfterRunning-millisecondsBeforeRunning) < (50 * millisecond)
+	self assert: (millisecondsAfterRunning-millisecondsBeforeRunning) < (50 * millisecond)"
 	
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'NR 4/3/2019 10:50:13'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'CZ 11/2/2020 22:00:10'!
 test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
 
-	| customerBook millisecondsBeforeRunning millisecondsAfterRunning paulMcCartney |
+	| customerBook paulMcCartney |
 	
 	customerBook := CustomerBook new.
 	paulMcCartney := 'Paul McCartney'.
 	
 	customerBook addCustomerNamed: paulMcCartney.
-	  
+	
+	self evaluateTimeWithCustomerActionAndName: (customerBook addCustomerNamed: paulMcCartney )  From: 100.
+
+	"
 	millisecondsBeforeRunning := Time millisecondClockValue * millisecond.
 	customerBook removeCustomerNamed: paulMcCartney.
 	millisecondsAfterRunning := Time millisecondClockValue * millisecond.
 	
-	self assert: (millisecondsAfterRunning-millisecondsBeforeRunning) < (100 * millisecond)
+	self assert: (millisecondsAfterRunning-millisecondsBeforeRunning) < (100 * millisecond)"
 	
 ! !
 
@@ -160,6 +167,23 @@ test08CanNotSuspendAnAlreadySuspendedCustomer
 			self assert: customerBook numberOfCustomers = 1.
 			self assert: (customerBook includesCustomerNamed: johnLennon) ]
 ! !
+
+
+!CustomerBookTest methodsFor: 'as yet unclassified' stamp: 'CZ 11/2/2020 21:57:36'!
+evaluateTimeWithCustomerActionAndName: customerActionAndName  From: referenceTime
+	|millisecondsBeforeRunning millisecondsAfterRunning|.
+	millisecondsBeforeRunning := Time millisecondClockValue * millisecond.
+	customerActionAndName.
+	millisecondsAfterRunning := Time millisecondClockValue * millisecond.
+	
+	self assert: (millisecondsAfterRunning-millisecondsBeforeRunning) < (referenceTime * millisecond).! !
+
+!CustomerBookTest methodsFor: 'as yet unclassified' stamp: 'CZ 11/2/2020 21:32:48'!
+initializeCustomerBook: customerName xxx: wantToAddACustomer
+	|customerBook|
+	customerBook  := CustomerBook new.
+	wantToAddACustomer ifTrue: [customerBook addCustomerNamed: customerName]. 
+	^customerBook.! !
 
 
 !classDefinition: #CustomerBook category: 'CodigoRepetido-Ejercicio'!
