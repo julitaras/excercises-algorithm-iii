@@ -21,6 +21,61 @@ TestCase subclass: #CustomerBookTest
 	poolDictionaries: ''
 	category: 'CodigoRepetido-Ejercicio'!
 
+!CustomerBookTest methodsFor: 'as yet unclassified' stamp: 'JT 11/4/2020 22:29:52'!
+canNotDo: customerAction causedBy: errorType shouldReturn: assert1 and: assert2
+
+[customerAction value.
+	self fail ]
+		on: errorType 
+		do: [ :anError | 
+			self assert: assert1.
+			self assert: assert2]! !
+
+!CustomerBookTest methodsFor: 'as yet unclassified' stamp: 'JT 11/4/2020 22:33:20'!
+canNotDo: customerAction causedBy: errorType with: anError shouldReturn: assert1 and: assert2
+
+[customerAction value.
+	self fail ]
+		on: errorType 
+		do: [ anError | 
+			self assert: assert1.
+			self assert: assert2]! !
+
+!CustomerBookTest methodsFor: 'as yet unclassified' stamp: 'JT 11/4/2020 23:23:39'!
+canNotSuspend: suspendedCustomer in: customerBook checkingExistanceOf: customerInBook
+[ customerBook suspendCustomerNamed: suspendedCustomer.
+	self fail ]
+		on: CantSuspend 
+		do: [ :anError | 
+			self assert: customerBook numberOfCustomers = 1.
+			self assert: (customerBook includesCustomerNamed: customerInBook) ]
+! !
+
+!CustomerBookTest methodsFor: 'as yet unclassified' stamp: 'JT 11/4/2020 23:10:55'!
+evaluateActionOnSuspendedCustomerWith: customerBook hopingFor: numberOfActiveCustomersExpected and: numberOfSuspendedCustomersExpected and: numberOfCustomersExpected assessing: logicalExpression
+
+	self assert: numberOfActiveCustomersExpected equals: customerBook numberOfActiveCustomers.
+	self assert: numberOfSuspendedCustomersExpected equals: customerBook numberOfSuspendedCustomers.
+	self assert: numberOfCustomersExpected equals: customerBook numberOfCustomers.
+	logicalExpression value.! !
+
+!CustomerBookTest methodsFor: 'as yet unclassified' stamp: 'CZ 11/2/2020 21:57:36'!
+evaluateTimeWithCustomerActionAndName: customerActionAndName  From: referenceTime
+	|millisecondsBeforeRunning millisecondsAfterRunning|.
+	millisecondsBeforeRunning := Time millisecondClockValue * millisecond.
+	customerActionAndName.
+	millisecondsAfterRunning := Time millisecondClockValue * millisecond.
+	
+	self assert: (millisecondsAfterRunning-millisecondsBeforeRunning) < (referenceTime * millisecond).! !
+
+!CustomerBookTest methodsFor: 'as yet unclassified' stamp: 'CZ 11/2/2020 21:32:48'!
+initializeCustomerBook: customerName xxx: wantToAddACustomer
+	|customerBook|
+	customerBook  := CustomerBook new.
+	wantToAddACustomer ifTrue: [customerBook addCustomerNamed: customerName]. 
+	^customerBook.! !
+
+
 !CustomerBookTest methodsFor: 'tests' stamp: 'CZ 11/2/2020 21:58:38'!
 test01AddingCustomerShouldNotTakeMoreThan50Milliseconds
 
@@ -40,7 +95,7 @@ test01AddingCustomerShouldNotTakeMoreThan50Milliseconds
 	
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'CZ 11/2/2020 22:00:10'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'JT 11/4/2020 23:50:58'!
 test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
 
 	| customerBook paulMcCartney |
@@ -50,7 +105,7 @@ test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
 	
 	customerBook addCustomerNamed: paulMcCartney.
 	
-	self evaluateTimeWithCustomerActionAndName: (customerBook addCustomerNamed: paulMcCartney )  From: 100.
+	self evaluateTimeWithCustomerActionAndName: (customerBook removeCustomerNamed: paulMcCartney )  From: 100.
 
 	"
 	millisecondsBeforeRunning := Time millisecondClockValue * millisecond.
@@ -61,13 +116,15 @@ test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
 	
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'HernanWilkinson 5/9/2012 18:12'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'JT 11/4/2020 23:33:47'!
 test03CanNotAddACustomerWithEmptyName 
 
 	| customerBook |
 			
 	customerBook := CustomerBook new.
 
+	"self canNotDo: [customerBook addCustomerNamed: ''] causedBy: Error with: anError shouldReturn: (anError messageText = CustomerBook customerCanNotBeEmptyErrorMessage) and: customerBook isEmpty."
+	
 	[ customerBook addCustomerNamed: ''.
 	self fail ]
 		on: Error 
@@ -75,7 +132,7 @@ test03CanNotAddACustomerWithEmptyName
 			self assert: anError messageText = CustomerBook customerCanNotBeEmptyErrorMessage.
 			self assert: customerBook isEmpty ]! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'HAW 8/28/2017 08:57:25'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'JT 11/4/2020 23:34:03'!
 test04CanNotRemoveAnInvalidCustomer
 	
 	| customerBook johnLennon |
@@ -83,6 +140,8 @@ test04CanNotRemoveAnInvalidCustomer
 	customerBook := CustomerBook new.
 	johnLennon := 'John Lennon'.
 	customerBook addCustomerNamed: johnLennon.
+	
+	"self canNotDo: [customerBook removeCustomerNamed: 'Paul McCartney'] causedBy: NotFound shouldReturn: (customerBook numberOfCustomers = 1) and: (customerBook includesCustomerNamed: johnLennon)."
 	
 	[ customerBook removeCustomerNamed: 'Paul McCartney'.
 	self fail ]
@@ -92,7 +151,7 @@ test04CanNotRemoveAnInvalidCustomer
 			self assert: (customerBook includesCustomerNamed: johnLennon) ]
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'NR 4/3/2019 10:50:25'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'JT 11/4/2020 23:14:42'!
 test05SuspendingACustomerShouldNotRemoveItFromCustomerBook
 
 	| customerBook paulMcCartney|
@@ -103,16 +162,14 @@ test05SuspendingACustomerShouldNotRemoveItFromCustomerBook
 	customerBook addCustomerNamed: paulMcCartney.
 	customerBook suspendCustomerNamed: paulMcCartney.
 	
-	self assert: 0 equals: customerBook numberOfActiveCustomers.
-	self assert: 1 equals: customerBook numberOfSuspendedCustomers.
-	self assert: 1 equals: customerBook numberOfCustomers.
-	self assert: (customerBook includesCustomerNamed: paulMcCartney).
+	self evaluateActionOnSuspendedCustomerWith: customerBook hopingFor: 0 and: 1 and: 1 assessing: [self assert: (customerBook includesCustomerNamed: paulMcCartney)].
+
 	
 
 	
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'NR 4/3/2019 10:50:28'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'JT 11/4/2020 23:14:49'!
 test06RemovingASuspendedCustomerShouldRemoveItFromCustomerBook
 
 	| customerBook paulMcCartney|
@@ -124,16 +181,12 @@ test06RemovingASuspendedCustomerShouldRemoveItFromCustomerBook
 	customerBook suspendCustomerNamed: paulMcCartney.
 	customerBook removeCustomerNamed: paulMcCartney.
 	
-	self assert: 0 equals: customerBook numberOfActiveCustomers.
-	self assert: 0 equals: customerBook numberOfSuspendedCustomers.
-	self assert: 0 equals: customerBook numberOfCustomers.
-	self deny: (customerBook includesCustomerNamed: paulMcCartney).
-
-
+	self evaluateActionOnSuspendedCustomerWith: customerBook hopingFor: 0 and: 0 and: 0 assessing: [self deny: (customerBook includesCustomerNamed: paulMcCartney)].
+	
 	
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'NR 4/30/2020 09:08:46'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'JT 11/4/2020 23:24:20'!
 test07CanNotSuspendAnInvalidCustomer
 	
 	| customerBook johnLennon |
@@ -142,15 +195,10 @@ test07CanNotSuspendAnInvalidCustomer
 	johnLennon := 'John Lennon'.
 	customerBook addCustomerNamed: johnLennon.
 	
-	[ customerBook suspendCustomerNamed: 'Ringo Starr'.
-	self fail ]
-		on: CantSuspend 
-		do: [ :anError | 
-			self assert: customerBook numberOfCustomers = 1.
-			self assert: (customerBook includesCustomerNamed: johnLennon) ]
+	self canNotSuspend: 'Ringo Starr' in: customerBook checkingExistanceOf: johnLennon.
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'NR 9/19/2018 17:57:11'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'JT 11/4/2020 23:24:11'!
 test08CanNotSuspendAnAlreadySuspendedCustomer
 	
 	| customerBook johnLennon |
@@ -160,30 +208,8 @@ test08CanNotSuspendAnAlreadySuspendedCustomer
 	customerBook addCustomerNamed: johnLennon.
 	customerBook suspendCustomerNamed: johnLennon.
 	
-	[ customerBook suspendCustomerNamed: johnLennon.
-	self fail ]
-		on: CantSuspend 
-		do: [ :anError | 
-			self assert: customerBook numberOfCustomers = 1.
-			self assert: (customerBook includesCustomerNamed: johnLennon) ]
+	self canNotSuspend: johnLennon in: customerBook  checkingExistanceOf: johnLennon.
 ! !
-
-
-!CustomerBookTest methodsFor: 'as yet unclassified' stamp: 'CZ 11/2/2020 21:57:36'!
-evaluateTimeWithCustomerActionAndName: customerActionAndName  From: referenceTime
-	|millisecondsBeforeRunning millisecondsAfterRunning|.
-	millisecondsBeforeRunning := Time millisecondClockValue * millisecond.
-	customerActionAndName.
-	millisecondsAfterRunning := Time millisecondClockValue * millisecond.
-	
-	self assert: (millisecondsAfterRunning-millisecondsBeforeRunning) < (referenceTime * millisecond).! !
-
-!CustomerBookTest methodsFor: 'as yet unclassified' stamp: 'CZ 11/2/2020 21:32:48'!
-initializeCustomerBook: customerName xxx: wantToAddACustomer
-	|customerBook|
-	customerBook  := CustomerBook new.
-	wantToAddACustomer ifTrue: [customerBook addCustomerNamed: customerName]. 
-	^customerBook.! !
 
 
 !classDefinition: #CustomerBook category: 'CodigoRepetido-Ejercicio'!
@@ -208,10 +234,19 @@ addCustomerNamed: aName
 	
 	active add: aName ! !
 
-!CustomerBook methodsFor: 'customer management' stamp: 'NR 4/3/2019 10:14:26'!
+!CustomerBook methodsFor: 'customer management' stamp: 'JT 11/5/2020 00:24:58'!
 removeCustomerNamed: aName 
- 
-	1 to: active size do: 
+ 	
+	|name|
+	name := self removeCustomerNamed: aName status: active.
+	name = 'not found' ifFalse: [^name].
+	
+
+	
+	name := self removeCustomerNamed: aName status: suspended.
+	name = 'not found' ifFalse: [^name].
+	
+	"1 to: active size do: 
 	[ :index |
 		aName = (active at: index)
 			ifTrue: [
@@ -219,6 +254,7 @@ removeCustomerNamed: aName
 				^ aName 
 			] 
 	].
+	
 
 	1 to: suspended size do: 	
 	[ :index |
@@ -227,10 +263,24 @@ removeCustomerNamed: aName
 				suspended removeAt: index.
 				^ aName 
 			] 
-	].
-	
+	]."
 	^ NotFound signal.
 ! !
+
+!CustomerBook methodsFor: 'customer management' stamp: 'JT 11/5/2020 00:25:10'!
+removeCustomerNamed: aName status: status
+ 
+	1 to: status size do: 
+	[ :index |
+		aName = (status at: index)
+			ifTrue: [
+				status removeAt: index.
+				^ aName 
+			] 
+	].
+
+
+	^ 'not found'. ! !
 
 !CustomerBook methodsFor: 'customer management' stamp: 'NR 4/3/2019 10:14:26'!
 suspendCustomerNamed: aName 
