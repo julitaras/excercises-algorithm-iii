@@ -14,6 +14,6 @@ Ejercicios para entregar - 2020, 2do cuatrimestre.
 
 - **[Resolución](https://github.com/julitaras/exercises-algorithm-iii/wiki/01---Factorio)**
 
-### 02 Código repetido
+### 02 Código Repetido
 
 - **[Resolución](https://github.com/julitaras/exercises-algorithm-iii/wiki/02-C%C3%B3digo-repetido)**
