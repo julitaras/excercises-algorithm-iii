@@ -99,10 +99,10 @@ test03CanNotAddACustomerWithEmptyName
 			self assert: anError messageText = CustomerBook customerCanNotBeEmptyErrorMessage.
 			self assert: customerBook isEmpty ]! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'JT 11/9/2020 10:09:48'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'CZ 11/9/2020 11:29:44'!
 test04CanNotRemoveAnInvalidCustomer
 	
-	"Chequea que no se puede remover un cliente inexistente de customerBook. Se espera que el numero de clientes en el customerBook sea 1 y que el cliente incluido sea johnLennon."
+	"Chequea que no se puede remover un cliente inexistente de customerBook. Se espera que el numero de clientes en customerBook sea 1 y que el cliente incluido sea el agregado (johnLennon) y no el que se quiere remover ('Paul McCartney')."
 	
 	| customerBook johnLennon |
 			
