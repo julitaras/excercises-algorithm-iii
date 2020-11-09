@@ -57,10 +57,10 @@ testExpectedNumbersIn: customerBook ofActiveCustomers: number1 andSuspendedCusto
 	self assert: expectedCondition value.! !
 
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'CZ 11/9/2020 02:29:05'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'JT 11/9/2020 10:05:17'!
 test01AddingCustomerShouldNotTakeMoreThan50Milliseconds
 
-	"Chequea que agregar un cliente a customerBook no tarde mas 50 milisegundos."
+	"Chequea que agregar un cliente a customerBook no tarde mas de 50 milisegundos."
 	
 	| customerBook |
 	
@@ -83,10 +83,10 @@ test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
 	self testCustomerAction: [customerBook removeCustomerNamed: paulMcCartney] shouldNotTakeMoreThan: 100.
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'CZ 11/9/2020 02:10:30'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'JT 11/9/2020 10:11:30'!
 test03CanNotAddACustomerWithEmptyName 
 	
-	"Chequea que no se puede agregar un cliente con nombre vacio a customerBook."
+	"Chequea que no se puede agregar un cliente con nombre vacio a customerBook. Se espera que el mensaje de error sea customerCanNotBeEmptyErrorMessage y tambien que efectivamente no se haya agregado ese nombre vacio."
 	
 	| customerBook|
 			
@@ -99,10 +99,10 @@ test03CanNotAddACustomerWithEmptyName
 			self assert: anError messageText = CustomerBook customerCanNotBeEmptyErrorMessage.
 			self assert: customerBook isEmpty ]! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'CZ 11/9/2020 02:11:07'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'JT 11/9/2020 10:09:48'!
 test04CanNotRemoveAnInvalidCustomer
 	
-	"Chequea que no se puede remover un cliente inexistente de customerBook."
+	"Chequea que no se puede remover un cliente inexistente de customerBook. Se espera que el numero de clientes en el customerBook sea 1 y que el cliente incluido sea johnLennon."
 	
 	| customerBook johnLennon |
 			
@@ -197,10 +197,10 @@ initialize
 	suspended:= OrderedCollection new.! !
 
 
-!CustomerBook methodsFor: 'customer management' stamp: 'CZ 11/9/2020 02:47:58'!
+!CustomerBook methodsFor: 'customer management' stamp: 'JT 11/9/2020 10:15:26'!
 addCustomerNamed: aName
 
-	"Agrega a la OrderedCollection active al cliente cuyo nombre es el recibido por parametro (aName). Si este nombre es vacio o ya existe en la coleccion, retorna una excepcion."
+	"Agrega a la coleccion ordenada llamada active al cliente cuyo nombre es el recibido por parametro (aName). Si este nombre es vacio o ya existe en la coleccion, retorna una excepcion."
 
 	aName isEmpty ifTrue: [ self signalCustomerNameCannotBeEmpty ].
 	(self includesCustomerNamed: aName) ifTrue: [ self signalCustomerAlreadyExists ].
