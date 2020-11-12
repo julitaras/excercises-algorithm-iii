@@ -397,21 +397,20 @@ Numero subclass: #Entero
 	"Preguntar diferencia entre hacer ^self class with: y ^Entero with: en el primer ifTrue"
 ! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'CZ 11/12/2020 17:50:22'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'CZ 11/12/2020 19:03:16'!
 - aSubtrahend 
 	
-	(aSubtrahend) restarDeUnEntero: aSubtrahend.
+	"(aSubtrahend) restarDeUnEntero: aSubtrahend."
 	
-	"
+	
 	(aSubtrahend isKindOf: Entero) ifTrue: [	^ self class with: value - aSubtrahend integerValue.].
 	(aSubtrahend isKindOf: Fraccion ) ifTrue: [
 		|numerator denominator|
 		numerator := (self * aSubtrahend denominator) - aSubtrahend numerator.
 		denominator := aSubtrahend denominator.
 		^Fraccion with: numerator over: denominator .
-	]."
-
-	"Preguntar por la parte comentada"
+	].
+	
 	
 	
 ! !
@@ -440,6 +439,11 @@ fibonacci
 	
 	^ (self - one) fibonacci + (self - two) fibonacci
 		! !
+
+!Entero methodsFor: 'arithmetic operations' stamp: 'CZ 11/12/2020 18:37:40'!
+restarDeUnEntero: aSubtrahend
+	
+	^ self class with: value - aSubtrahend integerValue.! !
 
 
 !Entero methodsFor: 'comparing' stamp: 'HernanWilkinson 5/7/2016 21:01'!
@@ -498,11 +502,6 @@ isZero
 greatestCommonDivisorWith: anEntero 
 	
 	^self class with: (value gcd: anEntero integerValue)! !
-
-!Entero methodsFor: 'arithmetic operations - private' stamp: 'CZ 11/12/2020 00:53:25'!
-restarDeUnEntero: aSubtrahend
-	
-	^ self class with: value - aSubtrahend integerValue.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
