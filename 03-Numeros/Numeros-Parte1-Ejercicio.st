@@ -1,4 +1,4 @@
-!classDefinition: #NumeroTest category: #'Numeros-Parte1-Ejercicio'!
+!classDefinition: #NumeroTest category: 'Numeros-Parte1-Ejercicio'!
 TestCase subclass: #NumeroTest
 	instanceVariableNames: 'zero one two four oneFifth oneHalf five twoFifth twoTwentyfifth fiveHalfs three eight negativeOne negativeTwo'
 	classVariableNames: ''
@@ -128,7 +128,7 @@ setUp
 	! !
 
 
-!classDefinition: #Numero category: #'Numeros-Parte1-Ejercicio'!
+!classDefinition: #Numero category: 'Numeros-Parte1-Ejercicio'!
 Object subclass: #Numero
 	instanceVariableNames: 'type value numerator denominator'
 	classVariableNames: ''
@@ -174,29 +174,20 @@ negated
 		[ ^self class with: numerator * (self class with: -1) over: denominator ].! !
 
 
-!Numero methodsFor: 'testing' stamp: 'NR 9/8/2019 22:00:09'!
+!Numero methodsFor: 'testing' stamp: 'JT 11/9/2020 21:19:44'!
 isNegative
 	
-	type = #Entero ifTrue:
-		[ ^value < 0 ].
-	type = #Fraccion ifTrue:
-		[ ^denominator < 0 ].! !
+	^self subclassResponsibility ! !
 
-!Numero methodsFor: 'testing' stamp: 'NR 9/8/2019 22:00:16'!
+!Numero methodsFor: 'testing' stamp: 'JT 11/9/2020 21:19:51'!
 isOne
 
-	type = #Entero ifTrue:
-		[ ^value = 1 ].
-	type = #Fraccion ifTrue:
-		[ ^false ].! !
+	^self subclassResponsibility .! !
 
-!Numero methodsFor: 'testing' stamp: 'NR 9/8/2019 22:00:23'!
+!Numero methodsFor: 'testing' stamp: 'JT 11/9/2020 21:19:56'!
 isZero
 
-	type = #Entero ifTrue:
-		[ ^value = 0 ].
-	type = #Fraccion ifTrue:
-		[ ^false ].! !
+	^self subclassResponsibility ! !
 
 
 !Numero methodsFor: 'initialization' stamp: 'NR 9/8/2019 20:40:14'!
@@ -291,7 +282,7 @@ greatestCommonDivisorWith: anEntero
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Numero class' category: #'Numeros-Parte1-Ejercicio'!
+!classDefinition: 'Numero class' category: 'Numeros-Parte1-Ejercicio'!
 Numero class
 	instanceVariableNames: ''!
 
@@ -326,3 +317,51 @@ with: aDividend over: aDivisor
 	denominator isOne ifTrue: [ ^numerator ].
 
 	^self new initializeWith: numerator over: denominator! !
+
+
+!classDefinition: #Entero category: 'Numeros-Parte1-Ejercicio'!
+Numero subclass: #Entero
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Numeros-Parte1-Ejercicio'!
+
+
+!Entero methodsFor: 'testing' stamp: 'JT 11/9/2020 21:17:01'!
+isNegative
+	
+	
+		 ^value < 0.! !
+
+!Entero methodsFor: 'testing' stamp: 'JT 11/9/2020 21:17:56'!
+isOne
+	
+	^value = 1.! !
+
+!Entero methodsFor: 'testing' stamp: 'JT 11/9/2020 21:17:20'!
+isZero
+
+	^value = 0.! !
+
+
+!classDefinition: #Fraccion category: 'Numeros-Parte1-Ejercicio'!
+Numero subclass: #Fraccion
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Numeros-Parte1-Ejercicio'!
+
+!Fraccion methodsFor: 'testing' stamp: 'JT 11/9/2020 21:18:33'!
+isNegative
+
+	^denominator < 0! !
+
+!Fraccion methodsFor: 'testing' stamp: 'JT 11/9/2020 21:18:41'!
+isOne
+	
+	^false.! !
+
+!Fraccion methodsFor: 'testing' stamp: 'JT 11/9/2020 21:18:51'!
+isZero
+
+	^false.! !
