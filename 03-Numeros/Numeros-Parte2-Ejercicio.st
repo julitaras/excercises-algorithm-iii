@@ -341,11 +341,6 @@ invalidNumberType
 
 	self error: self class invalidNumberTypeErrorDescription! !
 
-!Numero methodsFor: 'private' stamp: 'CZ 11/12/2020 01:13:19'!
-restarDeUnEntero: aSubtrahend
-
-	self subclassResponsibility.! !
-
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'Numero class' category: 'Numeros-Parte2-Ejercicio'!
@@ -392,13 +387,14 @@ Numero subclass: #Entero
 
 	^aDivisor dividingFromEntero: self.! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'HAW 9/24/2018 08:47:50'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'CZ 11/15/2020 00:06:35'!
 fibonacci
 
 	| one two |
 	
 	one := Entero with: 1.
 	two := Entero with: 2.
+	
 	
 	self isNegative ifTrue: [self error: Entero negativeFibonacciErrorDescription ].	
 	(self isZero or: [self isOne]) ifTrue: [^one].
@@ -465,7 +461,7 @@ greatestCommonDivisorWith: anEntero
 	^self class with: (value gcd: anEntero integerValue)! !
 
 
-!Entero methodsFor: 'complementary arithmetic operations' stamp: 'JT 11/12/2020 22:12:22'!
+!Entero methodsFor: 'complementary arithmetic operations' stamp: 'CZ 11/14/2020 23:33:55'!
 addingFromEntero: anAugendEntero
 
 	^self class with: anAugendEntero integerValue + self integerValue.
@@ -495,12 +491,12 @@ dividingFromFraccion: aDividendFraccion
 	
 	! !
 
-!Entero methodsFor: 'complementary arithmetic operations' stamp: 'JT 11/12/2020 21:08:28'!
+!Entero methodsFor: 'complementary arithmetic operations' stamp: 'CZ 11/14/2020 23:34:10'!
 multiplyingFromEntero: aMultiplicandEntero
 
 	^self class with: aMultiplicandEntero integerValue * self integerValue.! !
 
-!Entero methodsFor: 'complementary arithmetic operations' stamp: 'JT 11/12/2020 22:23:59'!
+!Entero methodsFor: 'complementary arithmetic operations' stamp: 'CZ 11/14/2020 23:35:20'!
 multiplyingFromFraccion: aMultiplicandFraccion
 
 	| newNumerator newDenominator |
@@ -531,11 +527,6 @@ Entero class
 !Entero class methodsFor: 'instance creation' stamp: 'NR 4/8/2019 02:57:57'!
 negativeFibonacciErrorDescription
 	^ ' Fibonacci no está definido aquí para Enteros Negativos'! !
-
-!Entero class methodsFor: 'instance creation' stamp: 'CZ 11/12/2020 01:41:31'!
-restarDeUnEntero2: aSubtrahend
-	
-	^ self value - aSubtrahend integerValue.! !
 
 !Entero class methodsFor: 'instance creation' stamp: 'HernanWilkinson 5/7/2016 22:53'!
 with: aValue 
