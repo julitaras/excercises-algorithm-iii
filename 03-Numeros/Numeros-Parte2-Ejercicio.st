@@ -387,14 +387,13 @@ Numero subclass: #Entero
 
 	^aDivisor dividingFromEntero: self.! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'CZ 11/15/2020 00:06:35'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'CZ 11/15/2020 21:08:39'!
 fibonacci
 
 	| one two |
 	
 	one := Entero with: 1.
 	two := Entero with: 2.
-	
 	
 	self isNegative ifTrue: [self error: Entero negativeFibonacciErrorDescription ].	
 	(self isZero or: [self isOne]) ifTrue: [^one].
@@ -434,7 +433,7 @@ printOn: aStream
 	aStream print: value ! !
 
 
-!Entero methodsFor: 'testing' stamp: 'NR 9/23/2018 22:17:55'!
+!Entero methodsFor: 'testing' stamp: 'CZ 11/15/2020 21:38:35'!
 isNegative
 	
 	^value < 0! !
@@ -455,19 +454,13 @@ isZero
 	
 	^self class with: value // aDivisor integerValue! !
 
-!Entero methodsFor: 'arithmetic operations - private' stamp: 'HernanWilkinson 5/7/2016 21:00'!
-greatestCommonDivisorWith: anEntero 
-	
-	^self class with: (value gcd: anEntero integerValue)! !
-
-
-!Entero methodsFor: 'complementary arithmetic operations' stamp: 'CZ 11/15/2020 12:27:40'!
+!Entero methodsFor: 'arithmetic operations - private' stamp: 'CZ 11/15/2020 12:27:40'!
 addingFromEntero: anEnteroAugend
 
 	^self class with: anEnteroAugend integerValue + self integerValue.
 ! !
 
-!Entero methodsFor: 'complementary arithmetic operations' stamp: 'CZ 11/15/2020 12:28:02'!
+!Entero methodsFor: 'arithmetic operations - private' stamp: 'CZ 11/15/2020 12:28:02'!
 addingFromFraccion: aFraccionAugend
 	
 	| newNumerator newDenominator |
@@ -475,13 +468,13 @@ addingFromFraccion: aFraccionAugend
 	newDenominator := aFraccionAugend denominator.
 	^Fraccion with: newNumerator over: newDenominator. ! !
 
-!Entero methodsFor: 'complementary arithmetic operations' stamp: 'CZ 11/15/2020 12:28:15'!
+!Entero methodsFor: 'arithmetic operations - private' stamp: 'CZ 11/15/2020 12:28:15'!
 dividingFromEntero: anEnteroDividend
 
 	^Fraccion with: anEnteroDividend over: self.
 	! !
 
-!Entero methodsFor: 'complementary arithmetic operations' stamp: 'CZ 11/15/2020 12:28:27'!
+!Entero methodsFor: 'arithmetic operations - private' stamp: 'CZ 11/15/2020 12:28:27'!
 dividingFromFraccion: aFraccionDividend
 
 	| newNumerator newDenominator |
@@ -491,12 +484,17 @@ dividingFromFraccion: aFraccionDividend
 	
 	! !
 
-!Entero methodsFor: 'complementary arithmetic operations' stamp: 'CZ 11/15/2020 12:28:40'!
+!Entero methodsFor: 'arithmetic operations - private' stamp: 'HernanWilkinson 5/7/2016 21:00'!
+greatestCommonDivisorWith: anEntero 
+	
+	^self class with: (value gcd: anEntero integerValue)! !
+
+!Entero methodsFor: 'arithmetic operations - private' stamp: 'CZ 11/15/2020 12:28:40'!
 multiplyingFromEntero: anEnteroMultiplicand
 
 	^self class with: anEnteroMultiplicand integerValue * self integerValue.! !
 
-!Entero methodsFor: 'complementary arithmetic operations' stamp: 'CZ 11/15/2020 12:28:58'!
+!Entero methodsFor: 'arithmetic operations - private' stamp: 'CZ 11/15/2020 12:28:58'!
 multiplyingFromFraccion: aFraccionMultiplicand
 
 	| newNumerator newDenominator |
@@ -504,12 +502,12 @@ multiplyingFromFraccion: aFraccionMultiplicand
 	newDenominator := aFraccionMultiplicand denominator.
 	^Fraccion with: newNumerator over: newDenominator.! !
 
-!Entero methodsFor: 'complementary arithmetic operations' stamp: 'CZ 11/15/2020 12:29:10'!
+!Entero methodsFor: 'arithmetic operations - private' stamp: 'CZ 11/15/2020 12:29:10'!
 substractingFromEntero: anEnteroMinuend
 	
 	^self class with: anEnteroMinuend integerValue - self integerValue.! !
 
-!Entero methodsFor: 'complementary arithmetic operations' stamp: 'CZ 11/15/2020 12:29:24'!
+!Entero methodsFor: 'arithmetic operations - private' stamp: 'CZ 11/15/2020 12:29:24'!
 substractingFromFraccion: aFraccionMinuend
 
 	| newNumerator newDenominator |
@@ -626,7 +624,7 @@ printOn: aStream
 		print: denominator ! !
 
 
-!Fraccion methodsFor: 'complementary arithmetic operations' stamp: 'CZ 11/15/2020 12:29:53'!
+!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'CZ 11/15/2020 12:29:53'!
 addingFromEntero: anEnteroAugend
 
 	| newNumerator newDenominator |
@@ -634,7 +632,7 @@ addingFromEntero: anEnteroAugend
 	newDenominator := self denominator.
 	^Fraccion with: newNumerator over: newDenominator.! !
 
-!Fraccion methodsFor: 'complementary arithmetic operations' stamp: 'CZ 11/15/2020 12:30:10'!
+!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'CZ 11/15/2020 12:30:10'!
 addingFromFraccion: aFraccionAugend
 	
 	| newNumerator newDenominator |
@@ -642,7 +640,7 @@ addingFromFraccion: aFraccionAugend
 	newDenominator := aFraccionAugend denominator * self denominator.
 	^newNumerator / newDenominator.! !
 
-!Fraccion methodsFor: 'complementary arithmetic operations' stamp: 'CZ 11/15/2020 12:30:21'!
+!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'CZ 11/15/2020 12:30:21'!
 dividingFromEntero: anEnteroDividend
 
 	| newNumerator newDenominator |
@@ -651,14 +649,17 @@ dividingFromEntero: anEnteroDividend
 	^Fraccion with: newNumerator over: newDenominator.
 	! !
 
-!Fraccion methodsFor: 'complementary arithmetic operations' stamp: 'CZ 11/15/2020 12:30:32'!
+!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'CZ 11/15/2020 20:54:42'!
 dividingFromFraccion: aFraccionDividend
 
-	^(aFraccionDividend numerator * self denominator) / (aFraccionDividend denominator * self numerator).
+	| newNumerator newDenominator |
+	newNumerator := aFraccionDividend numerator * self denominator.
+	newDenominator := aFraccionDividend denominator * self numerator.
+	^Fraccion with: newNumerator over: newDenominator.
 	
 	! !
 
-!Fraccion methodsFor: 'complementary arithmetic operations' stamp: 'CZ 11/15/2020 12:30:44'!
+!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'CZ 11/15/2020 12:30:44'!
 multiplyingFromEntero: anEnteroMultiplicand
 
 	| newNumerator newDenominator |
@@ -667,7 +668,7 @@ multiplyingFromEntero: anEnteroMultiplicand
 	^Fraccion with: newNumerator over: newDenominator.
 	! !
 
-!Fraccion methodsFor: 'complementary arithmetic operations' stamp: 'CZ 11/15/2020 12:30:58'!
+!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'CZ 11/15/2020 12:30:58'!
 multiplyingFromFraccion: aFraccionMultiplicand 
 
 	| newNumerator newDenominator |
@@ -675,7 +676,7 @@ multiplyingFromFraccion: aFraccionMultiplicand
 	newDenominator := aFraccionMultiplicand denominator * self denominator.
 	^Fraccion with: newNumerator over: newDenominator.! !
 
-!Fraccion methodsFor: 'complementary arithmetic operations' stamp: 'CZ 11/15/2020 12:31:09'!
+!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'CZ 11/15/2020 12:31:09'!
 substractingFromEntero: anEnteroMinuend
 
 	| newNumerator newDenominator |
@@ -684,7 +685,7 @@ substractingFromEntero: anEnteroMinuend
 	^Fraccion with: newNumerator over: newDenominator.
 ! !
 
-!Fraccion methodsFor: 'complementary arithmetic operations' stamp: 'CZ 11/15/2020 12:31:24'!
+!Fraccion methodsFor: 'arithmetic operations - private' stamp: 'CZ 11/15/2020 12:31:24'!
 substractingFromFraccion: aFraccionMinuend
 
 	| newNumerator newDenominator |
@@ -699,7 +700,7 @@ substractingFromFraccion: aFraccionMinuend
 Fraccion class
 	instanceVariableNames: ''!
 
-!Fraccion class methodsFor: 'intance creation' stamp: 'NR 9/23/2018 23:45:19'!
+!Fraccion class methodsFor: 'intance creation' stamp: 'CZ 11/15/2020 19:34:37'!
 with: aDividend over: aDivisor
 
 	| greatestCommonDivisor numerator denominator |
