@@ -1,4 +1,4 @@
-# excercises-algorithm-iii
+# exercises-algorithm-iii
 
 Repo donde se van a publicar los ejercicios para entregar en la materia Algoritmos y Programación III de la Facultad de Ingeniería de la Universidad de Buenos Aires.
 
@@ -17,3 +17,7 @@ Ejercicios para entregar - 2020, 2do cuatrimestre.
 ### 02 Código Repetido
 
 - **[Resolución](https://github.com/julitaras/exercises-algorithm-iii/wiki/02-C%C3%B3digo-repetido)**
+
+### 03 Números
+
+- **[Resolución](https://github.com/julitaras/exercises-algorithm-iii/wiki/03-N%C3%BAmeros)**
