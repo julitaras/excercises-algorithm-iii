@@ -207,7 +207,7 @@ value
 AccountTransaction class
 	instanceVariableNames: ''!
 
-!AccountTransaction class methodsFor: 'instance creation' stamp: 'NR 10/21/2019 18:54:27'!
+!AccountTransaction class methodsFor: 'instance creation' stamp: 'JT 12/3/2020 21:39:20'!
 register: aValue on: account
 
 	| transaction |
@@ -402,10 +402,10 @@ initialize
 	transactions := OrderedCollection new.! !
 
 
-!ReceptiveAccount methodsFor: 'main protocol' stamp: 'LL 9/21/2020 01:37:42'!
+!ReceptiveAccount methodsFor: 'main protocol' stamp: 'JT 12/3/2020 21:37:13'!
 balance
-
-	^transactions sum: [ :aTransaction | aTransaction value ] ifEmpty: [ 0 * peso ]! !
+	
+	^transactions sum: [ :aTransaction | aTransaction class = Withdraw ifTrue:[ aTransaction value negated] ifFalse: [aTransaction value]. ] ifEmpty: [ 0 * peso ].! !
 
 !ReceptiveAccount methodsFor: 'main protocol' stamp: 'LL 9/20/2020 20:48:29'!
 hasRegistered: aTransaction
