@@ -351,3 +351,6 @@ MigrationBackup/
 
 #OS Files
 .DS_Store
+
+#.idea
+.idea
