@@ -21,3 +21,7 @@ Ejercicios para entregar - 2020, 2do cuatrimestre.
 ### 03 Números
 
 - **[Resolución](https://github.com/julitaras/exercises-algorithm-iii/wiki/03-N%C3%BAmeros)**
+
+### 05 Mars Rover
+
+- **[Resolución](https://github.com/julitaras/exercises-algorithm-iii/wiki/05-Mars-Rover)**
