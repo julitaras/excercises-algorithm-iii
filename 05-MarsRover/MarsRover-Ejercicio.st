@@ -1,154 +1,507 @@
 !classDefinition: #MarsRoverTest category: 'MarsRover-Ejercicio'!
 TestCase subclass: #MarsRoverTest
+	instanceVariableNames: 'north south east west forward backwards rotateLeft rotateRight invalidCommand'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'MarsRover-Ejercicio'!
+
+!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 14:06:38'!
+setUp
+	
+	north := North new.
+	south := South new.
+	east := East new.
+	west := West new.
+	forward := 'f'.
+	backwards := 'b'.
+	rotateLeft := 'l'.
+	rotateRight := 'r'.
+	invalidCommand := 'x'.
+	! !
+
+!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:53:17'!
+test01
+	
+	| marsRover |
+	
+	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: north.
+	
+	self assert: (marsRover isIn: 0@0 andPointsTo: north).! !
+
+!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:53:12'!
+test02
+	
+	| marsRover |
+	
+	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: north.
+	
+	self deny: (marsRover isIn: 0@0 andPointsTo: south).! !
+
+!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:53:07'!
+test03
+	
+	| marsRover |
+	
+	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: north.
+	
+	self deny: (marsRover isIn: 0@1 andPointsTo: north).! !
+
+!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:58:21'!
+test04
+
+	| marsRover |
+	
+	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: north.
+	marsRover executeCommand: forward.
+	
+	self assert: (marsRover isIn: 0@1 andPointsTo: north).! !
+
+!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:58:27'!
+test05
+	
+	| marsRover |
+	
+	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: south.
+	marsRover executeCommand: forward.
+	
+	self assert: (marsRover isIn: 0@-1 andPointsTo: south).! !
+
+!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:58:31'!
+test06
+	
+	| marsRover |
+	
+	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: east.
+	marsRover executeCommand: forward.
+	
+	self assert: (marsRover isIn: 1@0 andPointsTo: east).! !
+
+!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:58:36'!
+test07
+
+	| marsRover |
+	
+	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: west.
+	marsRover executeCommand: forward.
+	
+	self assert: (marsRover isIn: -1@0 andPointsTo: west).! !
+
+!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:58:47'!
+test08
+
+	| marsRover |
+	
+	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: north.
+	marsRover executeCommand:  backwards.
+	
+	self assert: (marsRover isIn: 0@-1 andPointsTo: north).! !
+
+!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:58:52'!
+test09
+	
+	| marsRover |
+	
+	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: south.
+	marsRover executeCommand: backwards.
+	
+	self assert: (marsRover isIn: 0@1 andPointsTo: south).! !
+
+!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:59:00'!
+test10
+	
+	| marsRover |
+	
+	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: east.
+	marsRover executeCommand: backwards.
+	
+	self assert: (marsRover isIn: -1@0 andPointsTo: east).! !
+
+!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:59:09'!
+test11
+
+	| marsRover |
+	
+	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: north.
+	marsRover executeCommand: rotateLeft.
+	
+	self assert: (marsRover isIn: 0@0 andPointsTo: west).! !
+
+!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:59:13'!
+test12
+
+	| marsRover |
+
+	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: south.
+	marsRover executeCommand: rotateLeft.
+	
+	self assert: (marsRover isIn: 0@0 andPointsTo: east).! !
+
+!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:59:19'!
+test13
+	
+	| marsRover |
+	
+	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: east.
+	marsRover executeCommand: rotateLeft.
+	
+	self assert: (marsRover isIn: 0@0 andPointsTo: north).! !
+
+!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:59:24'!
+test14
+
+	| marsRover |
+	
+	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: west.
+	marsRover executeCommand: rotateLeft.
+	
+	self assert: (marsRover isIn: 0@0 andPointsTo: south).! !
+
+!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:59:32'!
+test15
+	
+	| marsRover |
+	
+	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: north.
+	marsRover executeCommand: rotateRight.
+	
+	self assert: (marsRover isIn: 0@0 andPointsTo: east).! !
+
+!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:59:44'!
+test16
+
+	| marsRover |
+
+	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: south.
+	marsRover executeCommand: rotateRight.
+	
+	self assert: (marsRover isIn: 0@0 andPointsTo: west).! !
+
+!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 13:00:00'!
+test17
+
+	| marsRover |
+
+	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: east.
+	marsRover executeCommand: rotateRight.
+	
+	self assert: (marsRover isIn: 0@0 andPointsTo: south).! !
+
+!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 13:00:09'!
+test18
+
+	| marsRover |
+
+	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: west.
+	marsRover executeCommand: rotateRight.
+	
+	self assert: (marsRover isIn: 0@0 andPointsTo: north).! !
+
+!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 14:02:17'!
+test19
+
+	| marsRover |
+
+	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: north.
+	
+	[ marsRover executeCommand: invalidCommand.
+		self fail]
+			on: Error 
+			do: [ :anError | 	
+				self assert: (marsRover isIn: 0@0 andPointsTo: north).
+				"self assert: anError messageText = Invalid"
+				]
+	
+	! !
+
+
+!classDefinition: #CardinalDirections category: 'MarsRover-Ejercicio'!
+Object subclass: #CardinalDirections
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MarsRover-Ejercicio'!
 
-!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/5/2020 22:48:05'!
-setUp
+!CardinalDirections methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:04:14'!
+= anotherCardinalDirection
+	^self isKindOf: anotherCardinalDirection class.! !
+
+!CardinalDirections methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:48:51'!
+doBackwardsMovement
+ 	self subclassResponsibility! !
+
+!CardinalDirections methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:48:57'!
+doForwardMovement
+ 	self subclassResponsibility! !
+
+!CardinalDirections methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:49:04'!
+doRotateLeftMovement
+ 	self subclassResponsibility! !
+
+!CardinalDirections methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:49:10'!
+doRotateRightMovement
+ 	self subclassResponsibility! !
+
+
+!classDefinition: #East category: 'MarsRover-Ejercicio'!
+CardinalDirections subclass: #East
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'MarsRover-Ejercicio'!
+
+!East methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:43:07'!
+doBackwardsMovement
+ 	
+	^-1@0! !
+
+!East methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:44:18'!
+doForwardMovement
+		
+	^1@0
+	"(param isKindOf: Backwards) ifTrue: [^-1@0].
+	
+	(param isKindOf: Forward ) ifTrue: [^1@0].
+	
+	(param isKindOf: RotateLeft) ifTrue: [^ North new.].
+	
+	(param isKindOf: RotateRight) ifTrue: [^ South new.]."
+	
+	
+	
 	! !
 
-!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/5/2020 20:03:00'!
-test01
-	| marsRover |
-	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: 'N'.
+!East methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:44:39'!
+doRotateLeftMovement
+		
+	^ North new.
+	"(param isKindOf: Backwards) ifTrue: [^-1@0].
 	
-	self assert: (marsRover isIn: 0@0 andPointsTo: 'N').! !
+	(param isKindOf: Forward ) ifTrue: [^1@0].
+	
+	(param isKindOf: RotateLeft) ifTrue: [^ North new.].
+	
+	(param isKindOf: RotateRight) ifTrue: [^ South new.]."
+	
+	
+	
+	! !
 
-!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/5/2020 20:34:57'!
-test02
-	| marsRover |
-	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: 'N'.
+!East methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:44:51'!
+doRotateRightMovement
+		
+	^ South new.
 	
-	self deny: (marsRover isIn: 0@0 andPointsTo: 'S').! !
+	"(param isKindOf: Backwards) ifTrue: [^-1@0].
+	
+	(param isKindOf: Forward ) ifTrue: [^1@0].
+	
+	(param isKindOf: RotateLeft) ifTrue: [^ North new.].
+	
+	(param isKindOf: RotateRight) ifTrue: [^ South new.]."
+	
+	
+	
+	! !
 
-!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/5/2020 20:37:44'!
-test03
-	| marsRover |
-	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: 'N'.
-	
-	self deny: (marsRover isIn: 0@1 andPointsTo: 'N').! !
+
+!classDefinition: #North category: 'MarsRover-Ejercicio'!
+CardinalDirections subclass: #North
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'MarsRover-Ejercicio'!
 
-!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/5/2020 23:16:29'!
-test04
-	| marsRover|
-	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: 'N'.
-	marsRover executeCommand: 'f'.
+!North methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:45:32'!
+doBackwardsMovement
 	
-	self assert: (marsRover isIn: 0@1 andPointsTo: 'N').! !
+	^0@-1
+	"(param isKindOf: Backwards ) ifTrue: [^0@-1].
+	
+	(param isKindOf: Forward) ifTrue: [^0@1].
+	
+	(param isKindOf: RotateLeft) ifTrue: [^ West new.].
+	
+	(param isKindOf: RotateRight) ifTrue: [^ East new.]."
 
-!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/5/2020 20:40:59'!
-test05
-	| marsRover |
-	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: 'S'.
-	marsRover executeCommand: 'f'.
 	
-	self assert: (marsRover isIn: 0@-1 andPointsTo: 'S').! !
+	
 
-!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/5/2020 20:44:54'!
-test06
-	| marsRover |
-	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: 'E'.
-	marsRover executeCommand: 'f'.
-	
-	self assert: (marsRover isIn: 1@0 andPointsTo: 'E').! !
+	! !
 
-!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/5/2020 20:53:04'!
-test07
-	| marsRover |
-	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: 'W'.
-	marsRover executeCommand: 'f'.
+!North methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:45:42'!
+doForwardMovement
 	
-	self assert: (marsRover isIn: -1@0 andPointsTo: 'W').! !
+	^0@1
+	"(param isKindOf: Backwards ) ifTrue: [^0@-1].
+	
+	(param isKindOf: Forward) ifTrue: [^0@1].
+	
+	(param isKindOf: RotateLeft) ifTrue: [^ West new.].
+	
+	(param isKindOf: RotateRight) ifTrue: [^ East new.]."
 
-!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/5/2020 20:54:23'!
-test08
-	| marsRover |
-	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: 'N'.
-	marsRover executeCommand: 'b'.
 	
-	self assert: (marsRover isIn: 0@-1 andPointsTo: 'N').! !
+	
 
-!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/5/2020 20:56:25'!
-test09
-	| marsRover |
-	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: 'S'.
-	marsRover executeCommand: 'b'.
-	
-	self assert: (marsRover isIn: 0@1 andPointsTo: 'S').! !
+	! !
 
-!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/5/2020 20:58:00'!
-test10
-	| marsRover |
-	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: 'E'.
-	marsRover executeCommand: 'b'.
+!North methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:45:54'!
+doRotateLeftMovement
 	
-	self assert: (marsRover isIn: -1@0 andPointsTo: 'E').! !
+	^ West new.
+	"(param isKindOf: Backwards ) ifTrue: [^0@-1].
+	
+	(param isKindOf: Forward) ifTrue: [^0@1].
+	
+	(param isKindOf: RotateLeft) ifTrue: [^ West new.].
+	
+	(param isKindOf: RotateRight) ifTrue: [^ East new.]."
 
-!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/5/2020 21:01:09'!
-test11
-	| marsRover |
-	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: 'N'.
-	marsRover executeCommand: 'l'.
 	
-	self assert: (marsRover isIn: 0@0 andPointsTo: 'W').! !
+	
 
-!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/5/2020 21:05:48'!
-test12
-	| marsRover |
-	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: 'S'.
-	marsRover executeCommand: 'l'.
-	
-	self assert: (marsRover isIn: 0@0 andPointsTo: 'E').! !
+	! !
 
-!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/5/2020 21:07:06'!
-test13
-	| marsRover |
-	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: 'E'.
-	marsRover executeCommand: 'l'.
+!North methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:46:02'!
+doRotateRightMovement
 	
-	self assert: (marsRover isIn: 0@0 andPointsTo: 'N').! !
+	^ East new.
+	"(param isKindOf: Backwards ) ifTrue: [^0@-1].
+	
+	(param isKindOf: Forward) ifTrue: [^0@1].
+	
+	(param isKindOf: RotateLeft) ifTrue: [^ West new.].
+	
+	(param isKindOf: RotateRight) ifTrue: [^ East new.]."
 
-!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/5/2020 21:14:34'!
-test14
-	| marsRover |
-	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: 'W'.
-	marsRover executeCommand: 'l'.
 	
-	self assert: (marsRover isIn: 0@0 andPointsTo: 'S').! !
+	
 
-!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/5/2020 21:39:07'!
-test15
-	| marsRover |
-	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: 'N'.
-	marsRover executeCommand: 'r'.
-	
-	self assert: (marsRover isIn: 0@0 andPointsTo: 'E').! !
+	! !
 
-!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/5/2020 21:40:09'!
-test16
-	| marsRover |
-	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: 'S'.
-	marsRover executeCommand: 'r'.
-	
-	self assert: (marsRover isIn: 0@0 andPointsTo: 'W').! !
+
+!classDefinition: #South category: 'MarsRover-Ejercicio'!
+CardinalDirections subclass: #South
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'MarsRover-Ejercicio'!
 
-!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/5/2020 21:40:51'!
-test17
-	| marsRover |
-	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: 'E'.
-	marsRover executeCommand: 'r'.
+!South methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:46:38'!
+doBackwardsMovement
 	
-	self assert: (marsRover isIn: 0@0 andPointsTo: 'S').! !
+	^ 0@1
+	"(param isKindOf: Backwards ) ifTrue: [^ 0@1].
+	
+	(param isKindOf: Forward) ifTrue: [^ 0@-1].
+	
+	(param isKindOf: RotateLeft) ifTrue: [^ East new.].
+	
+	(param isKindOf: RotateRight) ifTrue: [^  West new.]."
+	
+	! !
 
-!MarsRoverTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/5/2020 21:41:32'!
-test18
-	| marsRover |
-	marsRover  := MarsRover initializeIn: 0@0 andPointsTo: 'W'.
-	marsRover executeCommand: 'r'.
+!South methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:46:49'!
+doForwardMovement
 	
-	self assert: (marsRover isIn: 0@0 andPointsTo: 'N').! !
+	^ 0@-1
+	"(param isKindOf: Backwards ) ifTrue: [^ 0@1].
+	
+	(param isKindOf: Forward) ifTrue: [^ 0@-1].
+	
+	(param isKindOf: RotateLeft) ifTrue: [^ East new.].
+	
+	(param isKindOf: RotateRight) ifTrue: [^  West new.]."
+	
+	! !
+
+!South methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:47:01'!
+doRotateLeftMovement
+	
+	^ East new.
+	"(param isKindOf: Backwards ) ifTrue: [^ 0@1].
+	
+	(param isKindOf: Forward) ifTrue: [^ 0@-1].
+	
+	(param isKindOf: RotateLeft) ifTrue: [^ East new.].
+	
+	(param isKindOf: RotateRight) ifTrue: [^  West new.]."
+	
+	! !
+
+!South methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:47:13'!
+doRotateRightMovement
+	
+	^ West new.
+	"(param isKindOf: Backwards ) ifTrue: [^ 0@1].
+	
+	(param isKindOf: Forward) ifTrue: [^ 0@-1].
+	
+	(param isKindOf: RotateLeft) ifTrue: [^ East new.].
+	
+	(param isKindOf: RotateRight) ifTrue: [^  West new.]."
+	
+	! !
+
+
+!classDefinition: #West category: 'MarsRover-Ejercicio'!
+CardinalDirections subclass: #West
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'MarsRover-Ejercicio'!
+
+!West methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:47:48'!
+doBackwardsMovement
+	
+	^1@0
+	
+	"(param isKindOf: Backwards ) ifTrue: [^ 1@0].
+	
+	(param isKindOf: Forward ) ifTrue: [^-1@0].
+	
+	(param isKindOf: RotateLeft) ifTrue: [^ South new.].
+	
+	(param isKindOf: RotateRight) ifTrue: [^ North new.].	"! !
+
+!West methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:47:58'!
+doForwardMovement
+	
+	^-1@0
+	
+	"(param isKindOf: Backwards ) ifTrue: [^ 1@0].
+	
+	(param isKindOf: Forward ) ifTrue: [^-1@0].
+	
+	(param isKindOf: RotateLeft) ifTrue: [^ South new.].
+	
+	(param isKindOf: RotateRight) ifTrue: [^ North new.].	"! !
+
+!West methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:48:09'!
+doRotateLeftMovement
+	
+	^ South new.
+	
+	"(param isKindOf: Backwards ) ifTrue: [^ 1@0].
+	
+	(param isKindOf: Forward ) ifTrue: [^-1@0].
+	
+	(param isKindOf: RotateLeft) ifTrue: [^ South new.].
+	
+	(param isKindOf: RotateRight) ifTrue: [^ North new.].	"! !
+
+!West methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:48:16'!
+doRotateRightMovement
+	
+	^ North new.
+	
+	"(param isKindOf: Backwards ) ifTrue: [^ 1@0].
+	
+	(param isKindOf: Forward ) ifTrue: [^-1@0].
+	
+	(param isKindOf: RotateLeft) ifTrue: [^ South new.].
+	
+	(param isKindOf: RotateRight) ifTrue: [^ North new.].	"! !
 
 
 !classDefinition: #MarsRover category: 'MarsRover-Ejercicio'!
@@ -158,20 +511,20 @@ Object subclass: #MarsRover
 	poolDictionaries: ''
 	category: 'MarsRover-Ejercicio'!
 
-!MarsRover methodsFor: 'as yet unclassified' stamp: 'CZ 12/5/2020 20:11:58'!
-initializeIn: newCoordenate andPointsTo: newCardinalDirection 
-	actualCoordenate := newCoordenate .
-	actualCardinalDirection := newCardinalDirection .! !
+!MarsRover methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 10:34:25'!
+actualCardinalDirection
+	
+	^actualCardinalDirection! !
 
-!MarsRover methodsFor: 'as yet unclassified' stamp: 'CZ 12/5/2020 20:38:28'!
-isIn: aCoordenate andPointsTo: aCardinalDirection
-	^(actualCoordenate = aCoordenate  and: actualCardinalDirection = aCardinalDirection).! !
+!MarsRover methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 10:34:10'!
+actualCoordenate
+	
+	^actualCoordenate! !
 
-
-!MarsRover methodsFor: 'accessing' stamp: 'CZ 12/5/2020 23:27:43'!
+!MarsRover methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 14:06:21'!
 executeCommand: aCommand
 	
-	|command|
+	| command |
 	
 	aCommand = 'f' ifTrue: [command := Forward new].
 
@@ -181,8 +534,30 @@ executeCommand: aCommand
 	
 	aCommand = 'r' ifTrue: [command := RotateRight new].
 	
-	^ command executeCommand.
+	aCommand = 'x' ifTrue: [^aCommand class signalCanNotExecuteAnInvalidCommand ].
+	
+	^ command executeCommandFor: self.
 	! !
+
+!MarsRover methodsFor: 'as yet unclassified' stamp: 'CZ 12/5/2020 20:11:58'!
+initializeIn: newCoordenate andPointsTo: newCardinalDirection 
+	actualCoordenate := newCoordenate .
+	actualCardinalDirection := newCardinalDirection .! !
+
+!MarsRover methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:01:38'!
+isIn: aCoordenate andPointsTo: aCardinalDirection
+	^(actualCoordenate = aCoordenate  and: actualCardinalDirection = aCardinalDirection).! !
+
+!MarsRover methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 11:02:05'!
+modifyActualCardinalDirectionWith: newCardinalDirection
+	
+	actualCardinalDirection := newCardinalDirection ! !
+
+!MarsRover methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 11:01:37'!
+modifyActualCoordenateWith: newCoordenate
+	
+	actualCoordenate := newCoordenate ! !
+
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -194,6 +569,7 @@ MarsRover class
 initializeIn: newCooordenate andPointsTo: newCardinalDirection 
 	^self new initializeIn: newCooordenate andPointsTo: newCardinalDirection ! !
 
+
 
 !classDefinition: #Commands category: 'MarsRover-Ejercicio'!
 MarsRover subclass: #Commands
@@ -202,9 +578,26 @@ MarsRover subclass: #Commands
 	poolDictionaries: ''
 	category: 'MarsRover-Ejercicio'!
 
-!Commands methodsFor: 'as yet unclassified' stamp: 'CZ 12/5/2020 22:40:28'!
-executeCommand
+!Commands methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 11:39:28'!
+executeCommandFor: aMarsRover
+
 	self subclassResponsibility! !
+
+!Commands methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 14:02:52'!
+signalCanNotExecuteAnInvalidCommand
+
+	self error: self class canNotExecuteAnInvalidCommand.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Commands class' category: 'MarsRover-Ejercicio'!
+Commands class
+	instanceVariableNames: ''!
+
+!Commands class methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 13:44:02'!
+canNotExecuteAnInvalidCommand
+
+	^'Cannot Execute An Invalid Command'! !
 
 
 !classDefinition: #Backwards category: 'MarsRover-Ejercicio'!
@@ -214,13 +607,14 @@ Commands subclass: #Backwards
 	poolDictionaries: ''
 	category: 'MarsRover-Ejercicio'!
 
-!Backwards methodsFor: 'as yet unclassified' stamp: 'CZ 12/5/2020 22:38:19'!
-executeCommand
+!Backwards methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:50:37'!
+executeCommandFor: aMarsRover
 	
-	actualCardinalDirection = 'N' ifTrue: [actualCoordenate := 0@-1].
-	actualCardinalDirection = 'S' ifTrue: [actualCoordenate := 0@1].
-	actualCardinalDirection = 'E' ifTrue: [actualCoordenate := -1@0].
-	actualCardinalDirection = 'W' ifTrue: [actualCoordenate := 1@0].! !
+	| tempCoordenate |
+	
+	tempCoordenate := aMarsRover actualCardinalDirection doBackwardsMovement.
+	
+	aMarsRover modifyActualCoordenateWith: tempCoordenate.! !
 
 
 !classDefinition: #Forward category: 'MarsRover-Ejercicio'!
@@ -230,13 +624,14 @@ Commands subclass: #Forward
 	poolDictionaries: ''
 	category: 'MarsRover-Ejercicio'!
 
-!Forward methodsFor: 'as yet unclassified' stamp: 'CZ 12/5/2020 22:37:42'!
-executeCommand
-
-	actualCardinalDirection = 'N' ifTrue: [actualCoordenate := 0@1].
-	actualCardinalDirection = 'S' ifTrue: [actualCoordenate := 0@-1].
-	actualCardinalDirection = 'E' ifTrue: [actualCoordenate := 1@0].
-	actualCardinalDirection = 'W' ifTrue: [actualCoordenate := -1@0].! !
+!Forward methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:50:55'!
+executeCommandFor: aMarsRover
+	
+	| tempCoordenate |
+	
+	tempCoordenate := aMarsRover actualCardinalDirection doForwardMovement.
+	
+	aMarsRover modifyActualCoordenateWith: tempCoordenate.! !
 
 
 !classDefinition: #RotateLeft category: 'MarsRover-Ejercicio'!
@@ -246,15 +641,14 @@ Commands subclass: #RotateLeft
 	poolDictionaries: ''
 	category: 'MarsRover-Ejercicio'!
 
-!RotateLeft methodsFor: 'as yet unclassified' stamp: 'CZ 12/5/2020 22:40:51'!
-executeCommand
-	|tempCardinalDirection|
-	actualCardinalDirection = 'N' ifTrue: [tempCardinalDirection := 'W'].
-	actualCardinalDirection = 'S' ifTrue: [tempCardinalDirection := 'E'].
-	actualCardinalDirection = 'E' ifTrue: [tempCardinalDirection := 'N'].
-	actualCardinalDirection = 'W' ifTrue: [tempCardinalDirection := 'S'].
+!RotateLeft methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:51:09'!
+executeCommandFor: aMarsRover
 	
-	actualCardinalDirection := tempCardinalDirection.! !
+	| tempCardinalDirection |
+	
+	tempCardinalDirection := aMarsRover actualCardinalDirection doRotateLeftMovement.
+	
+	aMarsRover modifyActualCardinalDirectionWith: tempCardinalDirection.! !
 
 
 !classDefinition: #RotateRight category: 'MarsRover-Ejercicio'!
@@ -264,12 +658,11 @@ Commands subclass: #RotateRight
 	poolDictionaries: ''
 	category: 'MarsRover-Ejercicio'!
 
-!RotateRight methodsFor: 'as yet unclassified' stamp: 'CZ 12/5/2020 22:40:56'!
-executeCommand
-	|tempCardinalDirection|
-	actualCardinalDirection = 'N' ifTrue: [tempCardinalDirection := 'E'].
-	actualCardinalDirection = 'S' ifTrue: [tempCardinalDirection := 'W'].
-	actualCardinalDirection = 'E' ifTrue: [tempCardinalDirection := 'S'].
-	actualCardinalDirection = 'W' ifTrue: [tempCardinalDirection := 'N'].
+!RotateRight methodsFor: 'as yet unclassified' stamp: 'JT 12/7/2020 12:51:46'!
+executeCommandFor: aMarsRover
+
+	| tempCardinalDirection |
 	
-	actualCardinalDirection := tempCardinalDirection.! !
+	tempCardinalDirection := aMarsRover actualCardinalDirection doRotateRightMovement.
+	
+	aMarsRover modifyActualCardinalDirectionWith: tempCardinalDirection.! !
