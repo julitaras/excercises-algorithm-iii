@@ -189,6 +189,59 @@ test06ReceptiveAccountDoNotKnowNotRegisteredTransactions
 ! !
 
 
+!classDefinition: #TransfersTest category: 'ServiciosFinancieros-Ejercicio'!
+TestCase subclass: #TransfersTest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!TransfersTest methodsFor: 'tests' stamp: 'JT 12/8/2020 12:34:29'!
+test01
+
+	| senderAccount receiverAccount |
+	
+	senderAccount := ReceptiveAccount new.
+	receiverAccount := ReceptiveAccount new.
+	Deposit register: 100 * peso on: senderAccount.
+	
+	Transfers transferFrom: senderAccount to: receiverAccount withAmount: 100 * peso.
+	
+	self assert: 0 equals: senderAccount balance.
+	self assert: 100 * peso equals: receiverAccount balance.
+	! !
+
+!TransfersTest methodsFor: 'tests' stamp: 'JT 12/8/2020 12:51:46'!
+test02
+
+	| senderAccount receiverAccount transfer |
+	
+	senderAccount := ReceptiveAccount new.
+	receiverAccount := ReceptiveAccount new.
+	Deposit register: 100 * peso on: senderAccount.
+	 
+ 	transfer := Transfers transferFrom: senderAccount to: receiverAccount withAmount: 100 * peso.
+	
+	self assert: (transfer withdrawValue) equals: 100 * peso.
+	
+! !
+
+!TransfersTest methodsFor: 'tests' stamp: 'JT 12/8/2020 12:51:12'!
+test03
+
+	| senderAccount receiverAccount transfer |
+	
+	senderAccount := ReceptiveAccount new.
+	receiverAccount := ReceptiveAccount new.
+	Deposit register: 100 * peso on: senderAccount.
+	 
+ 	transfer := Transfers transferFrom: senderAccount to: receiverAccount withAmount: 100 * peso.
+	
+	self assert: (transfer depositValue) equals: 100 * peso.
+	
+! !
+
+
 !classDefinition: #AccountTransaction category: 'ServiciosFinancieros-Ejercicio'!
 Object subclass: #AccountTransaction
 	instanceVariableNames: ''
@@ -402,10 +455,10 @@ initialize
 	transactions := OrderedCollection new.! !
 
 
-!ReceptiveAccount methodsFor: 'main protocol' stamp: 'JT 12/3/2020 21:37:13'!
+!ReceptiveAccount methodsFor: 'main protocol' stamp: 'JT 12/8/2020 10:25:42'!
 balance
 	
-	^transactions sum: [ :aTransaction | aTransaction class = Withdraw ifTrue:[ aTransaction value negated] ifFalse: [aTransaction value]. ] ifEmpty: [ 0 * peso ].! !
+	^transactions sum: [ :aTransaction | (aTransaction isKindOf: Withdraw) ifTrue:[ aTransaction value negated] ifFalse: [aTransaction value]. ] ifEmpty: [ 0 * peso ].! !
 
 !ReceptiveAccount methodsFor: 'main protocol' stamp: 'LL 9/20/2020 20:48:29'!
 hasRegistered: aTransaction
@@ -429,3 +482,117 @@ addedTo: aPortfolio
 isComposedBy: anAccount
 
 	^self = anAccount ! !
+
+
+!classDefinition: #Transfers category: 'ServiciosFinancieros-Ejercicio'!
+Object subclass: #Transfers
+	instanceVariableNames: 'depositValue withdrawValue'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!Transfers methodsFor: 'accessing' stamp: 'JT 12/8/2020 13:15:06'!
+depositValue
+	
+	^depositValue! !
+
+!Transfers methodsFor: 'accessing' stamp: 'JT 12/8/2020 12:26:00'!
+withdrawValue
+	
+	^withdrawValue! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Transfers class' category: 'ServiciosFinancieros-Ejercicio'!
+Transfers class
+	instanceVariableNames: ''!
+
+!Transfers class methodsFor: 'transfer management' stamp: 'JT 12/8/2020 12:34:08'!
+transferFrom: aSenderAccount to: aReceiverAccount withAmount: anAmoutToTransfer
+	
+	| register |
+	
+	register := self register: anAmoutToTransfer.
+	Withdraw register: anAmoutToTransfer on: aSenderAccount.
+	Deposit register: anAmoutToTransfer on: aReceiverAccount.
+	
+	^register
+! !
+
+
+!Transfers class methodsFor: 'as yet unclassified' stamp: 'JT 12/8/2020 11:55:13'!
+for: aValue
+
+	self subclassResponsibility.! !
+
+!Transfers class methodsFor: 'as yet unclassified' stamp: 'JT 12/8/2020 13:18:55'!
+register: aValue
+
+	| transaction |
+	
+	transaction := Transfers new.
+	
+	"transaction updateDepositValue: aValue. 
+	transaction updateWithdrawValue: aValue. "
+	self allSubclassesDo:
+		[:aSubclass | aSubclass for: aValue.].
+		
+	^ transaction! !
+
+
+!classDefinition: #TransferDeposit category: 'ServiciosFinancieros-Ejercicio'!
+Transfers subclass: #TransferDeposit
+	instanceVariableNames: 'value'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!TransferDeposit methodsFor: 'initialization' stamp: 'JT 12/8/2020 13:10:24'!
+initializeFor: aValue
+
+	value := aValue ! !
+
+
+!TransferDeposit methodsFor: 'accessing' stamp: 'JT 12/8/2020 13:10:15'!
+value
+	 ^value! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'TransferDeposit class' category: 'ServiciosFinancieros-Ejercicio'!
+TransferDeposit class
+	instanceVariableNames: ''!
+
+!TransferDeposit class methodsFor: 'as yet unclassified' stamp: 'JT 12/8/2020 13:10:03'!
+for: aValue
+
+	^ self new initializeFor: aValue ! !
+
+
+!classDefinition: #TransferWithdraw category: 'ServiciosFinancieros-Ejercicio'!
+Transfers subclass: #TransferWithdraw
+	instanceVariableNames: 'value'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!TransferWithdraw methodsFor: 'accessing' stamp: 'JT 12/8/2020 11:36:34'!
+value
+	 ^value! !
+
+
+!TransferWithdraw methodsFor: 'initialization' stamp: 'JT 12/8/2020 11:38:12'!
+initializeFor: aValue
+
+	value := aValue ! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'TransferWithdraw class' category: 'ServiciosFinancieros-Ejercicio'!
+TransferWithdraw class
+	instanceVariableNames: ''!
+
+!TransferWithdraw class methodsFor: 'as yet unclassified' stamp: 'JT 12/8/2020 11:38:24'!
+for: aValue
+
+	^ self new initializeFor: aValue ! !
