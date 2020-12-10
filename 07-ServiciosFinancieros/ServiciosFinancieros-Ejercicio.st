@@ -110,6 +110,50 @@ test06PortfolioCanNotIncludeAnyOfTheComposedAccountOfPortfolioToAdd
 			self assert: Portfolio canNotAddAccountErrorMessage equals: anError messageText.
 			self assert: portfolioToModify hasAccounts ]! !
 
+!PortfolioTest methodsFor: 'tests' stamp: 'CZ 12/10/2020 14:09:57'!
+test07PortfolioAfterMultipleAccountsDepositHasCorrectBalance
+
+	| account1 account2 aPortfolio |
+	
+	account1 := ReceptiveAccount new.
+	account2 := ReceptiveAccount new.
+	aPortfolio := Portfolio new.
+	aPortfolio := Portfolio with: account1 with: account2 .
+	
+	Deposit register: 100 * peso on: account1.
+	Deposit register: 200 * peso on: account2.
+	
+	self assert: 300 * peso equals: aPortfolio balance.! !
+
+!PortfolioTest methodsFor: 'tests' stamp: 'CZ 12/10/2020 13:39:21'!
+test08PortfolioWithTransactionsReturnsTrueWhenAskedIfAnAccountHasRegisteredATransaction
+
+	| account1 account2 aPortfolio deposit1 deposit2 |
+	
+	account1 := ReceptiveAccount new.
+	account2 := ReceptiveAccount new.
+	aPortfolio := Portfolio new.
+	aPortfolio := Portfolio with: account1 with: account2 .
+	
+	deposit1 := Deposit register: 100 * peso on: account1.
+	deposit2 := Deposit register: 200 * peso on: account2.
+	
+	self assert: (aPortfolio hasRegistered: deposit1).! !
+
+!PortfolioTest methodsFor: 'tests' stamp: 'CZ 12/10/2020 13:39:01'!
+test09PortfolioWithoutTransactionsReturnsFalseWhenAskedIfAnAccountHasRegisteredATransaction
+
+	| account1 account2 aPortfolio deposit1 |
+	
+	account1 := ReceptiveAccount new.
+	account2 := ReceptiveAccount new.
+	aPortfolio := Portfolio new.
+	aPortfolio := Portfolio with: account1 with: account2 .
+	
+	deposit1 := Deposit new. 
+	
+	self deny: (aPortfolio hasRegistered: deposit1).! !
+
 
 !classDefinition: #ReceptiveAccountTest category: 'ServiciosFinancieros-Ejercicio'!
 TestCase subclass: #ReceptiveAccountTest
@@ -196,8 +240,8 @@ TestCase subclass: #TransfersTest
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!TransfersTest methodsFor: 'tests' stamp: 'CZ 12/9/2020 18:05:31'!
-test01
+!TransfersTest methodsFor: 'tests' stamp: 'CZ 12/10/2020 13:51:53'!
+test01AccountsBalanceAfterATransferAreCorrectlyUpdated
 
 	| senderAccount receiverAccount |
 	
@@ -211,8 +255,24 @@ test01
 	self assert: 100 * peso equals: receiverAccount balance.
 	! !
 
-!TransfersTest methodsFor: 'tests' stamp: 'CZ 12/9/2020 21:48:38'!
-test02
+!TransfersTest methodsFor: 'tests' stamp: 'CZ 12/10/2020 14:06:29'!
+test02AccountsBalanceRemainTheSameIfNoTransferIsMade
+
+	| senderAccount receiverAccount |
+	
+	senderAccount := ReceptiveAccount new.
+	receiverAccount := ReceptiveAccount new.
+	Deposit register: 100 * peso on: senderAccount.
+	Deposit register: 50 * peso on: receiverAccount.
+	
+	Transfer transferFrom: senderAccount to: receiverAccount withAmount: 0 * peso.
+	
+	self assert: 100 * peso equals: senderAccount balance.
+	self assert: 50 * peso equals: receiverAccount balance.
+	! !
+
+!TransfersTest methodsFor: 'tests' stamp: 'CZ 12/10/2020 13:50:40'!
+test03TransferValueAfterATransferIsCorrectlySettled
 
 	| senderAccount receiverAccount aTransfer |
 	
@@ -226,8 +286,8 @@ test02
 	
 ! !
 
-!TransfersTest methodsFor: 'tests' stamp: 'JT 12/10/2020 08:30:52'!
-test03
+!TransfersTest methodsFor: 'tests' stamp: 'CZ 12/10/2020 14:03:26'!
+test04DepositTransferValueAndWithdrawTransferValueAreTheSame
 
 	| senderAccount receiverAccount aTransfer |
 	
@@ -237,12 +297,12 @@ test03
 	 
  	aTransfer := Transfer transferFrom: senderAccount to: receiverAccount withAmount: 100 * peso.
 	
-	self assert: 100 * peso equals: (aTransfer depositValue).
+	self assert: (aTransfer depositTransfer value = aTransfer withdrawTransfer value).
 	
 ! !
 
-!TransfersTest methodsFor: 'tests' stamp: 'JT 12/10/2020 08:32:19'!
-test04
+!TransfersTest methodsFor: 'tests' stamp: 'CZ 12/10/2020 14:07:16'!
+test05DepositTransferValueAfterATransferIsCorrectlySettled
 
 	| senderAccount receiverAccount aTransfer |
 	
@@ -252,12 +312,12 @@ test04
 	 
  	aTransfer := Transfer transferFrom: senderAccount to: receiverAccount withAmount: 100 * peso.
 	
-	self assert: 100 * peso equals: (aTransfer withdrawValue).
+	self assert: 100 * peso equals: (aTransfer depositTransfer value).
 	
 ! !
 
-!TransfersTest methodsFor: 'tests' stamp: 'JT 12/10/2020 08:53:35'!
-test05
+!TransfersTest methodsFor: 'tests' stamp: 'CZ 12/10/2020 14:07:21'!
+test06WithdrawTransferValueAfterATransferIsCorrectlySettled
 
 	| senderAccount receiverAccount aTransfer |
 	
@@ -267,12 +327,12 @@ test05
 	 
  	aTransfer := Transfer transferFrom: senderAccount to: receiverAccount withAmount: 100 * peso.
 	
-	self assert: 100 * peso equals: (aTransfer counterpartOf: Deposit).
+	self assert: 100 * peso equals: (aTransfer withdrawTransfer value).
 	
 ! !
 
-!TransfersTest methodsFor: 'tests' stamp: 'JT 12/10/2020 08:55:52'!
-test06
+!TransfersTest methodsFor: 'tests' stamp: 'CZ 12/10/2020 14:07:26'!
+test07ADepositTransferLegKnowsItsCounterpart
 
 	| senderAccount receiverAccount aTransfer |
 	
@@ -282,7 +342,22 @@ test06
 	 
  	aTransfer := Transfer transferFrom: senderAccount to: receiverAccount withAmount: 100 * peso.
 	
-	self assert: 100 * peso equals: (aTransfer counterpartOf: Withdraw).
+	self assert: 100 * peso equals: (aTransfer counterpartOf: aTransfer depositTransfer with: aTransfer withdrawTransfer).
+	
+! !
+
+!TransfersTest methodsFor: 'tests' stamp: 'CZ 12/10/2020 14:07:30'!
+test08AWithdrawTransferLegKnowsItsCounterpart
+
+	| senderAccount receiverAccount aTransfer |
+	
+	senderAccount := ReceptiveAccount new.
+	receiverAccount := ReceptiveAccount new.
+	Deposit register: 100 * peso on: senderAccount.
+	 
+ 	aTransfer := Transfer transferFrom: senderAccount to: receiverAccount withAmount: 100 * peso.
+	
+	self assert: 100 * peso equals: (aTransfer counterpartOf: aTransfer withdrawTransfer with: aTransfer depositTransfer).
 	
 ! !
 
@@ -334,6 +409,12 @@ value
 
 	^ value! !
 
+
+!Deposit methodsFor: 'as yet unclassified' stamp: 'CZ 12/10/2020 14:25:23'!
+transactionValue
+
+	^value! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'Deposit class' category: 'ServiciosFinancieros-Ejercicio'!
@@ -347,36 +428,16 @@ for: aValue
 
 
 !classDefinition: #TransferDeposit category: 'ServiciosFinancieros-Ejercicio'!
-AccountTransaction subclass: #TransferDeposit
+Deposit subclass: #TransferDeposit
 	instanceVariableNames: 'transfer'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!TransferDeposit methodsFor: 'as yet unclassified' stamp: 'JT 12/10/2020 09:27:44'!
-initializeWith: aTransfer
+!TransferDeposit methodsFor: 'accessing' stamp: 'CZ 12/10/2020 12:02:55'!
+counterpartWith: theOtherLeg
 
-	transfer := aTransfer.
-	! !
-
-!TransferDeposit methodsFor: 'as yet unclassified' stamp: 'JT 12/10/2020 09:28:52'!
-value
-
-	^transfer depositValue.
-	! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'TransferDeposit class' category: 'ServiciosFinancieros-Ejercicio'!
-TransferDeposit class
-	instanceVariableNames: ''!
-
-!TransferDeposit class methodsFor: 'as yet unclassified' stamp: 'JT 12/10/2020 09:27:52'!
-register: aTransfer
-
-	^self new initializeWith: aTransfer.
-
-	! !
+	^theOtherLeg value.! !
 
 
 !classDefinition: #Withdraw category: 'ServiciosFinancieros-Ejercicio'!
@@ -397,6 +458,12 @@ value
 
 	^ value! !
 
+
+!Withdraw methodsFor: 'as yet unclassified' stamp: 'CZ 12/10/2020 14:25:35'!
+transactionValue
+
+	^value negated.! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'Withdraw class' category: 'ServiciosFinancieros-Ejercicio'!
@@ -407,6 +474,19 @@ Withdraw class
 for: aValue
 
 	^ self new initializeFor: aValue ! !
+
+
+!classDefinition: #TransferWithdraw category: 'ServiciosFinancieros-Ejercicio'!
+Withdraw subclass: #TransferWithdraw
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!TransferWithdraw methodsFor: 'accessing' stamp: 'CZ 12/10/2020 13:54:37'!
+counterpartWith: theOtherLeg
+
+	^theOtherLeg value.! !
 
 
 !classDefinition: #Portfolio category: 'ServiciosFinancieros-Ejercicio'!
@@ -443,11 +523,25 @@ hasAccounts
 	
 	^accounts isEmpty ! !
 
+!Portfolio methodsFor: 'testing' stamp: 'CZ 12/10/2020 13:12:12'!
+hasRegistered: aTransaction
+	
+	^accounts anySatisfy: [ :anAccount | anAccount hasRegistered: aTransaction].
+	
+	! !
+
 
 !Portfolio methodsFor: 'accessing' stamp: 'HAW 5/25/2019 11:49:06'!
 accountsSize
 	
 	^accounts size! !
+
+!Portfolio methodsFor: 'accessing' stamp: 'CZ 12/10/2020 12:42:58'!
+balance
+
+	^accounts sum: [:anAccount | anAccount balance]. 
+	
+	! !
 
 
 !Portfolio methodsFor: 'composition - private' stamp: 'HAW 5/25/2019 12:17:31'!
@@ -533,10 +627,10 @@ initialize
 	transactions := OrderedCollection new.! !
 
 
-!ReceptiveAccount methodsFor: 'main protocol' stamp: 'JT 12/8/2020 10:25:42'!
+!ReceptiveAccount methodsFor: 'main protocol' stamp: 'CZ 12/10/2020 14:26:19'!
 balance
 	
-	^transactions sum: [ :aTransaction | (aTransaction isKindOf: Withdraw) ifTrue:[ aTransaction value negated] ifFalse: [aTransaction value]. ] ifEmpty: [ 0 * peso ].! !
+	^transactions sum: [ :aTransaction | aTransaction transactionValue] ifEmpty: [ 0 * peso ].! !
 
 !ReceptiveAccount methodsFor: 'main protocol' stamp: 'LL 9/20/2020 20:48:29'!
 hasRegistered: aTransaction
@@ -564,39 +658,39 @@ isComposedBy: anAccount
 
 !classDefinition: #Transfer category: 'ServiciosFinancieros-Ejercicio'!
 Object subclass: #Transfer
-	instanceVariableNames: 'value depositValue withdrawValue depositTransfer'
+	instanceVariableNames: 'value depositTransfer withdrawTransfer'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!Transfer methodsFor: 'as yet unclassified' stamp: 'JT 12/10/2020 08:19:12'!
-depositValue
-	
-	^depositValue! !
-
-!Transfer methodsFor: 'as yet unclassified' stamp: 'JT 12/10/2020 09:47:55'!
+!Transfer methodsFor: 'initialization' stamp: 'CZ 12/10/2020 11:45:05'!
 initializeFor: aValue
 
 	value := aValue.
-	withdrawValue := aValue.
-	depositValue := aValue. ! !
+	withdrawTransfer := TransferWithdraw for: aValue.
+	depositTransfer := TransferDeposit for: aValue. ! !
 
-!Transfer methodsFor: 'as yet unclassified' stamp: 'CZ 12/9/2020 18:07:31'!
+
+!Transfer methodsFor: 'accessing' stamp: 'CZ 12/10/2020 12:14:14'!
+counterpartOf: aLeg with: theOtherLeg
+
+	^aLeg counterpartWith: theOtherLeg
+	! !
+
+!Transfer methodsFor: 'accessing' stamp: 'CZ 12/10/2020 11:33:49'!
+depositTransfer
+	
+	^depositTransfer ! !
+
+!Transfer methodsFor: 'accessing' stamp: 'CZ 12/10/2020 13:59:25'!
 value
 
 	^ value! !
 
-!Transfer methodsFor: 'as yet unclassified' stamp: 'JT 12/10/2020 08:32:44'!
-withdrawValue
+!Transfer methodsFor: 'accessing' stamp: 'CZ 12/10/2020 11:33:34'!
+withdrawTransfer
 
-	^ withdrawValue! !
-
-
-!Transfer methodsFor: 'accessing' stamp: 'JT 12/10/2020 08:57:54'!
-counterpartOf: aClass 
-	
-	(aClass isKindOf: Deposit) ifTrue: [^self withdrawValue].
-	^self depositValue.! !
+	^ withdrawTransfer ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -604,28 +698,22 @@ counterpartOf: aClass
 Transfer class
 	instanceVariableNames: ''!
 
-!Transfer class methodsFor: 'as yet unclassified' stamp: 'JT 12/10/2020 09:09:46'!
+!Transfer class methodsFor: 'instance creation' stamp: 'CZ 12/10/2020 10:32:20'!
 for: aValue
 
 	^self new initializeFor: aValue.
-	
-	"(aValue isKindOf: Deposit) ifTrue: [transaction := TransferDeposit new. ]."! !
+	! !
 
-!Transfer class methodsFor: 'as yet unclassified' stamp: 'CZ 12/9/2020 18:51:21'!
-register: aValue
 
-	^Transfer for: aValue.! !
-
-!Transfer class methodsFor: 'as yet unclassified' stamp: 'JT 12/10/2020 09:48:15'!
+!Transfer class methodsFor: 'transfer management' stamp: 'CZ 12/10/2020 11:54:23'!
 transferFrom: aSenderAccount to: aReceiverAccount withAmount: anAmoutToTransfer
 	
 	| register |
 	
-	register := self register: anAmoutToTransfer .
-	Withdraw register: anAmoutToTransfer on: aSenderAccount.
-	Deposit register: anAmoutToTransfer on: aReceiverAccount.
-	TransferDeposit register: self.
+	register := self for: anAmoutToTransfer .
 	
+	TransferWithdraw register: anAmoutToTransfer on: aSenderAccount.
+	TransferDeposit register: anAmoutToTransfer on: aReceiverAccount.
 	
 	^register
 	
