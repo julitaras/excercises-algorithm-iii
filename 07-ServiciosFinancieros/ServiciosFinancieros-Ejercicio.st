@@ -196,7 +196,7 @@ TestCase subclass: #TransfersTest
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!TransfersTest methodsFor: 'tests' stamp: 'JT 12/8/2020 12:34:29'!
+!TransfersTest methodsFor: 'tests' stamp: 'CZ 12/9/2020 18:05:31'!
 test01
 
 	| senderAccount receiverAccount |
@@ -205,39 +205,40 @@ test01
 	receiverAccount := ReceptiveAccount new.
 	Deposit register: 100 * peso on: senderAccount.
 	
-	Transfers transferFrom: senderAccount to: receiverAccount withAmount: 100 * peso.
+	Transfer transferFrom: senderAccount to: receiverAccount withAmount: 100 * peso.
 	
 	self assert: 0 equals: senderAccount balance.
 	self assert: 100 * peso equals: receiverAccount balance.
 	! !
 
-!TransfersTest methodsFor: 'tests' stamp: 'JT 12/8/2020 12:51:46'!
+!TransfersTest methodsFor: 'tests' stamp: 'CZ 12/9/2020 21:48:38'!
 test02
 
-	| senderAccount receiverAccount transfer |
+	| senderAccount receiverAccount aTransfer |
 	
 	senderAccount := ReceptiveAccount new.
 	receiverAccount := ReceptiveAccount new.
 	Deposit register: 100 * peso on: senderAccount.
 	 
- 	transfer := Transfers transferFrom: senderAccount to: receiverAccount withAmount: 100 * peso.
+ 	aTransfer := Transfer transferFrom: senderAccount to: receiverAccount withAmount: 100 * peso.
 	
-	self assert: (transfer withdrawValue) equals: 100 * peso.
+	self assert: 100 * peso equals: aTransfer value.
 	
 ! !
 
-!TransfersTest methodsFor: 'tests' stamp: 'JT 12/8/2020 12:51:12'!
+!TransfersTest methodsFor: 'tests' stamp: 'CZ 12/9/2020 22:22:24'!
 test03
 
-	| senderAccount receiverAccount transfer |
+	| senderAccount receiverAccount aTransfer |
 	
 	senderAccount := ReceptiveAccount new.
 	receiverAccount := ReceptiveAccount new.
 	Deposit register: 100 * peso on: senderAccount.
 	 
- 	transfer := Transfers transferFrom: senderAccount to: receiverAccount withAmount: 100 * peso.
+ 	aTransfer := Transfer transferFrom: senderAccount to: receiverAccount withAmount: 100 * peso.
+	aTransfer 
 	
-	self assert: (transfer depositValue) equals: 100 * peso.
+	self assert: 100 * peso equals: aTransfer value.
 	
 ! !
 
@@ -484,30 +485,40 @@ isComposedBy: anAccount
 	^self = anAccount ! !
 
 
-!classDefinition: #Transfers category: 'ServiciosFinancieros-Ejercicio'!
-Object subclass: #Transfers
-	instanceVariableNames: 'depositValue withdrawValue'
+!classDefinition: #Transfer category: 'ServiciosFinancieros-Ejercicio'!
+Object subclass: #Transfer
+	instanceVariableNames: 'value'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!Transfers methodsFor: 'accessing' stamp: 'JT 12/8/2020 13:15:06'!
-depositValue
-	
-	^depositValue! !
+!Transfer methodsFor: 'as yet unclassified' stamp: 'CZ 12/9/2020 18:06:16'!
+initializeFor: aValue
 
-!Transfers methodsFor: 'accessing' stamp: 'JT 12/8/2020 12:26:00'!
-withdrawValue
-	
-	^withdrawValue! !
+	value := aValue ! !
+
+!Transfer methodsFor: 'as yet unclassified' stamp: 'CZ 12/9/2020 18:07:31'!
+value
+
+	^ value! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Transfers class' category: 'ServiciosFinancieros-Ejercicio'!
-Transfers class
+!classDefinition: 'Transfer class' category: 'ServiciosFinancieros-Ejercicio'!
+Transfer class
 	instanceVariableNames: ''!
 
-!Transfers class methodsFor: 'transfer management' stamp: 'JT 12/8/2020 12:34:08'!
+!Transfer class methodsFor: 'as yet unclassified' stamp: 'CZ 12/9/2020 18:07:48'!
+for: aValue
+
+	^ self new initializeFor: aValue ! !
+
+!Transfer class methodsFor: 'as yet unclassified' stamp: 'CZ 12/9/2020 18:51:21'!
+register: aValue
+
+	^Transfer for: aValue.! !
+
+!Transfer class methodsFor: 'as yet unclassified' stamp: 'CZ 12/9/2020 18:13:45'!
 transferFrom: aSenderAccount to: aReceiverAccount withAmount: anAmoutToTransfer
 	
 	| register |
@@ -517,82 +528,5 @@ transferFrom: aSenderAccount to: aReceiverAccount withAmount: anAmoutToTransfer
 	Deposit register: anAmoutToTransfer on: aReceiverAccount.
 	
 	^register
-! !
-
-
-!Transfers class methodsFor: 'as yet unclassified' stamp: 'JT 12/8/2020 11:55:13'!
-for: aValue
-
-	self subclassResponsibility.! !
-
-!Transfers class methodsFor: 'as yet unclassified' stamp: 'JT 12/8/2020 13:18:55'!
-register: aValue
-
-	| transaction |
 	
-	transaction := Transfers new.
-	
-	"transaction updateDepositValue: aValue. 
-	transaction updateWithdrawValue: aValue. "
-	self allSubclassesDo:
-		[:aSubclass | aSubclass for: aValue.].
-		
-	^ transaction! !
-
-
-!classDefinition: #TransferDeposit category: 'ServiciosFinancieros-Ejercicio'!
-Transfers subclass: #TransferDeposit
-	instanceVariableNames: 'value'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'ServiciosFinancieros-Ejercicio'!
-
-!TransferDeposit methodsFor: 'initialization' stamp: 'JT 12/8/2020 13:10:24'!
-initializeFor: aValue
-
-	value := aValue ! !
-
-
-!TransferDeposit methodsFor: 'accessing' stamp: 'JT 12/8/2020 13:10:15'!
-value
-	 ^value! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'TransferDeposit class' category: 'ServiciosFinancieros-Ejercicio'!
-TransferDeposit class
-	instanceVariableNames: ''!
-
-!TransferDeposit class methodsFor: 'as yet unclassified' stamp: 'JT 12/8/2020 13:10:03'!
-for: aValue
-
-	^ self new initializeFor: aValue ! !
-
-
-!classDefinition: #TransferWithdraw category: 'ServiciosFinancieros-Ejercicio'!
-Transfers subclass: #TransferWithdraw
-	instanceVariableNames: 'value'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'ServiciosFinancieros-Ejercicio'!
-
-!TransferWithdraw methodsFor: 'accessing' stamp: 'JT 12/8/2020 11:36:34'!
-value
-	 ^value! !
-
-
-!TransferWithdraw methodsFor: 'initialization' stamp: 'JT 12/8/2020 11:38:12'!
-initializeFor: aValue
-
-	value := aValue ! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'TransferWithdraw class' category: 'ServiciosFinancieros-Ejercicio'!
-TransferWithdraw class
-	instanceVariableNames: ''!
-
-!TransferWithdraw class methodsFor: 'as yet unclassified' stamp: 'JT 12/8/2020 11:38:24'!
-for: aValue
-
-	^ self new initializeFor: aValue ! !
+	! !
