@@ -11,7 +11,7 @@ Se espera tener dos reportes inicialmente:
 
 El **resumen de cuenta** debe generar una línea por cada transacción realizada en una cuenta con el siguiente formato:
 
-```
+```smalltalk
 Depósito por 100 pesos
 Extracción por 50 pesos
 Salida por transferencia de 20 pesos
@@ -27,7 +27,7 @@ El banco prevé agregar muchos reportes nuevos en un tiempo inmediato, por lo ta
 
 1. Poder agregar futuros reportes sin tener que modificar la jerarquía de cuentas.
 2. Poder agregar futuros reportes sin tener que modificar la jerarquía de transacciones.
-3. Crear nuevos reportes debe implicar crear clases nuevas únicamente y no modificar ninguna existente.
+3. Crear nuevos reportes debe implicar crear clases nuevas únicamente y no modificar ninguna existente. --> **PREGUNTAR MAÑANA**
 
 Implementar la solución haciendo TDD. Deben partir del código de la solución del ejercicio anterior, ya sea el realizado por ustedes o a partir de la solución provista por la cátedra.
 
@@ -36,7 +36,7 @@ Implementar la solución haciendo TDD. Deben partir del código de la solución 
 El CEO del banco nos premiará si logramos tener 2 nuevos reportes para portfolios. El primero (PortfolioTreePrinter) deberá mostrar la estructura de árbol completa del portfolio. El segundo, un reporte más detallado (PortfolioDetailedTreePrinter) que muestre las transacciones indentadas de acuerdo a la profundidad de cada cuenta del portfolio.
 
 Dado un portfolio como se muestra a continuación: 
-```
+```smalltalk
 johnsAccount := ReceptiveAccount named: 'Cuenta de Juan'. 
 angiesAccount := ReceptiveAccount named: 'Cuenta de Angeles'. 
 childrenPortfolio := Portfolio named: 'Portfolio de hijos' with: johnsAccount with: angiesAccount. 
@@ -45,7 +45,7 @@ familyPortfolio := Portfolio named: 'Portfolio de la familia' with: myAccount wi
 ```
 
 El reporte de la estructura de árbol de dicho portfolio debería ser:
-```
+```smalltalk
 Portfolio de la familia
    Cuenta mia
    Portfolio de hijos
@@ -54,7 +54,7 @@ Portfolio de la familia
 ```
 
 Se espera que el reporte detallado se muestre de la siguiente manera:
-```
+```smalltalk
 Portfolio de la familia
    Cuenta Mia
       Depósito por xxx
