@@ -5,8 +5,8 @@ TestCase subclass: #AccountSummaryTest
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros2-Ejercicio'!
 
-!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/13/2020 10:44:19'!
-test01
+!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/14/2020 23:37:50'!
+test01SummaryOfAnAccountWithoutTransactionsIsCorrect
 
 	| account expectedSummary |
 	
@@ -16,8 +16,8 @@ test01
 	
 	self assert: ((account retrieveSummary) = expectedSummary).! !
 
-!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/13/2020 10:40:03'!
-test02
+!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/14/2020 23:39:14'!
+test02SummaryOfAnAccountWithADepositIsCorrect
 
 	| account expectedSummary |
 	
@@ -28,66 +28,63 @@ test02
 	
 	self assert: ((account retrieveSummary) = expectedSummary).! !
 
-!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/13/2020 10:45:28'!
-test03
+!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/14/2020 23:41:21'!
+test03SummaryOfAnAccountWithAWithdrawIsCorrect
 
 	| account expectedSummary |
 	
 	account := ReceptiveAccount new.
-	Deposit register: 100 * peso  on: account.
 	Withdraw register: 50 * peso  on: account.
 	
-	expectedSummary := OrderedCollection with: 'Depósito por 100 pesos' with: 'Extracción por 50 pesos' with: 'Balance = 50 pesos'.
+	expectedSummary := OrderedCollection with: 'Extracción por 50 pesos' with: 'Balance = -50 pesos'.
 	
 	self assert: ((account retrieveSummary) = expectedSummary).! !
 
-!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/13/2020 10:45:51'!
-test04
+!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/14/2020 23:42:55'!
+test04SummaryOfAnAccountWithAnOutgoingTransferIsCorrect
 
 	| originAccount destinationAccount expectedSummary |
 	
 	originAccount := ReceptiveAccount new.
 	destinationAccount := ReceptiveAccount new.
-	Deposit register: 100 * peso  on: originAccount.
-	Withdraw register: 50 * peso  on: originAccount.
 	Transfer amount: 10 * peso from: originAccount to: destinationAccount.
 	
-	expectedSummary := OrderedCollection with: 'Depósito por 100 pesos' with: 'Extracción por 50 pesos' with: 'Salida por transferencia de 10 pesos' with: 'Balance = 40 pesos'.
+	expectedSummary := OrderedCollection with: 'Salida por transferencia de 10 pesos' with: 'Balance = -10 pesos'.
 	
 	self assert: ((originAccount retrieveSummary) = expectedSummary).! !
 
-!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/13/2020 10:46:11'!
-test05
+!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/14/2020 23:45:58'!
+test05SummaryOfAnAccountWithAnIncomingTransferIsCorrect
 
 	| originAccount destinationAccount expectedSummary |
 	
 	originAccount := ReceptiveAccount new.
 	destinationAccount := ReceptiveAccount new.
-	Deposit register: 100 * peso  on: originAccount.
-	Withdraw register: 50 * peso  on: originAccount.
-	Transfer amount: 30 * peso from: originAccount to: destinationAccount.
-	Transfer amount: 10 * peso from: destinationAccount to: originAccount.
+	Transfer amount: 10 * peso from: originAccount to: destinationAccount.
 	
-	expectedSummary := OrderedCollection with: 'Depósito por 100 pesos' with: 'Extracción por 50 pesos' with: 'Salida por transferencia de 30 pesos' with: 'Entrada por transferencia de 10 pesos' with: 'Balance = 30 pesos'.
+	expectedSummary := OrderedCollection with: 'Entrada por transferencia de 10 pesos' with: 'Balance = 10 pesos'.
 	
-	self assert: ((originAccount retrieveSummary) = expectedSummary).! !
+	self assert: ((destinationAccount retrieveSummary) = expectedSummary).! !
 
-!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/13/2020 10:46:34'!
-test06
+!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/14/2020 23:51:12'!
+test06SummaryOfAnAccountWithMultipleTransactionsIsCorrect
 
-	| originAccount expectedSummary |
+	| account1 account2 expectedSummary |
 	
-	originAccount := ReceptiveAccount new.
-	Deposit register: 100 * peso  on: originAccount.
-	Deposit register: 50 * peso  on: originAccount.
-	Withdraw register: 20 * peso  on: originAccount.
+	account1 := ReceptiveAccount new.
+	account2 := ReceptiveAccount new.
+	Deposit register: 100 * peso  on: account2.
+	Deposit register: 50 * peso  on: account2.
+	Withdraw register: 20 * peso  on: account2.
+	Transfer amount: 50 * peso from: account2 to: account1.
+	Transfer amount: 10 * peso from: account1 to: account2.
 	
-	expectedSummary := OrderedCollection with: 'Depósito por 100 pesos' with: 'Depósito por 50 pesos' with: 'Extracción por 20 pesos' with: 'Balance = 130 pesos'.
+	expectedSummary := OrderedCollection with: 'Depósito por 100 pesos' with: 'Depósito por 50 pesos' with: 'Extracción por 20 pesos' with: 'Salida por transferencia de 50 pesos' with: 'Entrada por transferencia de 10 pesos' with: 'Balance = 90 pesos'.
 	
-	self assert: ((originAccount retrieveSummary) = expectedSummary).! !
+	self assert: ((account2 retrieveSummary) = expectedSummary).! !
 
-!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/13/2020 10:54:00'!
-test07
+!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/14/2020 23:52:11'!
+test07SummaryOfAnEmptyPortfolioIsCorrect
 
 	|aPortfolio expectedSummary|
 	
@@ -98,96 +95,86 @@ test07
 	self assert: ((aPortfolio retrieveSummary) = expectedSummary).
 	! !
 
-!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/13/2020 11:08:59'!
-test08
+!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/15/2020 01:22:53'!
+test08SummaryOfAPortfolioWithAnAccountWithADepositIsCorrect
 
-	|aPortfolio anAccount expectedSummary|
+	|aPortfolio account expectedSummary|
 	
-	anAccount := ReceptiveAccount new.
-	Deposit register: 100 * peso on: anAccount.
-	aPortfolio := Portfolio with: anAccount.
+	account := ReceptiveAccount new.
+	Deposit register: 100 * peso on: account.
+	aPortfolio := Portfolio with: account.
 	
 	expectedSummary := OrderedCollection with: 'Depósito por 100 pesos' with: 'Balance = 100 pesos'.
 	
 	self assert: ((aPortfolio retrieveSummary) = expectedSummary).
 	! !
 
-!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/13/2020 11:12:27'!
-test09
+!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/15/2020 01:23:15'!
+test09SummaryOfAPortfolioWithAnAccountWithAWithdrawIsCorrect
 
-	|aPortfolio anAccount expectedSummary|
+	|aPortfolio account expectedSummary|
 	
-	anAccount := ReceptiveAccount new.
-	Deposit register: 100 * peso on: anAccount.
-	Withdraw register: 50 * peso on: anAccount.
-	aPortfolio := Portfolio with: anAccount.
+	account := ReceptiveAccount new.
+	Withdraw register: 50 * peso on: account.
+	aPortfolio := Portfolio with: account.
 	
-	expectedSummary := OrderedCollection with: 'Depósito por 100 pesos' with: 'Extracción por 50 pesos' with: 'Balance = 50 pesos'.
+	expectedSummary := OrderedCollection with: 'Extracción por 50 pesos' with: 'Balance = -50 pesos'.
 	
 	self assert: ((aPortfolio retrieveSummary) = expectedSummary).
 	! !
 
-!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/13/2020 11:18:04'!
-test10
+!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/15/2020 00:16:12'!
+test10SummaryOfAPortfolioWithAnAccountWithAnOutgoingTransferIsCorrect
 
 	|aPortfolio originAccount destinationAccount expectedSummary|
 	
 	originAccount := ReceptiveAccount new.
 	destinationAccount := ReceptiveAccount new.
-	Deposit register: 100 * peso on: originAccount.
-	Withdraw register: 50 * peso on: originAccount.
-	aPortfolio := Portfolio with: originAccount.
 	Transfer amount: 10 * peso from: originAccount to: destinationAccount.
+	aPortfolio := Portfolio with: originAccount.
 	
 	
-	expectedSummary := OrderedCollection with: 'Depósito por 100 pesos' with: 'Extracción por 50 pesos' with: 'Salida por transferencia de 10 pesos' with: 'Balance = 40 pesos'.
+	expectedSummary := OrderedCollection with: 'Salida por transferencia de 10 pesos' with: 'Balance = -10 pesos'.
 	
 	self assert: ((aPortfolio retrieveSummary) = expectedSummary).
 	! !
 
-!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'JT 12/14/2020 20:09:01'!
-test11
+!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/15/2020 01:23:55'!
+test11SummaryOfAPortfolioWithAnAccountWithAnIncomingTransferIsCorrect
 
 	|aPortfolio originAccount destinationAccount expectedSummary|
 	
 	originAccount := ReceptiveAccount new.
 	destinationAccount := ReceptiveAccount new.
-	Deposit register: 100 * peso on: originAccount.
-	Withdraw register: 50 * peso on: originAccount.
-	aPortfolio := Portfolio with: originAccount.
 	Transfer amount: 10 * peso from: originAccount to: destinationAccount.
-	Transfer amount: 20 * peso from: destinationAccount to: originAccount.
+	aPortfolio := Portfolio with: destinationAccount.
 	
-	expectedSummary := OrderedCollection with: 'Depósito por 100 pesos' with: 'Extracción por 50 pesos' with: 'Salida por transferencia de 10 pesos' with: 'Entrada por transferencia de 20 pesos' with: 'Balance = 60 pesos'.
+	
+	expectedSummary := OrderedCollection with: 'Entrada por transferencia de 10 pesos' with: 'Balance = 10 pesos'.
+	
+	self assert: ((aPortfolio retrieveSummary) = expectedSummary).! !
+
+!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/15/2020 01:24:31'!
+test12SummaryOfAPortfolioWithAnAccountWithMultipleTransactionsIsCorrect
+
+	|aPortfolio account1 account2 expectedSummary|
+	
+	account1 := ReceptiveAccount new.
+	account2 := ReceptiveAccount new.
+	Deposit register: 100 * peso on: account1.
+	Deposit register: 50 * peso on: account1.
+	Withdraw register: 50 * peso on: account1.
+	Transfer amount: 10 * peso from: account1 to: account2.
+	Transfer amount: 20 * peso from: account2 to: account1.
+	aPortfolio := Portfolio with: account1.
+	
+	expectedSummary := OrderedCollection with: 'Depósito por 100 pesos' with: 'Depósito por 50 pesos'  with: 'Extracción por 50 pesos' with: 'Salida por transferencia de 10 pesos' with: 'Entrada por transferencia de 20 pesos' with: 'Balance = 110 pesos'.
 	
 	self assert: ((aPortfolio retrieveSummary) = expectedSummary).
 	! !
 
-!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/13/2020 11:32:16'!
-test12
-
-	|aPortfolio originAccount destinationAccount expectedSummary|
-	
-	originAccount := ReceptiveAccount new.
-	destinationAccount := ReceptiveAccount new.
-	Deposit register: 100 * peso on: originAccount.
-	Deposit register: 200 * peso on: originAccount.
-	Withdraw register: 50 * peso on: originAccount.
-	Withdraw register: 100 * peso on: originAccount.
-	Transfer amount: 10 * peso from: originAccount to: destinationAccount.
-	Transfer amount: 10 * peso from: originAccount to: destinationAccount.
-	Transfer amount: 20 * peso from: destinationAccount to: originAccount.
-	Transfer amount: 20 * peso from: destinationAccount to: originAccount.
-	aPortfolio := Portfolio with: originAccount.
-	
-	expectedSummary := OrderedCollection new.
-	expectedSummary add: 'Depósito por 100 pesos'; add: 'Depósito por 200 pesos'; add: 'Extracción por 50 pesos'; add: 'Extracción por 100 pesos'; add: 'Salida por transferencia de 10 pesos'; add: 'Salida por transferencia de 10 pesos'; add: 'Entrada por transferencia de 20 pesos'; add: 'Entrada por transferencia de 20 pesos'; add: 'Balance = 170 pesos'.
-	
-	self assert: ((aPortfolio retrieveSummary) = expectedSummary).
-	! !
-
-!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'JT 12/14/2020 20:09:25'!
-test13
+!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/15/2020 00:20:39'!
+test13SummaryOfAPortfolioComposedByASimplePortfolioWithAnAccountWithTransactionsIsCorrect
 	
 	| account simplePortfolio composedPortfolio expectedSummary |
 	
@@ -202,8 +189,8 @@ test13
 	self assert: ((composedPortfolio retrieveSummary) = expectedSummary).
 	! !
 
-!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'JT 12/14/2020 20:09:50'!
-test14
+!AccountSummaryTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/15/2020 00:22:50'!
+test14SummaryOfAPortfolioComposedByAnAccountAndASimplePortfolioWithAnAccountWithTransactionsIsCorrect
 
 	| simplePortfolioAccount simplePortfolio composedPortfolioAccount composedPortofolio expectedSummary |
 	
@@ -212,10 +199,12 @@ test14
 	simplePortfolio := Portfolio with: simplePortfolioAccount.
 	
 	composedPortfolioAccount := ReceptiveAccount new.
-	Withdraw register: 50 * peso on: composedPortfolioAccount.
+	Withdraw register: 50 * peso on: simplePortfolioAccount.
 	composedPortofolio := Portfolio with: simplePortfolio with: composedPortfolioAccount.
+	
+	Transfer amount: 10*peso from: simplePortfolioAccount to: composedPortfolioAccount.
 
-	expectedSummary := OrderedCollection with: 'Depósito por 100 pesos' with: 'Extracción por 50 pesos' with: 'Balance = 50 pesos'.
+	expectedSummary := OrderedCollection with: 'Depósito por 100 pesos' with: 'Extracción por 50 pesos' with: 'Salida por transferencia de 10 pesos' with: 'Entrada por transferencia de 10 pesos' with: 'Balance = 50 pesos'.
 	
 	self assert: ((composedPortofolio retrieveSummary) = expectedSummary).
 	! !
@@ -482,8 +471,8 @@ TestCase subclass: #TransferNetTest
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros2-Ejercicio'!
 
-!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'JT 12/14/2020 20:52:11'!
-test01
+!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/15/2020 00:26:17'!
+test01TransferNetOfAnAccountWithoutTransactionsIsZero
 
 	| account expectedTransferNet |
 	
@@ -493,8 +482,8 @@ test01
 	
 	self assert: (account retrieveTransferNet = expectedTransferNet).! !
 
-!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'JT 12/14/2020 20:52:11'!
-test02
+!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/15/2020 00:32:58'!
+test02TransferNetOfAnAccountWithAnIncomingTransferIsTheIncomingTransfer
 
 	| originAccount destinationAccount expectedTransferNet |
 	
@@ -508,42 +497,23 @@ test02
 	self assert: (destinationAccount retrieveTransferNet = expectedTransferNet).
 	! !
 
-!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'JT 12/14/2020 20:52:11'!
-test03
+!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/15/2020 01:27:29'!
+test03TransferNetOfAnAccountWithAnOutgoingTransferIsTheOutgoingTransferNegated
 
 	| originAccount destinationAccount expectedTransferNet |
 	
 	originAccount := ReceptiveAccount new.
 	destinationAccount := ReceptiveAccount new.
 	
-	Transfer amount: 100*peso from: originAccount to: destinationAccount.
-	Transfer amount: 20*peso from: destinationAccount to: originAccount.
+	Transfer amount: 20*peso from: originAccount to: destinationAccount.
 	
-	expectedTransferNet := 80*peso.
+	expectedTransferNet := -20*peso.
 	
-	self assert: (destinationAccount retrieveTransferNet = expectedTransferNet).
+	self assert: (originAccount retrieveTransferNet = expectedTransferNet).
 	! !
 
-!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'JT 12/14/2020 20:52:11'!
-test04
-
-	| account1 account2 expectedTransferNet |
-	
-	account1 := ReceptiveAccount new.
-	account2 := ReceptiveAccount new.
-	
-	Deposit register: 100*peso on: account1.
-	 
-	Transfer amount: 50*peso from: account2 to: account1.
-	Transfer amount: 20*peso from: account1 to: account2.
-	
-	expectedTransferNet := 30*peso.
-	
-	self assert: (account1 retrieveTransferNet = expectedTransferNet).
-	! !
-
-!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'JT 12/14/2020 20:52:11'!
-test05
+!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/15/2020 00:39:23'!
+test04TransferNetOfAnAccountWithMultipleTransactionsIsCorrect
 
 	| account1 account2 expectedTransferNet |
 	
@@ -561,8 +531,8 @@ test05
 	self assert: (account1 retrieveTransferNet = expectedTransferNet).
 	! !
 
-!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'JT 12/14/2020 20:52:35'!
-test06
+!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/15/2020 00:40:09'!
+test05TransferNetOfAnEmptyPortfolioIsZero
 
 	|aPortfolio expectedTransferNet |
 	
@@ -573,61 +543,42 @@ test06
 	self assert: (aPortfolio retrieveTransferNet = expectedTransferNet).
 	! !
 
-!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'JT 12/14/2020 20:52:39'!
-test07
+!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/15/2020 01:31:33'!
+test06TransferNetOfAPortfolioWithAnAccountWithAnIncomingTransferIsTheIncomingTransfer
 
-	|aPortfolio account1 account2  expectedTransferNet |
+	|aPortfolio originAccount destinationAccount  expectedTransferNet |
 	
-	account1 := ReceptiveAccount new.
-	account2 := ReceptiveAccount new.
-	Transfer amount: 100*peso from: account1 to: account2.
+	originAccount := ReceptiveAccount new.
+	destinationAccount := ReceptiveAccount new.
 	
-	aPortfolio := Portfolio with: account2.
+	Transfer amount: 100*peso from: originAccount to: destinationAccount.
+	
+	aPortfolio := Portfolio with: destinationAccount.
 	
 	expectedTransferNet := 100*peso.
 	
 	self assert: (aPortfolio retrieveTransferNet = expectedTransferNet).
 	! !
 
-!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'JT 12/14/2020 20:52:44'!
-test08
+!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/15/2020 01:29:58'!
+test07TransferNetOfAPortfolioWithAnAccountWithAnOutgoingTransferIsTheOutgoingTransferNegated
 
-	|aPortfolio account1 account2  expectedTransferNet |
+	|aPortfolio destinationAccount originAccount  expectedTransferNet |
 	
-	account1 := ReceptiveAccount new.
-	account2 := ReceptiveAccount new.
+	originAccount := ReceptiveAccount new.
+	destinationAccount := ReceptiveAccount new.
 	
-	Transfer amount: 100*peso from: account1 to: account2.
-	Transfer amount: 20*peso from: account2 to: account1.
+	Transfer amount: 20*peso from: originAccount to: destinationAccount.
 	
-	aPortfolio := Portfolio with: account2.
+	aPortfolio := Portfolio with: originAccount.
 	
-	expectedTransferNet := 80*peso.
+	expectedTransferNet := -20*peso.
 	
 	self assert: (aPortfolio retrieveTransferNet = expectedTransferNet).
 	! !
 
-!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'JT 12/14/2020 20:52:48'!
-test09
-
-	|aPortfolio account1 account2  expectedTransferNet |
-	
-	account1 := ReceptiveAccount new.
-	account2 := ReceptiveAccount new.
-	
-	Deposit register: 100*peso on: account2.
-	Transfer amount: 100*peso from: account1 to: account2.
-	Transfer amount: 30*peso from: account2 to: account1.
-	
-	aPortfolio := Portfolio with: account2.
-	
-	expectedTransferNet := 70*peso.
-	
-	self assert: (aPortfolio retrieveTransferNet = expectedTransferNet).
-	! !
-
-!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'JT 12/14/2020 20:52:51'!
-test10
+!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/15/2020 00:44:43'!
+test08TransferNetOfAPortfolioWithAnAccountWithMultipleTransactionsIsCorrect
 
 	|aPortfolio account1 account2  expectedTransferNet |
 	
@@ -646,15 +597,14 @@ test10
 	self assert: (aPortfolio retrieveTransferNet = expectedTransferNet).
 	! !
 
-!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'JT 12/14/2020 20:52:54'!
-test11
+!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/15/2020 01:31:46'!
+test09TransferNetOfAPortfolioWithAccountsTransferingEachOtherIsZero
 
 	|aPortfolio account1 account2  expectedTransferNet |
 	
 	account1 := ReceptiveAccount new.
 	account2 := ReceptiveAccount new.
 	
-	Deposit register: 200*peso on: account1.
 	Transfer amount: 300*peso from: account1 to: account2.
 	Transfer amount: 50*peso from: account2 to: account1.
 	
@@ -665,17 +615,17 @@ test11
 	self assert: (aPortfolio retrieveTransferNet = expectedTransferNet).
 	! !
 
-!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'JT 12/14/2020 20:53:00'!
-test12
+!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/15/2020 01:32:30'!
+test10TransferNetOfAPortfolioComposedByASimplePortfolioWithAnAccountWithAnIncomingTransferIsTheIncomingTransfer
 
-	| account1 account2 simplePortfolio composedPortfolio expectedTransferNet |
+	| originAccount destinationAccount simplePortfolio composedPortfolio expectedTransferNet |
 	
-	account1 := ReceptiveAccount new.
-	account2 := ReceptiveAccount new.
+	originAccount := ReceptiveAccount new.
+	destinationAccount := ReceptiveAccount new.
 	
-	Transfer amount: 300*peso from: account1 to: account2.
+	Transfer amount: 300*peso from: originAccount to: destinationAccount.
 	
-	simplePortfolio := Portfolio with: account2.
+	simplePortfolio := Portfolio with: destinationAccount.
 	composedPortfolio := Portfolio with: simplePortfolio.
 
 	expectedTransferNet := 300*peso.
@@ -683,17 +633,15 @@ test12
 	self assert: (composedPortfolio retrieveTransferNet = expectedTransferNet).
 	! !
 
-!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'JT 12/14/2020 20:53:04'!
-test13
+!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/15/2020 00:56:40'!
+test11TransferNetOfAPortfolioComposedByAccountsTransferingEachOtherIsZero
 
 	| simplePortfolioAccount simplePortfolio composedPortfolioAccount composedPortfolio expectedTransferNet |
 	
 	simplePortfolioAccount := ReceptiveAccount new.
-	Deposit register: 100 * peso on: simplePortfolioAccount.
 	simplePortfolio := Portfolio with: simplePortfolioAccount.
 	
 	composedPortfolioAccount := ReceptiveAccount new.
-	Withdraw register: 50 * peso on: composedPortfolioAccount.
 	Transfer amount: 40*peso from: simplePortfolioAccount to: composedPortfolioAccount.
 	
 	composedPortfolio := Portfolio with: simplePortfolio with: composedPortfolioAccount.
@@ -703,8 +651,8 @@ test13
 	self assert: (composedPortfolio retrieveTransferNet = expectedTransferNet).
 	! !
 
-!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'JT 12/14/2020 20:53:07'!
-test14
+!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/15/2020 01:01:15'!
+test12TransferNetOfAPortolioWithAccountsAndAnExternalIncomingTransferIsAlwaysPositive
 
 	|aPortfolio account1 account2 account3 expectedTransferNet |
 	
@@ -718,6 +666,25 @@ test14
 	aPortfolio := Portfolio with: account1 with: account2.
 
 	expectedTransferNet := 130*peso.
+	
+	self assert: (aPortfolio retrieveTransferNet = expectedTransferNet).
+	! !
+
+!TransferNetTest methodsFor: 'as yet unclassified' stamp: 'CZ 12/15/2020 01:03:23'!
+test13TransferNetOfAPortolioWithAccountsAndAnExternalOutgoingTransferIsAlwaysNegative
+
+	|aPortfolio account1 account2 account3 expectedTransferNet |
+	
+	account1 := ReceptiveAccount new.
+	account2 := ReceptiveAccount new.
+	account3 := ReceptiveAccount new.
+	
+	Transfer amount: 100*peso from: account2 to: account3.
+	Transfer amount: 30*peso from: account1 to: account3.
+	
+	aPortfolio := Portfolio with: account1 with: account2.
+
+	expectedTransferNet := -130*peso.
 	
 	self assert: (aPortfolio retrieveTransferNet = expectedTransferNet).
 	! !
@@ -1046,15 +1013,13 @@ retrieveSummary
 	summary add: ('Balance = ', self balance asString).
 	^summary.! !
 
-!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'JT 12/14/2020 21:03:49'!
+!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'CZ 12/14/2020 23:05:28'!
 retrieveTransferNet
 	
 	| transferNet |
 	
 	transferNet := 0.	
-	"transactions do: [:aTransaction | (aTransaction isKindOf: TransferDepositLeg) ifTrue: [transferNet := transferNet + (aTransaction value)].
-		(aTransaction isKindOf: TransferWithdrawLeg) ifTrue: [transferNet := transferNet - (aTransaction value)]].
-	"
+	
 	transactions do: [:aTransaction | transferNet := aTransaction affectTransferNet: transferNet.].
 	
 	^transferNet.! !
@@ -1297,6 +1262,40 @@ Withdraw class
 for: aValue
 
 	^ self new initializeFor: aValue ! !
+
+
+!classDefinition: #Report category: 'ServiciosFinancieros2-Ejercicio'!
+Object subclass: #Report
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros2-Ejercicio'!
+
+
+!classDefinition: #AccountSummary category: 'ServiciosFinancieros2-Ejercicio'!
+Report subclass: #AccountSummary
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros2-Ejercicio'!
+
+!AccountSummary methodsFor: 'as yet unclassified' stamp: 'CZ 12/14/2020 23:29:28'!
+retrieveReportFor: anAccount
+
+	| aReport |
+	aReport := OrderedCollection new.
+	
+	anAccount retrieveSummary.
+	aReport add: ('Balance = ', self balance asString).
+	^aReport.! !
+
+
+!classDefinition: #TransferNet category: 'ServiciosFinancieros2-Ejercicio'!
+Report subclass: #TransferNet
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros2-Ejercicio'!
 
 
 !classDefinition: #Transfer category: 'ServiciosFinancieros2-Ejercicio'!
