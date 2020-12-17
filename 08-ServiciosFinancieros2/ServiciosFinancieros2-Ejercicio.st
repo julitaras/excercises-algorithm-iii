@@ -101,35 +101,35 @@ test07SummaryOfAnEmptyPortfolioIsCorrect
 	self assert: ((aPortfolio retrieveReport: summaryReport) = expectedSummary).
 	! !
 
-!AccountSummaryTest methodsFor: 'tests' stamp: 'JT 12/16/2020 20:56:19'!
+!AccountSummaryTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 02:55:28'!
 test08SummaryOfAPortfolioWithAnAccountWithADepositIsCorrect
 
 	| aPortfolio account expectedSummary |
 	
 	account _ ReceptiveAccount new.
 	Deposit register: 100 * peso on: account.
-	aPortfolio _ Portfolio with: account.
+	aPortfolio _ Portfolio named: 'Portfolio' with: account.
 	
 	expectedSummary _ OrderedCollection with: 'Depósito por 100 pesos' with: 'Balance = 100 pesos'.
 	
 	self assert: ((aPortfolio retrieveReport: summaryReport) = expectedSummary).
 	! !
 
-!AccountSummaryTest methodsFor: 'tests' stamp: 'JT 12/16/2020 20:56:32'!
+!AccountSummaryTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 02:55:38'!
 test09SummaryOfAPortfolioWithAnAccountWithAWithdrawIsCorrect
 
 	| aPortfolio account expectedSummary |
 	
 	account _ ReceptiveAccount new.
 	Withdraw register: 50 * peso on: account.
-	aPortfolio _ Portfolio with: account.
+	aPortfolio _ Portfolio named: 'Portfolio' with: account.
 	
 	expectedSummary _ OrderedCollection with: 'Extracción por 50 pesos' with: 'Balance = -50 pesos'.
 	
 	self assert: ((aPortfolio retrieveReport: summaryReport) = expectedSummary).
 	! !
 
-!AccountSummaryTest methodsFor: 'tests' stamp: 'JT 12/16/2020 20:56:46'!
+!AccountSummaryTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 02:55:44'!
 test10SummaryOfAPortfolioWithAnAccountWithAnOutgoingTransferIsCorrect
 
 	| aPortfolio originAccount destinationAccount expectedSummary |
@@ -137,7 +137,7 @@ test10SummaryOfAPortfolioWithAnAccountWithAnOutgoingTransferIsCorrect
 	originAccount _ ReceptiveAccount new.
 	destinationAccount _ ReceptiveAccount new.
 	Transfer amount: 10 * peso from: originAccount to: destinationAccount.
-	aPortfolio _ Portfolio with: originAccount.
+	aPortfolio _ Portfolio named: 'Portfolio' with: originAccount.
 	
 	
 	expectedSummary _ OrderedCollection with: 'Salida por transferencia de 10 pesos' with: 'Balance = -10 pesos'.
@@ -145,7 +145,7 @@ test10SummaryOfAPortfolioWithAnAccountWithAnOutgoingTransferIsCorrect
 	self assert: ((aPortfolio retrieveReport: summaryReport) = expectedSummary).
 	! !
 
-!AccountSummaryTest methodsFor: 'tests' stamp: 'JT 12/16/2020 20:57:04'!
+!AccountSummaryTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 02:56:00'!
 test11SummaryOfAPortfolioWithAnAccountWithAnIncomingTransferIsCorrect
 
 	| aPortfolio originAccount destinationAccount expectedSummary |
@@ -153,14 +153,14 @@ test11SummaryOfAPortfolioWithAnAccountWithAnIncomingTransferIsCorrect
 	originAccount _ ReceptiveAccount new.
 	destinationAccount _ ReceptiveAccount new.
 	Transfer amount: 10 * peso from: originAccount to: destinationAccount.
-	aPortfolio _ Portfolio with: destinationAccount.
+	aPortfolio _ Portfolio named: 'Portfolio' with: destinationAccount.
 	
 	
 	expectedSummary _ OrderedCollection with: 'Entrada por transferencia de 10 pesos' with: 'Balance = 10 pesos'.
 	
 	self assert: ((aPortfolio retrieveReport: summaryReport) = expectedSummary).! !
 
-!AccountSummaryTest methodsFor: 'tests' stamp: 'JT 12/16/2020 20:57:20'!
+!AccountSummaryTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 02:56:10'!
 test12SummaryOfAPortfolioWithAnAccountWithMultipleTransactionsIsCorrect
 
 	| aPortfolio account1 account2 expectedSummary |
@@ -172,14 +172,14 @@ test12SummaryOfAPortfolioWithAnAccountWithMultipleTransactionsIsCorrect
 	Withdraw register: 50 * peso on: account1.
 	Transfer amount: 10 * peso from: account1 to: account2.
 	Transfer amount: 20 * peso from: account2 to: account1.
-	aPortfolio _ Portfolio with: account1.
+	aPortfolio _ Portfolio named: 'Portfolio' with: account1.
 	
 	expectedSummary _ OrderedCollection with: 'Depósito por 100 pesos' with: 'Depósito por 50 pesos'  with: 'Extracción por 50 pesos' with: 'Salida por transferencia de 10 pesos' with: 'Entrada por transferencia de 20 pesos' with: 'Balance = 110 pesos'.
 	
 	self assert: ((aPortfolio retrieveReport: summaryReport) = expectedSummary).
 	! !
 
-!AccountSummaryTest methodsFor: 'tests' stamp: 'JT 12/16/2020 20:57:35'!
+!AccountSummaryTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 02:57:13'!
 test13SummaryOfAPortfolioComposedByASimplePortfolioWithAnAccountWithTransactionsIsCorrect
 	
 	| account simplePortfolio composedPortfolio expectedSummary |
@@ -187,26 +187,26 @@ test13SummaryOfAPortfolioComposedByASimplePortfolioWithAnAccountWithTransactions
 	account _ ReceptiveAccount new.
 	Deposit register: 100 * peso on: account.
 	Withdraw register: 55 * peso on: account.
-	simplePortfolio _ Portfolio with: account.
-	composedPortfolio _ Portfolio with: simplePortfolio.
+	simplePortfolio _ Portfolio named: 'Portfolio Simple' with: account.
+	composedPortfolio _ Portfolio named: 'Portfolio Compuesto' with: simplePortfolio.
 	
 	expectedSummary _ OrderedCollection with: 'Depósito por 100 pesos' with: 'Extracción por 55 pesos' with: 'Balance = 45 pesos'.
 	
 	self assert: ((composedPortfolio retrieveReport: summaryReport) = expectedSummary).
 	! !
 
-!AccountSummaryTest methodsFor: 'tests' stamp: 'JT 12/16/2020 20:57:54'!
+!AccountSummaryTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 02:57:00'!
 test14SummaryOfAPortfolioComposedByAnAccountAndASimplePortfolioWithAnAccountWithTransactionsIsCorrect
 
 	| simplePortfolioAccount simplePortfolio composedPortfolioAccount composedPortofolio expectedSummary |
 	
 	simplePortfolioAccount _ ReceptiveAccount new.
 	Deposit register: 100 * peso on: simplePortfolioAccount.
-	simplePortfolio _ Portfolio with: simplePortfolioAccount.
+	simplePortfolio _ Portfolio named: 'Portfolio Simple' with: simplePortfolioAccount.
 	
 	composedPortfolioAccount _ ReceptiveAccount new.
 	Withdraw register: 50 * peso on: simplePortfolioAccount.
-	composedPortofolio _ Portfolio with: simplePortfolio with: composedPortfolioAccount.
+	composedPortofolio _ Portfolio named: 'Portfolio Compuesto' with: simplePortfolio with: composedPortfolioAccount.
 	
 	Transfer amount: 10*peso from: simplePortfolioAccount to: composedPortfolioAccount.
 
@@ -216,6 +216,82 @@ test14SummaryOfAPortfolioComposedByAnAccountAndASimplePortfolioWithAnAccountWith
 	! !
 
 
+!classDefinition: #PortfolioDetailedTreePrinterTest category: 'ServiciosFinancieros2-Ejercicio'!
+TestCase subclass: #PortfolioDetailedTreePrinterTest
+	instanceVariableNames: 'portfolioDetailedTreePrinter'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros2-Ejercicio'!
+
+!PortfolioDetailedTreePrinterTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 02:47:04'!
+test01PortfolioDetailedTreePrinterOfAnEmptyPortfolioIsCorrect
+
+	| aPortfolio expectedPortfolioTreePrinter |
+	
+	aPortfolio _ Portfolio new.
+	
+	expectedPortfolioTreePrinter _ OrderedCollection with: 'Portfolio' with: 'Balance = 0 pesos'.
+	
+	self assert: ((aPortfolio retrieveReport: portfolioDetailedTreePrinter) = expectedPortfolioTreePrinter).! !
+
+!PortfolioDetailedTreePrinterTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 02:48:00'!
+test02PortfolioDetailedTreePrinterOfAPortfolioWithAnAccountWithADepositIsCorrect
+
+	| johnsAccount aPortfolio expectedPortfolioTreePrinter |
+	
+	johnsAccount _ ReceptiveAccount named: 'Cuenta de Juan'. 
+	
+	aPortfolio _ Portfolio named: 'Portfolio de Juan' with: johnsAccount.
+	
+	Deposit register: 100*peso on: johnsAccount.
+	
+	expectedPortfolioTreePrinter _ OrderedCollection with: 'Portfolio de Juan' with: 'Cuenta de Juan' with: 'Depósito por 100 pesos' with: 'Balance = 100 pesos' with: 'Balance = 100 pesos'.
+	
+	self assert: ((aPortfolio retrieveReport: portfolioDetailedTreePrinter) = expectedPortfolioTreePrinter).! !
+
+!PortfolioDetailedTreePrinterTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 03:11:58'!
+test03PortfolioDetailedTreePrinterOfAPortfolioComposedByAnAccountWithAWithdrawAndAnEmptyPortfolioIsCorrect
+
+	| johnsAccount childrenPortfolio familyPortfolio expectedPortfolioTreePrinter |
+	
+	johnsAccount _ ReceptiveAccount named: 'Cuenta de Juan'. 
+	childrenPortfolio _ Portfolio new.
+	familyPortfolio _ Portfolio named: 'Portfolio de la familia' with: johnsAccount with: childrenPortfolio.
+	
+	Withdraw register: 100*peso on: johnsAccount.
+	
+	expectedPortfolioTreePrinter _ OrderedCollection new.
+	expectedPortfolioTreePrinter add: 'Portfolio de la familia'; add: 'Cuenta de Juan'; add: 'Extracción por 100 pesos'; add: 'Balance = -100 pesos'; add: 'Portfolio'; add: 'Balance = 0 pesos'; add: 'Balance = -100 pesos'.
+	
+	
+	self assert: ((familyPortfolio retrieveReport: portfolioDetailedTreePrinter) = expectedPortfolioTreePrinter).! !
+
+!PortfolioDetailedTreePrinterTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 03:12:13'!
+test04PortfolioDetailedTreePrinterOfAPortfolioComposedByAnAccountWithMultipleTransactionsAndAPortfolioWithAnAccountIsCorrect
+
+	| johnsAccount angiesAccount childrenPortfolio familyPortfolio expectedPortfolioTreePrinter |
+	
+	johnsAccount _ ReceptiveAccount named: 'Cuenta de Juan'. 
+	angiesAccount _ ReceptiveAccount named: 'Cuenta de Angeles'. 
+	childrenPortfolio _ Portfolio named: 'Portfolio de hijos' with: angiesAccount.
+	familyPortfolio _ Portfolio named: 'Portfolio de la familia' with: johnsAccount with: childrenPortfolio.
+	
+	Deposit register: 100*peso on: johnsAccount.
+	Transfer amount: 50*peso from: johnsAccount to: angiesAccount.
+		
+	expectedPortfolioTreePrinter _ OrderedCollection new.
+	expectedPortfolioTreePrinter add: 'Portfolio de la familia'; add: 'Cuenta de Juan'; add: 'Depósito por 100 pesos'; add: 'Salida por transferencia de 50 pesos'; add: 'Balance = 50 pesos'; add: 'Portfolio de hijos'; add: 'Cuenta de Angeles'; add: 'Entrada por transferencia de 50 pesos'; add: 'Balance = 50 pesos'; add: 'Balance = 50 pesos'; add: 'Balance = 100 pesos'.
+	
+	
+	self assert: ((familyPortfolio retrieveReport: portfolioDetailedTreePrinter) = expectedPortfolioTreePrinter).! !
+
+
+!PortfolioDetailedTreePrinterTest methodsFor: 'setUp' stamp: 'CZ 12/17/2020 01:47:29'!
+setUp
+
+	portfolioDetailedTreePrinter _ PortfolioDetailedTreePrinter new.! !
+
+
 !classDefinition: #PortfolioTest category: 'ServiciosFinancieros2-Ejercicio'!
 TestCase subclass: #PortfolioTest
 	instanceVariableNames: ''
@@ -223,13 +299,13 @@ TestCase subclass: #PortfolioTest
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros2-Ejercicio'!
 
-!PortfolioTest methodsFor: 'tests' stamp: 'JT 12/16/2020 20:59:12'!
+!PortfolioTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 02:57:44'!
 test01PortfolioCanNotIncludeTheSameAccountMoreThanOnce
 
 	| account portfolio |
 	
 	account _ ReceptiveAccount new.
-	portfolio _ Portfolio with: account.
+	portfolio _ Portfolio named: 'Portfolio' with: account.
 	
 	self 
 		should: [ portfolio add: account ]
@@ -239,14 +315,14 @@ test01PortfolioCanNotIncludeTheSameAccountMoreThanOnce
 			self assert: 1 equals: portfolio accountsSize.
 			self assert: (portfolio hasAccount: account) ]! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'JT 12/16/2020 20:59:20'!
+!PortfolioTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 02:58:09'!
 test02PortfolioCanNotIncludeAccountOfItsPortfolios
 
 	| account simplePortfolio composedPortfolio |
 	
 	account _ ReceptiveAccount new.
-	simplePortfolio _ Portfolio with: account.
-	composedPortfolio _ Portfolio with: simplePortfolio.
+	simplePortfolio _ Portfolio named: 'Portfolio Simple' with: account.
+	composedPortfolio _ Portfolio named: 'Portfolio Compuesto' with: simplePortfolio.
 	
 	self 
 		should: [ composedPortfolio add: account ]
@@ -256,13 +332,13 @@ test02PortfolioCanNotIncludeAccountOfItsPortfolios
 			self assert: 1 equals: composedPortfolio accountsSize.
 			self assert: (composedPortfolio hasAccount: simplePortfolio) ]! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'JT 12/16/2020 20:59:27'!
+!PortfolioTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 02:58:21'!
 test03PortfolioCanNotIncludeItself
 
 	| account simplePortfolio |
 	
 	account _ ReceptiveAccount new.
-	simplePortfolio _ Portfolio with: account.
+	simplePortfolio _ Portfolio named: 'Portfolio' with: account.
 	
 	self 
 		should: [ simplePortfolio add: simplePortfolio ]
@@ -272,14 +348,14 @@ test03PortfolioCanNotIncludeItself
 			self assert: 1 equals: simplePortfolio accountsSize.
 			self assert: (simplePortfolio hasAccount: account) ]! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'JT 12/16/2020 20:59:52'!
+!PortfolioTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 02:58:34'!
 test04ComposedPortfolioCanNotHaveParentPortfolioAccount
 
 	| account simplePortfolio composedPortfolio |
 	
 	account _ ReceptiveAccount new.
 	simplePortfolio _ Portfolio new.
-	composedPortfolio _ Portfolio with: simplePortfolio.
+	composedPortfolio _ Portfolio named: 'Portfolio' with: simplePortfolio.
 	composedPortfolio add: account.
 	
 	self 
@@ -289,19 +365,19 @@ test04ComposedPortfolioCanNotHaveParentPortfolioAccount
 			self assert: Portfolio canNotAddAccountErrorMessage equals: anError messageText.
 			self assert: simplePortfolio hasAccounts ]! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'JT 12/16/2020 21:00:21'!
+!PortfolioTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 03:05:09'!
 test05ComposedPortfolioCanNotHaveAccountOfAnyRootParentRecursively
 
 	| account leftParentPortfolio leftRootParentPortfolio portfolio rightParentPortfolio rightRootParentPortfolio |
 	
 	account _ ReceptiveAccount new.
 	portfolio _ Portfolio new.
-	leftParentPortfolio _ Portfolio with: portfolio .
-	leftRootParentPortfolio _ Portfolio with: leftParentPortfolio.
+	leftParentPortfolio _ Portfolio named: 'Portfolio Padre Izquierdo'  with: portfolio .
+	leftRootParentPortfolio _ Portfolio named: 'Portfolio Padre Raíz Izquierdo' with: leftParentPortfolio.
 	leftRootParentPortfolio add: account.
 	
-	rightParentPortfolio _ Portfolio with: portfolio .
-	rightRootParentPortfolio _ Portfolio with: rightParentPortfolio.
+	rightParentPortfolio _ Portfolio named: 'Portfolio Padre Derecho' with: portfolio .
+	rightRootParentPortfolio _ Portfolio named: 'Portfolio Padre Raíz Derecho' with: rightParentPortfolio.
 	rightRootParentPortfolio add: account.
 
 	self 
@@ -311,15 +387,15 @@ test05ComposedPortfolioCanNotHaveAccountOfAnyRootParentRecursively
 			self assert: Portfolio canNotAddAccountErrorMessage equals: anError messageText.
 			self assert: portfolio hasAccounts ]! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'JT 12/16/2020 21:00:33'!
+!PortfolioTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 03:05:48'!
 test06PortfolioCanNotIncludeAnyOfTheComposedAccountOfPortfolioToAdd
 
 	| portfolioToAdd portfolioToModify rootPortfolio sharedAccount |
 	
 	sharedAccount _ ReceptiveAccount new.
 	portfolioToModify _ Portfolio new.
-	rootPortfolio _ Portfolio with: sharedAccount with: portfolioToModify.
-	portfolioToAdd _ Portfolio with: sharedAccount.
+	rootPortfolio _ Portfolio named: 'Portfolio Raíz' with: sharedAccount with: portfolioToModify.
+	portfolioToAdd _ Portfolio named: 'Portfolio A Agregar' with: sharedAccount.
 	
 	self 
 		should: [ portfolioToModify add: portfolioToAdd ]
@@ -333,29 +409,29 @@ test07BalanceOfPortfolioWithoutAccountsIsZero
 
 	self assert: 0 equals: Portfolio new balance! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'JT 12/16/2020 21:01:02'!
+!PortfolioTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 03:03:02'!
 test08BalanceOfPortfolioWithOneAccountIsAccountBalance
 
 	| account portfolio |
 	
 	account _ ReceptiveAccount new.
 	Deposit register: 100 * peso on: account.
-	portfolio _ Portfolio with: account.
+	portfolio _ Portfolio named: 'Portfolio' with: account.
 	
 	self assert: account balance equals: portfolio balance! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'JT 12/16/2020 21:01:13'!
+!PortfolioTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 03:06:28'!
 test09BalanceOfPortfolioIsCalculatedRecursivelyOnPortfolios
 
 	| simplePortfolioAccount simplePortfolio composedPortfolioAccount composedPortofolio |
 	
 	simplePortfolioAccount _ ReceptiveAccount new.
 	Deposit register: 100 * peso on: simplePortfolioAccount.
-	simplePortfolio _ Portfolio with: simplePortfolioAccount.
+	simplePortfolio _ Portfolio named: 'Portfolio Simple' with: simplePortfolioAccount.
 	
 	composedPortfolioAccount _ ReceptiveAccount new.
 	Withdraw register: 50 * peso on: composedPortfolioAccount.
-	composedPortofolio _ Portfolio with: simplePortfolio with: composedPortfolioAccount.
+	composedPortofolio _ Portfolio named: 'Porfolio Compuesto' with: simplePortfolio with: composedPortfolioAccount.
 	
 	self assert: (composedPortfolioAccount balance + simplePortfolio balance) equals: composedPortofolio balance! !
 
@@ -364,32 +440,97 @@ test10PortfolioWithoutAccountsHasNoRegisteredTransaction
 
 	self deny: (Portfolio new hasRegistered: (Deposit for: 100 * peso))! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'JT 12/16/2020 21:01:25'!
+!PortfolioTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 03:06:48'!
 test11PortfolioHasRegisteredItsAccountsTransactions
 
 	| account portfolio deposit |
 	
 	account _ ReceptiveAccount new.
 	deposit _ Deposit register: 100 * peso on: account.
-	portfolio _ Portfolio with: account.
+	portfolio _ Portfolio named: 'Portfolio' with: account.
 	
 	self assert: (portfolio hasRegistered: deposit)! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'JT 12/16/2020 21:01:48'!
+!PortfolioTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 03:07:22'!
 test12PortfolioLooksForRegisteredTransactionsRecursively
 
 	| simplePortfolioAccount simplePortfolio composedPortfolioAccount composedPortfolio composedPortfolioAccountWithdraw simplePortfolioAccountDeposit |
 	
 	simplePortfolioAccount _ ReceptiveAccount new.
 	simplePortfolioAccountDeposit _ Deposit register: 100 * peso on: simplePortfolioAccount.
-	simplePortfolio _ Portfolio with: simplePortfolioAccount.
+	simplePortfolio _ Portfolio named: 'Portfolio Simple' with: simplePortfolioAccount.
 	
 	composedPortfolioAccount _ ReceptiveAccount new.
 	composedPortfolioAccountWithdraw _ Withdraw register: 50 * peso on: composedPortfolioAccount.
-	composedPortfolio _ Portfolio with: simplePortfolio with: composedPortfolioAccount.
+	composedPortfolio _ Portfolio named: 'Portfolio Compuesto' with: simplePortfolio with: composedPortfolioAccount.
 	
 	self assert: (composedPortfolio hasRegistered: simplePortfolioAccountDeposit).
 	self assert: (composedPortfolio hasRegistered: composedPortfolioAccountWithdraw)! !
+
+
+!classDefinition: #PortfolioTreePrinterTest category: 'ServiciosFinancieros2-Ejercicio'!
+TestCase subclass: #PortfolioTreePrinterTest
+	instanceVariableNames: 'portfolioTreePrinter'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros2-Ejercicio'!
+
+!PortfolioTreePrinterTest methodsFor: 'setUp' stamp: 'CZ 12/16/2020 23:54:01'!
+setUp
+
+	portfolioTreePrinter _ PortfolioTreePrinter new.! !
+
+
+!PortfolioTreePrinterTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 02:38:10'!
+test01PortfolioTreePrinterOfAnEmptyPortfolioHasOnlyItsDefaultName
+	
+	| aPortfolio expectedPortfolioTreePrinter |
+	
+	aPortfolio _ Portfolio new.
+	
+	expectedPortfolioTreePrinter _ OrderedCollection with: 'Portfolio'.
+	
+	self assert: ((aPortfolio retrieveReport: portfolioTreePrinter) = expectedPortfolioTreePrinter).! !
+
+!PortfolioTreePrinterTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 02:42:42'!
+test02PortfolioTreePrinterOfAPortfolioWithAnAccountIsCorrect
+
+	| johnsAccount aPortfolio expectedPortfolioTreePrinter |
+	
+	johnsAccount _ ReceptiveAccount named: 'Cuenta de Juan'. 
+	
+	aPortfolio _ Portfolio named: 'Portfolio de Juan' with: johnsAccount.
+	
+	expectedPortfolioTreePrinter _ OrderedCollection with: 'Portfolio de Juan' with: 'Cuenta de Juan'.
+	
+	self assert: ((aPortfolio retrieveReport: portfolioTreePrinter) = expectedPortfolioTreePrinter).! !
+
+!PortfolioTreePrinterTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 03:12:49'!
+test03PortfolioTreePrinterOfAPortfolioComposedByAnAccountAndAnEmptyPortfolioIsCorrect
+
+	| johnsAccount childrenPortfolio familyPortfolio expectedPortfolioTreePrinter |
+	
+	johnsAccount _ ReceptiveAccount named: 'Cuenta de Juan'. 
+	childrenPortfolio _ Portfolio new.
+	familyPortfolio _ Portfolio named: 'Portfolio de la familia' with: johnsAccount with: childrenPortfolio.
+	
+	expectedPortfolioTreePrinter _ OrderedCollection with: 'Portfolio de la familia' with: 'Cuenta de Juan' with: 'Portfolio'.
+	
+	self assert: ((familyPortfolio retrieveReport: portfolioTreePrinter) = expectedPortfolioTreePrinter).! !
+
+!PortfolioTreePrinterTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 03:13:02'!
+test04PortfolioTreePrinterOfAPortfolioComposedByAnAccountAndAPortfolioWithAnAccountIsCorrect
+
+	| johnsAccount angiesAccount childrenPortfolio familyPortfolio expectedPortfolioTreePrinter |
+	
+	johnsAccount _ ReceptiveAccount named: 'Cuenta de Juan'. 
+	angiesAccount _ ReceptiveAccount named: 'Cuenta de Angeles'.
+	childrenPortfolio _ Portfolio named: 'Portfolio de hijos' with: angiesAccount. 
+	familyPortfolio _ Portfolio named: 'Portfolio de la familia 2' with: johnsAccount with: childrenPortfolio.
+	
+	expectedPortfolioTreePrinter _ OrderedCollection with: 'Portfolio de la familia 2' with: 'Cuenta de Juan' with: 'Portfolio de hijos' with: 'Cuenta de Angeles'.
+	
+	self assert: ((familyPortfolio retrieveReport: portfolioTreePrinter) = expectedPortfolioTreePrinter).! !
 
 
 !classDefinition: #ReceptiveAccountTest category: 'ServiciosFinancieros2-Ejercicio'!
@@ -555,7 +696,7 @@ test05TransferNetOfAnEmptyPortfolioIsZero
 	self assert: ((aPortfolio retrieveReport: transferNetReport) = expectedTransferNet).
 	! !
 
-!TransferNetTest methodsFor: 'tests' stamp: 'JT 12/16/2020 21:07:26'!
+!TransferNetTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 03:08:40'!
 test06TransferNetOfAPortfolioWithAnAccountWithAnIncomingTransferIsTheIncomingTransfer
 
 	| aPortfolio originAccount destinationAccount  expectedTransferNet |
@@ -565,14 +706,14 @@ test06TransferNetOfAPortfolioWithAnAccountWithAnIncomingTransferIsTheIncomingTra
 	
 	Transfer amount: 100*peso from: originAccount to: destinationAccount.
 	
-	aPortfolio _ Portfolio with: destinationAccount.
+	aPortfolio _ Portfolio named: 'Portfolio' with: destinationAccount.
 	
 	expectedTransferNet _ 100*peso.
 	
 	self assert: ((aPortfolio retrieveReport: transferNetReport) = expectedTransferNet).
 	! !
 
-!TransferNetTest methodsFor: 'tests' stamp: 'JT 12/16/2020 21:07:21'!
+!TransferNetTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 03:08:49'!
 test07TransferNetOfAPortfolioWithAnAccountWithAnOutgoingTransferIsTheOutgoingTransferNegated
 
 	| aPortfolio destinationAccount originAccount  expectedTransferNet |
@@ -582,14 +723,14 @@ test07TransferNetOfAPortfolioWithAnAccountWithAnOutgoingTransferIsTheOutgoingTra
 	
 	Transfer amount: 20*peso from: originAccount to: destinationAccount.
 	
-	aPortfolio _ Portfolio with: originAccount.
+	aPortfolio _ Portfolio named: 'Portfolio' with: originAccount.
 	
 	expectedTransferNet _ -20*peso.
 	
 	self assert: ((aPortfolio retrieveReport: transferNetReport) = expectedTransferNet).
 	! !
 
-!TransferNetTest methodsFor: 'tests' stamp: 'JT 12/16/2020 21:07:17'!
+!TransferNetTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 03:09:09'!
 test08TransferNetOfAPortfolioWithAnAccountWithMultipleTransactionsIsCorrect
 
 	| aPortfolio account1 account2  expectedTransferNet |
@@ -602,14 +743,14 @@ test08TransferNetOfAPortfolioWithAnAccountWithMultipleTransactionsIsCorrect
 	Transfer amount: 100*peso from: account1 to: account2.
 	Transfer amount: 30*peso from: account2 to: account1.
 	
-	aPortfolio _ Portfolio with: account2.
+	aPortfolio _ Portfolio named: 'Portfolio' with: account2.
 	
 	expectedTransferNet _ 70*peso.
 	
 	self assert: ((aPortfolio retrieveReport: transferNetReport) = expectedTransferNet).
 	! !
 
-!TransferNetTest methodsFor: 'tests' stamp: 'JT 12/16/2020 21:06:55'!
+!TransferNetTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 03:09:15'!
 test09TransferNetOfAPortfolioWithAccountsTransferingEachOtherIsZero
 
 	| aPortfolio account1 account2  expectedTransferNet |
@@ -620,14 +761,14 @@ test09TransferNetOfAPortfolioWithAccountsTransferingEachOtherIsZero
 	Transfer amount: 300*peso from: account1 to: account2.
 	Transfer amount: 50*peso from: account2 to: account1.
 	
-	aPortfolio _ Portfolio with: account1 with: account2.
+	aPortfolio _ Portfolio named: 'Portfolio' with: account1 with: account2.
 	
 	expectedTransferNet _ 0*peso.
 	
 	self assert: ((aPortfolio retrieveReport: transferNetReport) = expectedTransferNet).
 	! !
 
-!TransferNetTest methodsFor: 'tests' stamp: 'JT 12/16/2020 21:07:10'!
+!TransferNetTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 03:09:37'!
 test10TransferNetOfAPortfolioComposedByASimplePortfolioWithAnAccountWithAnIncomingTransferIsTheIncomingTransfer
 
 	| originAccount destinationAccount simplePortfolio composedPortfolio expectedTransferNet |
@@ -637,33 +778,33 @@ test10TransferNetOfAPortfolioComposedByASimplePortfolioWithAnAccountWithAnIncomi
 	
 	Transfer amount: 300*peso from: originAccount to: destinationAccount.
 	
-	simplePortfolio _ Portfolio with: destinationAccount.
-	composedPortfolio _ Portfolio with: simplePortfolio.
+	simplePortfolio _ Portfolio named: 'Portfolio Simple' with: destinationAccount.
+	composedPortfolio _ Portfolio named: 'Portfolio Compuesto' with: simplePortfolio.
 
 	expectedTransferNet _ 300*peso.
 	
 	self assert: ((composedPortfolio retrieveReport: transferNetReport) = expectedTransferNet).
 	! !
 
-!TransferNetTest methodsFor: 'tests' stamp: 'JT 12/16/2020 21:07:48'!
+!TransferNetTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 03:10:01'!
 test11TransferNetOfAPortfolioComposedByAccountsTransferingEachOtherIsZero
 
 	| simplePortfolioAccount simplePortfolio composedPortfolioAccount composedPortfolio expectedTransferNet |
 	
 	simplePortfolioAccount _ ReceptiveAccount new.
-	simplePortfolio _ Portfolio with: simplePortfolioAccount.
+	simplePortfolio _ Portfolio named: 'Portfolio Simple' with: simplePortfolioAccount.
 	
 	composedPortfolioAccount _ ReceptiveAccount new.
 	Transfer amount: 40*peso from: simplePortfolioAccount to: composedPortfolioAccount.
 	
-	composedPortfolio _ Portfolio with: simplePortfolio with: composedPortfolioAccount.
+	composedPortfolio _ Portfolio named: 'Portfolio Compuesto' with: simplePortfolio with: composedPortfolioAccount.
 
 	expectedTransferNet _ 0*peso.
 	
 	self assert: ((composedPortfolio retrieveReport: transferNetReport) = expectedTransferNet).
 	! !
 
-!TransferNetTest methodsFor: 'tests' stamp: 'JT 12/16/2020 21:08:03'!
+!TransferNetTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 03:10:10'!
 test12TransferNetOfAPortolioWithAccountsAndAnExternalIncomingTransferIsAlwaysPositive
 
 	| aPortfolio account1 account2 account3 expectedTransferNet |
@@ -675,14 +816,14 @@ test12TransferNetOfAPortolioWithAccountsAndAnExternalIncomingTransferIsAlwaysPos
 	Transfer amount: 100*peso from: account3 to: account2.
 	Transfer amount: 30*peso from: account3 to: account1.
 	
-	aPortfolio _ Portfolio with: account1 with: account2.
+	aPortfolio _ Portfolio named: 'Portfolio' with: account1 with: account2.
 
 	expectedTransferNet _ 130*peso.
 	
 	self assert: ((aPortfolio retrieveReport: transferNetReport) = expectedTransferNet).
 	! !
 
-!TransferNetTest methodsFor: 'tests' stamp: 'JT 12/16/2020 21:08:20'!
+!TransferNetTest methodsFor: 'tests' stamp: 'CZ 12/17/2020 03:10:17'!
 test13TransferNetOfAPortolioWithAccountsAndAnExternalOutgoingTransferIsAlwaysNegative
 
 	| aPortfolio account1 account2 account3 expectedTransferNet |
@@ -694,7 +835,7 @@ test13TransferNetOfAPortolioWithAccountsAndAnExternalOutgoingTransferIsAlwaysNeg
 	Transfer amount: 100*peso from: account2 to: account3.
 	Transfer amount: 30*peso from: account1 to: account3.
 	
-	aPortfolio _ Portfolio with: account1 with: account2.
+	aPortfolio _ Portfolio named: 'Portfolio' with: account1 with: account2.
 
 	expectedTransferNet _ -130*peso.
 	
@@ -837,14 +978,15 @@ isComposedBy: anAccount
 
 !classDefinition: #Portfolio category: 'ServiciosFinancieros2-Ejercicio'!
 Account subclass: #Portfolio
-	instanceVariableNames: 'accounts parents'
+	instanceVariableNames: 'name accounts parents'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros2-Ejercicio'!
 
-!Portfolio methodsFor: 'initialization' stamp: 'JT 12/16/2020 20:53:42'!
+!Portfolio methodsFor: 'initialization' stamp: 'CZ 12/17/2020 00:12:25'!
 initialize
-
+	
+	name _ 'Portfolio'.
 	accounts _ OrderedCollection new.
 	parents _ OrderedCollection new.! !
 
@@ -933,10 +1075,20 @@ hasRegistered: aTransaction
 
 	^accounts anySatisfy: [ :anAccount | anAccount hasRegistered: aTransaction ]! !
 
+!Portfolio methodsFor: 'main protocol' stamp: 'CZ 12/17/2020 00:13:48'!
+name
+	
+	^name.! !
+
 !Portfolio methodsFor: 'main protocol' stamp: 'JT 12/16/2020 20:07:47'!
 retrieveReport: aReport
 
 	^aReport retrieveReportForAPortfolio: self.! !
+
+!Portfolio methodsFor: 'main protocol' stamp: 'CZ 12/17/2020 00:13:32'!
+updateName: newName
+
+	name _ newName.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -949,17 +1101,19 @@ canNotAddAccountErrorMessage
 	
 	^'Can not add repeated account to a portfolio'! !
 
-!Portfolio class methodsFor: 'as yet unclassified' stamp: 'HAW 5/25/2019 11:18:21'!
-with: anAccount
+!Portfolio class methodsFor: 'as yet unclassified' stamp: 'CZ 12/17/2020 00:13:12'!
+named: aName with: anAccount
 
 	^self new 
+		updateName: aName;
 		add: anAccount;
 		yourself! !
 
-!Portfolio class methodsFor: 'as yet unclassified' stamp: 'HAW 5/25/2019 11:23:59'!
-with: anAccount with: anotherAccount
+!Portfolio class methodsFor: 'as yet unclassified' stamp: 'CZ 12/17/2020 00:29:32'!
+named: aName with: anAccount with: anotherAccount
 
 	^self new 
+		updateName: aName;
 		add: anAccount;
 		add: anotherAccount;
 		yourself! !
@@ -967,14 +1121,15 @@ with: anAccount with: anotherAccount
 
 !classDefinition: #ReceptiveAccount category: 'ServiciosFinancieros2-Ejercicio'!
 Account subclass: #ReceptiveAccount
-	instanceVariableNames: 'transactions'
+	instanceVariableNames: 'name transactions'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros2-Ejercicio'!
 
-!ReceptiveAccount methodsFor: 'initialization' stamp: 'JT 12/16/2020 20:54:25'!
+!ReceptiveAccount methodsFor: 'initialization' stamp: 'CZ 12/17/2020 00:18:49'!
 initialize
-
+	
+	name _ 'Account'.
 	transactions _ OrderedCollection new.! !
 
 
@@ -991,6 +1146,11 @@ hasRegistered: aTransaction
 	^transactions includes: aTransaction
 ! !
 
+!ReceptiveAccount methodsFor: 'main protocol' stamp: 'CZ 12/17/2020 00:19:13'!
+name
+
+	^name.! !
+
 !ReceptiveAccount methodsFor: 'main protocol' stamp: 'HernanWilkinson 7/13/2011 18:37'!
 register: aTransaction
 
@@ -1001,6 +1161,11 @@ register: aTransaction
 retrieveReport: aReport
 
 	^aReport retrieveReportForAReceptiveAccount: self.! !
+
+!ReceptiveAccount methodsFor: 'main protocol' stamp: 'CZ 12/17/2020 00:19:02'!
+updateName: newName
+
+	name _ newName! !
 
 
 !ReceptiveAccount methodsFor: 'transactions management' stamp: 'JT 12/16/2020 19:17:02'!
@@ -1018,6 +1183,18 @@ addedTo: aPortfolio
 isComposedBy: anAccount
 
 	^self = anAccount ! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'ReceptiveAccount class' category: 'ServiciosFinancieros2-Ejercicio'!
+ReceptiveAccount class
+	instanceVariableNames: ''!
+
+!ReceptiveAccount class methodsFor: 'as yet unclassified' stamp: 'CZ 12/17/2020 00:21:43'!
+named: aName
+	
+	^self new updateName: aName.
+	! !
 
 
 !classDefinition: #AccountTransaction category: 'ServiciosFinancieros2-Ejercicio'!
@@ -1263,12 +1440,12 @@ Object subclass: #Report
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros2-Ejercicio'!
 
-!Report methodsFor: 'as yet unclassified' stamp: 'JT 12/16/2020 20:25:27'!
+!Report methodsFor: 'report management' stamp: 'JT 12/16/2020 20:25:27'!
 retrieveReportForAPortfolio: aPortfolio
 
 	self subclassResponsibility ! !
 
-!Report methodsFor: 'as yet unclassified' stamp: 'JT 12/16/2020 20:25:44'!
+!Report methodsFor: 'report management' stamp: 'JT 12/16/2020 20:25:44'!
 retrieveReportForAReceptiveAccount: aReceptiveAccount
 
 	self subclassResponsibility ! !
@@ -1325,6 +1502,58 @@ summaryLineForTransferWithdrawLeg: aTransferWithdrawLeg
 summaryLineForWithdraw: aWithdraw
 
 	^'Extracción por ', aWithdraw value asString.! !
+
+
+!classDefinition: #PortfolioDetailedTreePrinter category: 'ServiciosFinancieros2-Ejercicio'!
+Report subclass: #PortfolioDetailedTreePrinter
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros2-Ejercicio'!
+
+!PortfolioDetailedTreePrinter methodsFor: 'portfolio detailed tree printer management' stamp: 'CZ 12/17/2020 03:26:18'!
+retrieveReportForAPortfolio: aPortfolio
+	
+	| portfolioTreePrinter |
+	
+	portfolioTreePrinter _ OrderedCollection with: aPortfolio name.
+	
+	aPortfolio accounts do: [:anAccount | portfolioTreePrinter addAll: (anAccount retrieveReport: self).
+		(anAccount isKindOf: ReceptiveAccount) ifTrue: [portfolioTreePrinter addAll: (anAccount retrieveReport: AccountSummary new)]
+		].
+	
+	portfolioTreePrinter add: 'Balance = ', aPortfolio balance asString.
+		
+	^portfolioTreePrinter.! !
+
+!PortfolioDetailedTreePrinter methodsFor: 'portfolio detailed tree printer management' stamp: 'CZ 12/17/2020 01:59:41'!
+retrieveReportForAReceptiveAccount: aReceptiveAccount
+	
+	^OrderedCollection with: aReceptiveAccount name.! !
+
+
+!classDefinition: #PortfolioTreePrinter category: 'ServiciosFinancieros2-Ejercicio'!
+Report subclass: #PortfolioTreePrinter
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros2-Ejercicio'!
+
+!PortfolioTreePrinter methodsFor: 'portfolio tree printer management' stamp: 'CZ 12/17/2020 01:52:48'!
+retrieveReportForAPortfolio: aPortfolio
+	
+	| portfolioTreePrinter |
+	
+	portfolioTreePrinter _ OrderedCollection with: aPortfolio name.
+	
+	aPortfolio accounts do: [:anAccount | portfolioTreePrinter addAll: (anAccount retrieveReport: self)].
+
+	^portfolioTreePrinter.! !
+
+!PortfolioTreePrinter methodsFor: 'portfolio tree printer management' stamp: 'CZ 12/17/2020 01:42:20'!
+retrieveReportForAReceptiveAccount: aReceptiveAccount
+	
+	^OrderedCollection with: aReceptiveAccount name.! !
 
 
 !classDefinition: #TransferNet category: 'ServiciosFinancieros2-Ejercicio'!
