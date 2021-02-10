@@ -354,3 +354,17 @@ MigrationBackup/
 
 #.idea
 .idea
+
+#cuis
+/CuisUniversity-4384.changes
+/CuisUniversity-4384.image
+/CuisUniversity-4384.user.changes
+/CuisV5.sources
+/run.sh
+/Packages
+/Documentation
+.changes
+Squeak.app
+/TrueTypeFonts
+.sources
+/CoreUpdates
