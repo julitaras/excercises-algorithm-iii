@@ -5,7 +5,7 @@ TestCase subclass: #CartTest
 	poolDictionaries: ''
 	category: 'TusLibros-Ejercicio'!
 
-!CartTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/8/2021 21:36:57'!
+!CartTest methodsFor: 'tests' stamp: 'CZ 2/8/2021 21:36:57'!
 test01
 "carrito vacio"
 	
@@ -14,7 +14,7 @@ test01
 	
 	self assert: (aCart isEmpty).! !
 
-!CartTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/8/2021 21:37:08'!
+!CartTest methodsFor: 'tests' stamp: 'CZ 2/8/2021 21:37:08'!
 test02
 "se agrega libro al carrito vacio"
 	
@@ -26,7 +26,7 @@ test02
 	
 	self deny: (aCart isEmpty).! !
 
-!CartTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/8/2021 21:37:16'!
+!CartTest methodsFor: 'tests' stamp: 'CZ 2/8/2021 21:37:16'!
 test03
 "se agregan varios libros al carrito vacio"
 	
@@ -40,7 +40,7 @@ test03
 	
 	self deny: (aCart isEmpty).! !
 
-!CartTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/8/2021 21:38:40'!
+!CartTest methodsFor: 'tests' stamp: 'CZ 2/8/2021 21:38:40'!
 test04
 "se verifica la existencia de ciertos libros en el carrito"
 	
@@ -55,7 +55,7 @@ test04
 	self assert: (aCart hasBook: aBook).
 	self assert: (aCart hasBook: anotherBook).! !
 
-!CartTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/8/2021 21:49:55'!
+!CartTest methodsFor: 'tests' stamp: 'CZ 2/8/2021 21:49:55'!
 test05
 "se verifica la existencia de ciertos libros en el carrito"
 	
@@ -77,6 +77,12 @@ Object subclass: #Cart
 	poolDictionaries: ''
 	category: 'TusLibros-Ejercicio'!
 
+!Cart methodsFor: 'initialization' stamp: 'CZ 2/8/2021 21:35:25'!
+initialize
+
+	books _ OrderedCollection new.! !
+
+
 !Cart methodsFor: 'as yet unclassified' stamp: 'CZ 2/8/2021 21:34:00'!
 addBook: bookToAdd
 	
@@ -88,20 +94,7 @@ hasBook: bookToVerify
 
 	^books includes: 	bookToVerify.! !
 
-!Cart methodsFor: 'as yet unclassified' stamp: 'CZ 2/8/2021 21:35:25'!
-initialize
-
-	books _ OrderedCollection new.! !
-
 !Cart methodsFor: 'as yet unclassified' stamp: 'CZ 2/8/2021 21:35:15'!
 isEmpty
 
 	^books isEmpty.! !
-
-
-!classDefinition: #NameOfSubclass category: 'TusLibros-Ejercicio'!
-Object subclass: #NameOfSubclass
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'TusLibros-Ejercicio'!
