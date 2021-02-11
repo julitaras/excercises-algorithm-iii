@@ -123,10 +123,10 @@ test08AnInvalidBookIsbnCannotBeAddedToTheCart
 	
 ! !
 
-!CartTest methodsFor: 'tests' stamp: 'CZ 2/11/2021 00:40:45'!
+!CartTest methodsFor: 'tests' stamp: 'CZ 2/11/2021 10:57:27'!
 test09ACartKnowsItsContent
 	
-	| aCart aBook anotherBook expectedListOfBooks |
+	| aCart aBook anotherBook expectedBooksInCart |
 	
 	aCart _ Cart new.
 	aBook _ 9789877250244.
@@ -135,9 +135,9 @@ test09ACartKnowsItsContent
 	aCart addBook: aBook quantity: 2.
 	aCart addBook: anotherBook quantity: 1.
 	
-	expectedListOfBooks _ OrderedCollection with: aBook with: aBook with: anotherBook.
+	expectedBooksInCart _ OrderedCollection with: aBook with: aBook with: anotherBook.
 	
-	self assert: (aCart listBooksInCart = expectedListOfBooks).
+	self assert: (aCart booksStored = expectedBooksInCart).
 	! !
 
 
@@ -196,22 +196,22 @@ size
 	^books size.! !
 
 
-!Cart methodsFor: 'cart management' stamp: 'CZ 2/11/2021 10:07:57'!
+!Cart methodsFor: 'cart management' stamp: 'CZ 2/11/2021 11:05:39'!
 addBook: bookToAdd quantity: numberOfCopies
 
-	self assertExistenceOfBookInCatalog: bookToAdd AndValidNumberOfCopies: numberOfCopies. 
+	self assertCanAddBook:  bookToAdd withNumberOfCopies: numberOfCopies.
 	
 	numberOfCopies timesRepeat: [books add: bookToAdd].
 	! !
 
-!Cart methodsFor: 'cart management' stamp: 'CZ 2/11/2021 00:32:28'!
-listBooksInCart
+!Cart methodsFor: 'cart management' stamp: 'CZ 2/11/2021 10:57:27'!
+booksStored
 	
 	^books.! !
 
 
-!Cart methodsFor: 'assertions' stamp: 'CZ 2/11/2021 10:07:57'!
-assertExistenceOfBookInCatalog: bookToVerify AndValidNumberOfCopies: numberOfCopiesToVerify
+!Cart methodsFor: 'assertions' stamp: 'CZ 2/11/2021 11:04:11'!
+assertCanAddBook: bookToVerify withNumberOfCopies: numberOfCopiesToVerify
 
 	(numberOfCopiesToVerify < 1) ifTrue: [self signalQuantityCannotBeLessThanOne].
 	
@@ -223,15 +223,15 @@ assertExistenceOfBookInCatalog: bookToVerify AndValidNumberOfCopies: numberOfCop
 Cart class
 	instanceVariableNames: ''!
 
-!Cart class methodsFor: 'error messages' stamp: 'JT 2/10/2021 21:32:51'!
+!Cart class methodsFor: 'error messages' stamp: 'CZ 2/11/2021 10:34:39'!
 invalidIsbnCannotBeAddedToCartErrorMessage
 
-    ^'Invalid ISBN cannot be added to cart'! !
+	^'Invalid ISBN cannot be added to cart'! !
 
-!Cart class methodsFor: 'error messages' stamp: 'JT 2/10/2021 21:11:12'!
+!Cart class methodsFor: 'error messages' stamp: 'CZ 2/11/2021 10:34:46'!
 quantityCannotBeLessThanOneErrorMessage
 
-    ^'Quantity cannot be less than one'! !
+	^'Quantity cannot be less than one'! !
 
 
 !classDefinition: #Publisher category: 'TusLibros-Ejercicio'!
@@ -241,16 +241,17 @@ Object subclass: #Publisher
 	poolDictionaries: ''
 	category: 'TusLibros-Ejercicio'!
 
-!Publisher methodsFor: 'publisher management' stamp: 'CZ 2/11/2021 10:06:15'!
+!Publisher methodsFor: 'publisher management' stamp: 'CZ 2/11/2021 10:52:05'!
 catalog
 	
-	^catalog! !
+	^catalog.! !
 
 
-!Publisher methodsFor: 'initialization' stamp: 'CZ 2/11/2021 10:05:58'!
+!Publisher methodsFor: 'initialization' stamp: 'CZ 2/11/2021 10:50:30'!
 initialize
 
-	catalog _ OrderedCollection with: 9789877250244 with: 9789585118300 with: 9788408081548 with: 9789870711544 with: 9789871534388 with: 9788477511205. ! !
+	catalog _ OrderedCollection with: 9789877250244 with: 9789585118300 with: 9788408081548 with: 9789870711544 with: 9789871534388 with: 9788477511205. 
+	! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -258,7 +259,7 @@ initialize
 Publisher class
 	instanceVariableNames: ''!
 
-!Publisher class methodsFor: 'testing' stamp: 'CZ 2/11/2021 10:10:17'!
+!Publisher class methodsFor: 'testing' stamp: 'CZ 2/11/2021 10:51:00'!
 hasBookInCatalog: bookToVerify
 	
 	^self new catalog includes: bookToVerify.! !
