@@ -86,7 +86,7 @@ test06ABookIsAddedMoreThanOnceAndTheNumberOfCopiesAndSizeOfCartAreCorrect
 	self assert: ((aCart numberOfCopiesOf: anotherBook) = 1).
 ! !
 
-!CartTest methodsFor: 'tests' stamp: 'CZ 2/10/2021 23:16:47'!
+!CartTest methodsFor: 'tests' stamp: 'CZ 2/11/2021 10:09:39'!
 test07BookQuantityCannotBeLessThanOne
 	
 	| aCart aBook |
@@ -98,8 +98,8 @@ test07BookQuantityCannotBeLessThanOne
         should: [ aCart addBook: aBook quantity: 0 ]
         raise: Error
         asserting: [ :anError |
-            self assert: anError messageText = Cart quantityCannotBeLessThanOneErrorMessage.
-            self assert: aCart isEmpty].
+		self assert: anError messageText = Cart quantityCannotBeLessThanOneErrorMessage.
+		self assert: aCart isEmpty].
 	
 	
 ! !
@@ -163,15 +163,15 @@ initialize
 	books _ OrderedCollection new.! !
 
 
-!Cart methodsFor: 'signal error' stamp: 'JT 2/10/2021 21:32:08'!
+!Cart methodsFor: 'signal error' stamp: 'CZ 2/11/2021 10:08:37'!
 signalInvalidIsbnCannotBeAddedToCart
+	
+	self error: self class invalidIsbnCannotBeAddedToCartErrorMessage.! !
 
-    self error: self class invalidIsbnCannotBeAddedToCartErrorMessage.! !
-
-!Cart methodsFor: 'signal error' stamp: 'JT 2/10/2021 21:11:50'!
+!Cart methodsFor: 'signal error' stamp: 'CZ 2/11/2021 10:08:46'!
 signalQuantityCannotBeLessThanOne 
-
-    self error: self class quantityCannotBeLessThanOneErrorMessage.! !
+	
+	self error: self class quantityCannotBeLessThanOneErrorMessage.! !
 
 
 !Cart methodsFor: 'testing' stamp: 'CZ 2/8/2021 21:52:43'!
@@ -196,10 +196,10 @@ size
 	^books size.! !
 
 
-!Cart methodsFor: 'cart management' stamp: 'CZ 2/11/2021 00:11:42'!
+!Cart methodsFor: 'cart management' stamp: 'CZ 2/11/2021 10:07:57'!
 addBook: bookToAdd quantity: numberOfCopies
 
-	self assertExistenceOfBookInCatalogue: bookToAdd AndValidNumberOfCopies: numberOfCopies. 
+	self assertExistenceOfBookInCatalog: bookToAdd AndValidNumberOfCopies: numberOfCopies. 
 	
 	numberOfCopies timesRepeat: [books add: bookToAdd].
 	! !
@@ -210,12 +210,12 @@ listBooksInCart
 	^books.! !
 
 
-!Cart methodsFor: 'assertions' stamp: 'CZ 2/11/2021 00:11:42'!
-assertExistenceOfBookInCatalogue: bookToVerify AndValidNumberOfCopies: numberOfCopiesToVerify
+!Cart methodsFor: 'assertions' stamp: 'CZ 2/11/2021 10:07:57'!
+assertExistenceOfBookInCatalog: bookToVerify AndValidNumberOfCopies: numberOfCopiesToVerify
 
 	(numberOfCopiesToVerify < 1) ifTrue: [self signalQuantityCannotBeLessThanOne].
 	
-	(Publisher hasBookInCatalogue: bookToVerify) ifFalse:[self signalInvalidIsbnCannotBeAddedToCart].  ! !
+	(Publisher hasBookInCatalog: bookToVerify) ifFalse:[self signalInvalidIsbnCannotBeAddedToCart].  ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -236,21 +236,21 @@ quantityCannotBeLessThanOneErrorMessage
 
 !classDefinition: #Publisher category: 'TusLibros-Ejercicio'!
 Object subclass: #Publisher
-	instanceVariableNames: 'catalogue'
+	instanceVariableNames: 'catalog'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros-Ejercicio'!
 
-!Publisher methodsFor: 'publisher management' stamp: 'JT 2/10/2021 21:42:00'!
-catalogue
+!Publisher methodsFor: 'publisher management' stamp: 'CZ 2/11/2021 10:06:15'!
+catalog
 	
-	^catalogue! !
+	^catalog! !
 
 
-!Publisher methodsFor: 'initialization' stamp: 'CZ 2/10/2021 23:14:46'!
+!Publisher methodsFor: 'initialization' stamp: 'CZ 2/11/2021 10:05:58'!
 initialize
 
-	catalogue _ OrderedCollection with: 9789877250244 with: 9789585118300 with: 9788408081548 with: 9789870711544 with: 9789871534388 with: 9788477511205. ! !
+	catalog _ OrderedCollection with: 9789877250244 with: 9789585118300 with: 9788408081548 with: 9789870711544 with: 9789871534388 with: 9788477511205. ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -258,7 +258,7 @@ initialize
 Publisher class
 	instanceVariableNames: ''!
 
-!Publisher class methodsFor: 'testing' stamp: 'CZ 2/11/2021 00:09:30'!
-hasBookInCatalogue: bookToVerify
-
-	^self new catalogue includes: bookToVerify.! !
+!Publisher class methodsFor: 'testing' stamp: 'CZ 2/11/2021 10:10:17'!
+hasBookInCatalog: bookToVerify
+	
+	^self new catalog includes: bookToVerify.! !
