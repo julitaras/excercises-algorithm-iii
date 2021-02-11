@@ -14,88 +14,88 @@ test01ACartIsCreatedEmpty
 	
 	self assert: (aCart isEmpty).! !
 
-!CartTest methodsFor: 'tests' stamp: 'CZ 2/11/2021 00:14:42'!
+!CartTest methodsFor: 'tests' stamp: 'CZ 2/11/2021 13:33:18'!
 test02ABookIsAddedAndTheCartIsNotEmptyAnymore
 	
-	| aCart aBook |
+	| aCart aBookIsbn |
 	
 	aCart _ Cart new.
-	aBook _ 9789877250244.
+	aBookIsbn _ 9789877250244.
 	
-	aCart addBook: aBook quantity: 1.
+	aCart addBook: aBookIsbn quantity: 1.
 	
 	self deny: (aCart isEmpty).! !
 
-!CartTest methodsFor: 'tests' stamp: 'CZ 2/11/2021 00:14:52'!
+!CartTest methodsFor: 'tests' stamp: 'CZ 2/11/2021 13:33:55'!
 test03MultipleBooksAreAddedAndTheCartIsNotEmptyAnymore
 	
-	| aCart aBook anotherBook |
+	| aCart book1Isbn book2Isbn |
 	
 	aCart _ Cart new.
-	aBook _ 9789877250244.
-	anotherBook _ 9789585118300.
+	book1Isbn _ 9789877250244.
+	book2Isbn _ 9789585118300.
 	
-	aCart addBook: aBook quantity: 1.
-	aCart addBook: anotherBook quantity: 1.
+	aCart addBook: book1Isbn quantity: 1.
+	aCart addBook: book2Isbn quantity: 1.
 	
 	self deny: (aCart isEmpty).! !
 
-!CartTest methodsFor: 'tests' stamp: 'CZ 2/11/2021 00:15:02'!
+!CartTest methodsFor: 'tests' stamp: 'CZ 2/11/2021 13:34:26'!
 test04MultipleBooksAreAddedAndTheyAreStoredInTheCart
 	
-	| aCart aBook anotherBook |
+	| aCart book1Isbn book2Isbn |
 	
 	aCart _ Cart new.
-	aBook _ 9789877250244.
-	anotherBook _ 9789585118300.
+	book1Isbn _ 9789877250244.
+	book2Isbn _ 9789585118300.
 	
-	aCart addBook: aBook quantity: 1.
-	aCart addBook: anotherBook quantity: 1.
+	aCart addBook: book1Isbn quantity: 1.
+	aCart addBook: book2Isbn quantity: 1.
 	
-	self assert: (aCart hasBook: aBook).
-	self assert: (aCart hasBook: anotherBook).! !
+	self assert: (aCart hasBook: book1Isbn).
+	self assert: (aCart hasBook: book2Isbn).! !
 
-!CartTest methodsFor: 'tests' stamp: 'CZ 2/10/2021 23:15:49'!
+!CartTest methodsFor: 'tests' stamp: 'CZ 2/11/2021 13:34:46'!
 test05ABookThatIsNotAddedIsNotStoredInTheCart
 	
-	| aCart aBook anotherBook |
+	| aCart book1Isbn book2Isbn |
 	
 	aCart _ Cart new.
-	aBook _ 9789877250244.
-	anotherBook _ 9789585118300.
+	book1Isbn _ 9789877250244.
+	book2Isbn _ 9789585118300.
 	
-	aCart addBook: aBook quantity: 1.
+	aCart addBook: book1Isbn quantity: 1.
 	
-	self assert: (aCart hasBook: aBook).
-	self deny: (aCart hasBook: anotherBook).! !
+	self assert: (aCart hasBook: book1Isbn).
+	self deny: (aCart hasBook: book2Isbn).! !
 
-!CartTest methodsFor: 'tests' stamp: 'CZ 2/11/2021 00:15:21'!
+!CartTest methodsFor: 'tests' stamp: 'CZ 2/11/2021 13:35:19'!
 test06ABookIsAddedMoreThanOnceAndTheNumberOfCopiesAndSizeOfCartAreCorrect
 	
-	| aCart aBook anotherBook |
+	| aCart book1Isbn book2Isbn |
 	
 	aCart _ Cart new.
-	aBook _ 9789877250244.
-	anotherBook _ 9789585118300.
+	book1Isbn _ 9789877250244.
+	book2Isbn _ 9789585118300.
 	
-	aCart addBook: aBook quantity: 2.
-	aCart addBook: anotherBook quantity: 1.
+	aCart addBook: book1Isbn quantity: 2.
+	aCart addBook: book2Isbn quantity: 1.
 	
 	self assert: (aCart size = 3).
-	self assert: ((aCart numberOfCopiesOf: aBook) = 2).
-	self assert: ((aCart numberOfCopiesOf: anotherBook) = 1).
+	self assert: ((aCart numberOfCopiesOf: book1Isbn) = 2).
+	self assert: ((aCart numberOfCopiesOf: book2Isbn) = 1).
 ! !
 
-!CartTest methodsFor: 'tests' stamp: 'CZ 2/11/2021 10:09:39'!
+!CartTest methodsFor: 'tests' stamp: 'CZ 2/11/2021 13:35:45'!
 test07BookQuantityCannotBeLessThanOne
 	
-	| aCart aBook |
+	| aCart aBookIsbn |
 	
 	aCart _ Cart new.
-	aBook _ 9789877250244.
+	aBookIsbn _ 9789877250244.
 	
 	self 
-        should: [ aCart addBook: aBook quantity: 0 ]
+        should: [ aCart addBook: aBookIsbn quantity: 0 ]
         raise: Error
         asserting: [ :anError |
 		self assert: anError messageText = Cart quantityCannotBeLessThanOneErrorMessage.
@@ -104,38 +104,38 @@ test07BookQuantityCannotBeLessThanOne
 	
 ! !
 
-!CartTest methodsFor: 'tests' stamp: 'CZ 2/10/2021 23:37:58'!
+!CartTest methodsFor: 'tests' stamp: 'CZ 2/11/2021 13:36:08'!
 test08AnInvalidBookIsbnCannotBeAddedToTheCart
 	
-	| aCart aBook |
+	| aCart aBookIsbn |
 	
 	aCart _ Cart new.
-	aBook _ 9789721091651.
+	aBookIsbn _ 9789721091651.
 	
 	self 
-        should: [ aCart addBook: aBook quantity: 1 ]
+        should: [ aCart addBook: aBookIsbn quantity: 1 ]
         raise: Error
         asserting: [ :anError |
 		self assert: anError messageText = Cart invalidIsbnCannotBeAddedToCartErrorMessage.
 		self assert: aCart isEmpty.
-		self deny: (aCart hasBook: aBook)].
+		self deny: (aCart hasBook: aBookIsbn)].
 	
 	
 ! !
 
-!CartTest methodsFor: 'tests' stamp: 'CZ 2/11/2021 10:57:27'!
+!CartTest methodsFor: 'tests' stamp: 'CZ 2/11/2021 13:36:40'!
 test09ACartKnowsItsContent
 	
-	| aCart aBook anotherBook expectedBooksInCart |
+	| aCart book1Isbn book2Isbn expectedBooksInCart |
 	
 	aCart _ Cart new.
-	aBook _ 9789877250244.
-	anotherBook _ 9789585118300.
+	book1Isbn _ 9789877250244.
+	book2Isbn _ 9789585118300.
 	
-	aCart addBook: aBook quantity: 2.
-	aCart addBook: anotherBook quantity: 1.
+	aCart addBook: book1Isbn quantity: 2.
+	aCart addBook: book2Isbn quantity: 1.
 	
-	expectedBooksInCart _ OrderedCollection with: aBook with: aBook with: anotherBook.
+	expectedBooksInCart _ OrderedCollection with: book1Isbn with: book1Isbn with: book2Isbn.
 	
 	self assert: (aCart booksStored = expectedBooksInCart).
 	! !
@@ -174,10 +174,10 @@ signalQuantityCannotBeLessThanOne
 	self error: self class quantityCannotBeLessThanOneErrorMessage.! !
 
 
-!Cart methodsFor: 'testing' stamp: 'CZ 2/11/2021 12:03:29'!
-hasBook: bookToVerify
+!Cart methodsFor: 'testing' stamp: 'CZ 2/11/2021 13:31:33'!
+hasBook: bookIsbnToVerify
 
-	^self booksStored includes: 	bookToVerify.! !
+	^self booksStored includes: 	bookIsbnToVerify.! !
 
 !Cart methodsFor: 'testing' stamp: 'CZ 2/11/2021 12:03:43'!
 isEmpty
@@ -185,10 +185,10 @@ isEmpty
 	^self booksStored isEmpty.! !
 
 
-!Cart methodsFor: 'accessing' stamp: 'CZ 2/11/2021 12:03:58'!
-numberOfCopiesOf: bookToVerify
+!Cart methodsFor: 'accessing' stamp: 'CZ 2/11/2021 13:32:24'!
+numberOfCopiesOf: bookIsbnToVerify
 
-	^self booksStored occurrencesOf: bookToVerify.! !
+	^self booksStored occurrencesOf: bookIsbnToVerify.! !
 
 !Cart methodsFor: 'accessing' stamp: 'CZ 2/11/2021 12:04:15'!
 size
@@ -196,12 +196,12 @@ size
 	^self booksStored size.! !
 
 
-!Cart methodsFor: 'cart management' stamp: 'CZ 2/11/2021 12:03:14'!
-addBook: bookToAdd quantity: numberOfCopies
+!Cart methodsFor: 'cart management' stamp: 'CZ 2/11/2021 13:31:42'!
+addBook: bookIsbn quantity: numberOfCopies
 
-	self assertCanAddBook:  bookToAdd withNumberOfCopies: numberOfCopies.
+	self assertCanAddBook: bookIsbn withNumberOfCopies: numberOfCopies.
 	
-	numberOfCopies timesRepeat: [self booksStored add: bookToAdd].
+	numberOfCopies timesRepeat: [self booksStored add: bookIsbn].
 	! !
 
 !Cart methodsFor: 'cart management' stamp: 'CZ 2/11/2021 10:57:27'!
@@ -210,12 +210,12 @@ booksStored
 	^books.! !
 
 
-!Cart methodsFor: 'assertions' stamp: 'CZ 2/11/2021 11:04:11'!
-assertCanAddBook: bookToVerify withNumberOfCopies: numberOfCopiesToVerify
+!Cart methodsFor: 'assertions' stamp: 'CZ 2/11/2021 13:31:17'!
+assertCanAddBook: bookIsbnToVerify withNumberOfCopies: numberOfCopiesToVerify
 
 	(numberOfCopiesToVerify < 1) ifTrue: [self signalQuantityCannotBeLessThanOne].
 	
-	(Publisher hasBookInCatalog: bookToVerify) ifFalse:[self signalInvalidIsbnCannotBeAddedToCart].  ! !
+	(Publisher hasBookInCatalog: bookIsbnToVerify) ifFalse:[self signalInvalidIsbnCannotBeAddedToCart].  ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
