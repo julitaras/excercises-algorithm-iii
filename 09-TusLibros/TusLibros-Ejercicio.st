@@ -174,40 +174,40 @@ signalQuantityCannotBeLessThanOne
 	self error: self class quantityCannotBeLessThanOneErrorMessage.! !
 
 
-!Cart methodsFor: 'testing' stamp: 'CZ 2/8/2021 21:52:43'!
+!Cart methodsFor: 'testing' stamp: 'CZ 2/11/2021 12:03:29'!
 hasBook: bookToVerify
 
-	^books includes: 	bookToVerify.! !
+	^self booksStored includes: 	bookToVerify.! !
 
-!Cart methodsFor: 'testing' stamp: 'CZ 2/8/2021 21:35:15'!
+!Cart methodsFor: 'testing' stamp: 'CZ 2/11/2021 12:03:43'!
 isEmpty
 
-	^books isEmpty.! !
+	^self booksStored isEmpty.! !
 
 
-!Cart methodsFor: 'accessing' stamp: 'CZ 2/11/2021 10:57:27'!
+!Cart methodsFor: 'accessing' stamp: 'CZ 2/11/2021 12:03:58'!
+numberOfCopiesOf: bookToVerify
+
+	^self booksStored occurrencesOf: bookToVerify.! !
+
+!Cart methodsFor: 'accessing' stamp: 'CZ 2/11/2021 12:04:15'!
+size
+
+	^self booksStored size.! !
+
+
+!Cart methodsFor: 'cart management' stamp: 'CZ 2/11/2021 12:03:14'!
+addBook: bookToAdd quantity: numberOfCopies
+
+	self assertCanAddBook:  bookToAdd withNumberOfCopies: numberOfCopies.
+	
+	numberOfCopies timesRepeat: [self booksStored add: bookToAdd].
+	! !
+
+!Cart methodsFor: 'cart management' stamp: 'CZ 2/11/2021 10:57:27'!
 booksStored
 	
 	^books.! !
-
-!Cart methodsFor: 'accessing' stamp: 'JT 2/10/2021 20:29:39'!
-numberOfCopiesOf: bookToVerify
-
-	^books occurrencesOf: bookToVerify.! !
-
-!Cart methodsFor: 'accessing' stamp: 'JT 2/10/2021 20:21:40'!
-size
-
-	^books size.! !
-
-
-!Cart methodsFor: 'cart management' stamp: 'CZ 2/11/2021 11:50:26'!
-addBook: bookToAdd quantity: numberOfCopies
-
-	self assertCanAddBook: bookToAdd withNumberOfCopies: numberOfCopies.
-	
-	numberOfCopies timesRepeat: [books add: bookToAdd].
-	! !
 
 
 !Cart methodsFor: 'assertions' stamp: 'CZ 2/11/2021 11:04:11'!
