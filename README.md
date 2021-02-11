@@ -34,3 +34,7 @@ Ejercicios para entregar - 2020, 2do cuatrimestre.
 ### 08 Servicios Financieros 2
 
 - **[Resolución](https://github.com/julitaras/exercises-algorithm-iii/wiki/08-Servicios-Financieros-2)**
+
+### 09 Tus Libros
+
+- **[Resolución](https://github.com/julitaras/exercises-algorithm-iii/wiki/09-Tus-Libros)**
