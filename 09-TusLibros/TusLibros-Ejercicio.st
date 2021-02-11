@@ -185,6 +185,11 @@ isEmpty
 	^books isEmpty.! !
 
 
+!Cart methodsFor: 'accessing' stamp: 'CZ 2/11/2021 10:57:27'!
+booksStored
+	
+	^books.! !
+
 !Cart methodsFor: 'accessing' stamp: 'JT 2/10/2021 20:29:39'!
 numberOfCopiesOf: bookToVerify
 
@@ -196,18 +201,13 @@ size
 	^books size.! !
 
 
-!Cart methodsFor: 'cart management' stamp: 'CZ 2/11/2021 11:05:39'!
+!Cart methodsFor: 'cart management' stamp: 'CZ 2/11/2021 11:50:26'!
 addBook: bookToAdd quantity: numberOfCopies
 
-	self assertCanAddBook:  bookToAdd withNumberOfCopies: numberOfCopies.
+	self assertCanAddBook: bookToAdd withNumberOfCopies: numberOfCopies.
 	
 	numberOfCopies timesRepeat: [books add: bookToAdd].
 	! !
-
-!Cart methodsFor: 'cart management' stamp: 'CZ 2/11/2021 10:57:27'!
-booksStored
-	
-	^books.! !
 
 
 !Cart methodsFor: 'assertions' stamp: 'CZ 2/11/2021 11:04:11'!
