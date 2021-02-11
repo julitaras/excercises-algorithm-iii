@@ -15,43 +15,43 @@ test01
 	
 	self assert: (aCart isEmpty).! !
 
-!CartTest methodsFor: 'tests' stamp: 'JT 2/10/2021 21:22:13'!
+!CartTest methodsFor: 'tests' stamp: 'JT 2/10/2021 21:39:28'!
 test02
 "se agrega libro al carrito vacio"
 	
 	| aCart aBook |
 	
 	aCart _ Cart new.
-	aBook _ 'Libro nuevo'.
+	aBook _ 1.
 	
 	aCart addBook: aBook quantity: 1.
 	
 	self deny: (aCart isEmpty).! !
 
-!CartTest methodsFor: 'tests' stamp: 'JT 2/10/2021 21:22:10'!
+!CartTest methodsFor: 'tests' stamp: 'JT 2/10/2021 21:39:39'!
 test03
 "se agregan varios libros al carrito vacio"
 	
 	| aCart aBook anotherBook |
 	
 	aCart _ Cart new.
-	aBook _ 'A book'.
-	anotherBook _ 'Another book'.
+	aBook _ 1.
+	anotherBook _ 2.
 	
 	aCart addBook: aBook quantity: 1.
 	aCart addBook: anotherBook quantity: 1.
 	
 	self deny: (aCart isEmpty).! !
 
-!CartTest methodsFor: 'tests' stamp: 'JT 2/10/2021 21:22:06'!
+!CartTest methodsFor: 'tests' stamp: 'JT 2/10/2021 21:39:51'!
 test04
 "se verifica la existencia de ciertos libros en el carrito"
 	
 	| aCart aBook anotherBook |
 	
 	aCart _ Cart new.
-	aBook _ 'A book'.
-	anotherBook _ 'Another book'.
+	aBook _ 1.
+	anotherBook _ 2.
 	
 	aCart addBook: aBook quantity: 1.
 	aCart addBook: anotherBook quantity: 1.
@@ -59,30 +59,30 @@ test04
 	self assert: (aCart hasBook: aBook).
 	self assert: (aCart hasBook: anotherBook).! !
 
-!CartTest methodsFor: 'tests' stamp: 'JT 2/10/2021 21:22:02'!
+!CartTest methodsFor: 'tests' stamp: 'JT 2/10/2021 21:39:59'!
 test05
 "se verifica la existencia de ciertos libros en el carrito"
 	
 	| aCart aBook anotherBook |
 	
 	aCart _ Cart new.
-	aBook _ 'A book'.
-	anotherBook _ 'Another book'.
+	aBook _ 1.
+	anotherBook _ 2.
 	
 	aCart addBook: aBook quantity: 1.
 	
 	self assert: (aCart hasBook: aBook).
 	self deny: (aCart hasBook: anotherBook).! !
 
-!CartTest methodsFor: 'tests' stamp: 'JT 2/10/2021 21:21:55'!
+!CartTest methodsFor: 'tests' stamp: 'JT 2/10/2021 21:40:09'!
 test06
 "Que este la cantidad total agregada y que sean efectivamente los libros que se agregaron"
 	
 	| aCart aBook anotherBook |
 	
 	aCart _ Cart new.
-	aBook _ 'A book'.
-	anotherBook _ 'Another book'.
+	aBook _ 1.
+	anotherBook _ 2.
 	
 	aCart addBook: aBook quantity: 2.
 	aCart addBook: anotherBook quantity: 1.
@@ -92,20 +92,39 @@ test06
 	self assert: ((aCart numberOfCopiesOf: anotherBook) = 1).
 ! !
 
-!CartTest methodsFor: 'tests' stamp: 'JT 2/10/2021 21:21:51'!
+!CartTest methodsFor: 'tests' stamp: 'JT 2/10/2021 21:40:16'!
 test07
 "La cantidad agregada de libros no puede ser menor a 1"
 	
 	| aCart aBook |
 	
 	aCart _ Cart new.
-	aBook _ 'A book'.
+	aBook _ 1.
 	
 	self 
         should: [ aCart addBook: aBook quantity: 0 ]
         raise: Error
         asserting: [ :anError |
             self assert: anError messageText = Cart quantityCannotBeLessThanOneErrorMessage.
+            self assert: aCart isEmpty].
+	
+	
+! !
+
+!CartTest methodsFor: 'tests' stamp: 'JT 2/10/2021 21:41:30'!
+test08
+"Se consulta a la editorial si es un ISBN invalido"
+	
+	| aCart aBook |
+	
+	aCart _ Cart new.
+	aBook _ 3.
+	
+	self 
+        should: [ aCart addBook: aBook quantity: 1 ]
+        raise: Error
+        asserting: [ :anError |
+            self assert: anError messageText = Cart invalidIsbnCannotBeAddedToCartErrorMessage.
             self assert: aCart isEmpty].
 	
 	
@@ -134,6 +153,11 @@ initialize
 	books _ OrderedCollection new.! !
 
 
+!Cart methodsFor: 'signal error' stamp: 'JT 2/10/2021 21:32:08'!
+signalInvalidIsbnCannotBeAddedToCart
+
+    self error: self class invalidIsbnCannotBeAddedToCartErrorMessage.! !
+
 !Cart methodsFor: 'signal error' stamp: 'JT 2/10/2021 21:11:50'!
 signalQuantityCannotBeLessThanOne 
 
@@ -156,10 +180,12 @@ numberOfCopiesOf: bookToVerify
 	^books occurrencesOf: bookToVerify.! !
 
 
-!Cart methodsFor: 'as yet unclassified' stamp: 'JT 2/10/2021 21:13:24'!
+!Cart methodsFor: 'as yet unclassified' stamp: 'JT 2/10/2021 21:47:17'!
 addBook: bookToAdd quantity: numberOfCopies
 
 	(numberOfCopies < 1) ifTrue: [^self signalQuantityCannotBeLessThanOne].
+	
+	(Editorial new catalogue includes: bookToAdd) ifFalse:[^self signalInvalidIsbnCannotBeAddedToCart].  
 	
 	numberOfCopies timesRepeat: [books add: bookToAdd].
 	! !
@@ -175,7 +201,30 @@ size
 Cart class
 	instanceVariableNames: ''!
 
+!Cart class methodsFor: 'as yet unclassified' stamp: 'JT 2/10/2021 21:32:51'!
+invalidIsbnCannotBeAddedToCartErrorMessage
+
+    ^'Invalid ISBN cannot be added to cart'! !
+
 !Cart class methodsFor: 'as yet unclassified' stamp: 'JT 2/10/2021 21:11:12'!
 quantityCannotBeLessThanOneErrorMessage
 
     ^'Quantity cannot be less than one'! !
+
+
+!classDefinition: #Editorial category: 'TusLibros-Ejercicio'!
+Object subclass: #Editorial
+	instanceVariableNames: 'catalogue'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros-Ejercicio'!
+
+!Editorial methodsFor: 'as yet unclassified' stamp: 'JT 2/10/2021 21:42:00'!
+catalogue
+	
+	^catalogue! !
+
+!Editorial methodsFor: 'as yet unclassified' stamp: 'JT 2/10/2021 21:38:36'!
+initialize
+
+	catalogue _ OrderedCollection with: 1 with: 2. ! !
