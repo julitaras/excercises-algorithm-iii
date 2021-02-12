@@ -150,6 +150,65 @@ should: aBlockThatShouldFail raise: anExceptionType asserting: aVerificationBloc
        		do: aVerificationBlock! !
 
 
+!classDefinition: #CashierTest category: 'TusLibros-Ejercicio'!
+TestCase subclass: #CashierTest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros-Ejercicio'!
+
+!CashierTest methodsFor: 'as yet unclassified' stamp: 'JT 2/11/2021 21:35:30'!
+should: aBlockThatShouldFail raise: anExceptionType asserting: aVerificationBlock
+
+	[ aBlockThatShouldFail value.
+    	self fail ]
+        		on: anExceptionType 
+       		do: aVerificationBlock! !
+
+!CashierTest methodsFor: 'as yet unclassified' stamp: 'JT 2/11/2021 21:38:44'!
+test01
+	"No se puede hacer checkout del carrito vacio"
+	| aCart cced ccn cco aCashier |
+	
+	aCart _ Cart new.
+	aCashier _ Cashier new.
+
+	ccn _ 12345.
+	cced _ 022023.
+	cco _ 'Marcela'.
+	
+	self 
+        should: [ aCashier checkOutCart: aCart WithCreditCardNumber: ccn andExpirationDate: cced andOwnersName:cco. ]
+        raise: Error
+        asserting: [ :anError |
+		self assert: anError messageText = Cashier checkOutCannotBeExecutedWithEmptyCartErrorMessage.].
+	
+	
+
+	! !
+
+!CashierTest methodsFor: 'as yet unclassified' stamp: 'JT 2/12/2021 16:31:18'!
+test02
+	"Si se puede hacer checkout del carrito con un libro"
+	| aCart aBook1Isbn cced ccn cco aCashier |
+	
+	aCart _ Cart new.
+	aCashier _ Cashier new.
+	
+	aBook1Isbn _ 9789877250244.
+	ccn _ 12345.
+	cced _ 022023.
+	cco _ 'Marcela'.
+	
+	aCart addBook: aBook1Isbn quantity: 1.
+	aCashier checkOutCart: aCart WithCreditCardNumber: ccn andExpirationDate: cced andOwnersName: cco.
+	
+	self assert: aCart isEmpty.
+	self assert: aCashier totalAmountCashed equals: 100 * peso.
+	
+	! !
+
+
 !classDefinition: #Cart category: 'TusLibros-Ejercicio'!
 Object subclass: #Cart
 	instanceVariableNames: 'books'
@@ -204,18 +263,23 @@ addBook: bookIsbn quantity: numberOfCopies
 	numberOfCopies timesRepeat: [self booksStored add: bookIsbn].
 	! !
 
-!Cart methodsFor: 'cart management' stamp: 'CZ 2/11/2021 10:57:27'!
+!Cart methodsFor: 'cart management' stamp: 'JT 2/11/2021 21:29:12'!
 booksStored
 	
 	^books.! !
 
+!Cart methodsFor: 'cart management' stamp: 'JT 2/11/2021 21:19:37'!
+removeBooks
+	
+	books removeAll.! !
 
-!Cart methodsFor: 'assertions' stamp: 'CZ 2/11/2021 13:31:17'!
+
+!Cart methodsFor: 'assertions' stamp: 'JT 2/11/2021 20:59:31'!
 assertCanAddBook: bookIsbnToVerify withNumberOfCopies: numberOfCopiesToVerify
 
 	(numberOfCopiesToVerify < 1) ifTrue: [self signalQuantityCannotBeLessThanOne].
 	
-	(Publisher hasBookInCatalog: bookIsbnToVerify) ifFalse:[self signalInvalidIsbnCannotBeAddedToCart].  ! !
+	(Publisher new hasBookInCatalog: bookIsbnToVerify) ifFalse:[self signalInvalidIsbnCannotBeAddedToCart].  ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -232,6 +296,42 @@ invalidIsbnCannotBeAddedToCartErrorMessage
 quantityCannotBeLessThanOneErrorMessage
 
 	^'Quantity cannot be less than one'! !
+
+
+!classDefinition: #Cashier category: 'TusLibros-Ejercicio'!
+Object subclass: #Cashier
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros-Ejercicio'!
+
+!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/12/2021 16:30:32'!
+checkOutCart: aCart WithCreditCardNumber: creditCardNumber andExpirationDate: expirationDate andOwnersName: ownersName
+	
+	aCart isEmpty ifTrue: [self signalCheckOutCannotBeExecutedWithEmptyCart.].
+	
+	aCart removeBooks.! !
+
+!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/11/2021 21:37:49'!
+signalCheckOutCannotBeExecutedWithEmptyCart
+	
+	self error: self class checkOutCannotBeExecutedWithEmptyCartErrorMessage .! !
+
+!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/12/2021 16:31:00'!
+totalAmountCashed
+	
+	^(100 * peso).! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Cashier class' category: 'TusLibros-Ejercicio'!
+Cashier class
+	instanceVariableNames: ''!
+
+!Cashier class methodsFor: 'as yet unclassified' stamp: 'JT 2/11/2021 21:36:41'!
+checkOutCannotBeExecutedWithEmptyCartErrorMessage
+
+	^'CheckOut cannot be executed with empty cart'! !
 
 
 !classDefinition: #Publisher category: 'TusLibros-Ejercicio'!
@@ -253,13 +353,8 @@ initialize
 	catalog _ OrderedCollection with: 9789877250244 with: 9789585118300 with: 9788408081548 with: 9789870711544 with: 9789871534388 with: 9788477511205. 
 	! !
 
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Publisher class' category: 'TusLibros-Ejercicio'!
-Publisher class
-	instanceVariableNames: ''!
-
-!Publisher class methodsFor: 'testing' stamp: 'CZ 2/11/2021 10:51:00'!
+!Publisher methodsFor: 'as yet unclassified' stamp: 'JT 2/11/2021 20:59:06'!
 hasBookInCatalog: bookToVerify
 	
-	^self new catalog includes: bookToVerify.! !
+	^self catalog includes: bookToVerify.! !
