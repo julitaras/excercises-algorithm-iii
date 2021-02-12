@@ -101,10 +101,18 @@ Ejemplos:
 
 La idea de esta primera iteración es comenzar modelando el dominio del problema, basándonos en la metáfora de un supermercado.
 Lo primero que hacemos al llegar al supermercado es tomar un carrito e ir agregando al mismo los items que queremos comprar.
-Se pide modelar esta parte del problema. Considerar que no podemos agregar cualquier libro al carrito, sino sólo aquellos libros que figuran en el catálogo de la editorial.
+Se pide modelar esta parte del problema. No olvidar pensar y modelar las diferentes restricciones que puede tener esta parte del problema, que no están explícitas en el enunciado. Ej: Considerar que no podemos agregar cualquier libro al carrito, sino sólo aquellos libros que figuran en el catálogo de la editorial. Ante la duda, preguntar.
 
 Este ejercicio trata de un problema similar a uno real de la industria, bastante más grande que los ejercicios que veníamos haciendo. Mientras más grande es el problema, es habitual que su definición sea más ambigua / menos clara. Este enunciado es en consecuencia ambiguo y poco definido. Esto es intencional. Queremos enfrentarlos con un problema que inevitablemente van a tener. Por lo cual, tal como ocurriría en la realidad, se espera que despejen las dudas con "el cliente", en este caso, representado por los docentes de la cátedra, haciéndonos todas las preguntas que hagan falta. Esto es parte de lo que estamos evaluando / ejercitando.
 
 Como siempre, se pide resolver el ejercicio mediante TDD, aplicando todo lo visto hasta el momento en la materia.
+
+## Iteración 2
+
+Ya podemos agregar cosas al carrito, ahora viene la segunda parte de toda compra: el checkout! La idea es modelar por completo esta problemática, pensando los distintos escenarios posibles. En el medio van a tener que interactuar con el Merchant Processor. Recuerden la idea que vimos de usar un objeto simulador, una especie de doble de riesgo, que va a ser controlado por nosotros en los tests, para que este Merchant Processor de mentira nos responda lo que queremos, y así poder seguir testeando nuestro modelo, sin tener que hablar con servicio externo real. No se olviden que el supermercado debe registrar las ventas realizadas, ni tampoco se olviden resolver el tema de la expiración de la tarjeta, ni los casos de falla donde el MP no pudo procesar el pago.
+
+Como siempre, se pide resolver el ejercicio mediante TDD, aplicando todo lo visto hasta el momento en la materia.
+
+
 
 
