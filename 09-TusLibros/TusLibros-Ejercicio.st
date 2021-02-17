@@ -306,7 +306,7 @@ test06
 	self assert: 500 * peso equals: aCashier totalAmountCashed.
 	! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 01:25:57'!
+!CashierTest methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 01:33:36'!
 test07
 	"Largo nombre mayor a 30 caracteres"
 	| aCart cced ccn cco aCashier book1Isbn book2Isbn |
@@ -318,7 +318,7 @@ test07
 	book2Isbn _ 9789585118300.
 	ccn _ 12345.
 	cced _ 022050.
-	cco _ 'Marcela de las nieves como esats jansja fj ahfbajkf dsjhd'.
+	cco _ 'un nombre cualquiera de la tarjeta de credito'.
 	
 	aCart addBook: book1Isbn quantity: 1.
 	aCart addBook: book2Isbn quantity: 2.
