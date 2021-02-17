@@ -231,7 +231,7 @@ test03
 	
 	! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'JT 2/16/2021 23:31:48'!
+!CashierTest methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 00:51:14'!
 test04
 	"Listar las compras que se realizo"
 	| aCart cced ccn cco aCashier book1Isbn book2Isbn expectedBill |
@@ -251,14 +251,14 @@ test04
 	
 	expectedBill _ Dictionary with: 9789877250244->(100*peso) with: 9789585118300->(200*peso) with: 9789585118300->(200*peso).
 	
-	self assert: expectedBill equals: aCashier bill.
+	self assert: expectedBill equals: aCashier issuedBill.
 	
 	! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 00:05:10'!
-_test05
+!CashierTest methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 00:32:20'!
+test05
 	"Tarjeta expirada"
-	| aCart cced ccn cco aCashier book1Isbn book2Isbn expectedBill |
+	| aCart cced ccn cco aCashier book1Isbn book2Isbn |
 	
 	aCart _ Cart new.
 	aCashier _ Cashier new.
@@ -266,7 +266,7 @@ _test05
 	book1Isbn _ 9789877250244.
 	book2Isbn _ 9789585118300.
 	ccn _ 12345.
-	cced _ 022023.
+	cced _ 022000.
 	cco _ 'Marcela'.
 	
 	aCart addBook: book1Isbn quantity: 1.
@@ -278,6 +278,32 @@ _test05
         asserting: [ :anError |
 		self assert: Cashier checkOutCannotBeExecutedWithExpiredCreditCardErrorMessage equals: anError messageText].
 	
+	! !
+
+!CashierTest methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 00:51:14'!
+test06
+	"Tarjeta no expirada"
+	| aCart cced ccn cco aCashier book1Isbn book2Isbn expectedBill |
+	
+	aCart _ Cart new.
+	aCashier _ Cashier new.
+	
+	book1Isbn _ 9789877250244.
+	book2Isbn _ 9789585118300.
+	ccn _ 12345.
+	cced _ 022050.
+	cco _ 'Marcela'.
+	
+	aCart addBook: book1Isbn quantity: 1.
+	aCart addBook: book2Isbn quantity: 2.
+
+	aCashier checkOutCart: aCart WithCreditCardNumber: ccn andExpirationDate: cced andOwnersName:cco.
+	
+	expectedBill _ Dictionary with: 9789877250244->(100*peso) with: 9789585118300->(200*peso) with: 9789585118300->(200*peso).
+	
+	self assert: expectedBill equals: aCashier issuedBill.
+	self assert: aCart isEmpty.
+	self assert: 500 * peso equals: aCashier totalAmountCashed.
 	! !
 
 
@@ -377,10 +403,12 @@ Object subclass: #Cashier
 	poolDictionaries: ''
 	category: 'TusLibros-Ejercicio'!
 
-!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/16/2021 23:32:40'!
-bill
+!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 00:57:00'!
+assertCanExecuteCheckOutOf: aCartToCheckOut withCreditCardExpirationDate: expirationDate
 	
-	^bill.! !
+	aCartToCheckOut isEmpty ifTrue: [self signalCheckOutCannotBeExecutedWithEmptyCart.].
+	
+	self checkCreditCardExpirationDate: expirationDate.! !
 
 !Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/16/2021 23:26:03'!
 calculateTotalPaid: aCart
@@ -394,12 +422,22 @@ calculateTotalPaid: aCart
 	
 	totalPaid _ total.! !
 
-!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 00:01:09'!
+!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 00:53:15'!
+checkCreditCardExpirationDate: expirationDate
+
+	| todayDate todayMonth todayYear todayMonthAndYear |
+	
+	todayDate _ Date today.
+	todayMonth _ todayDate monthIndex asString.
+	todayYear _ todayDate year yearNumber asString.
+	todayMonthAndYear _ todayMonth,todayYear.
+	
+	expirationDate asString < todayMonthAndYear ifTrue: [self signalCheckOutCannotBeExecutedWithExpiredCreditCard.]! !
+
+!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 00:57:24'!
 checkOutCart: aCart WithCreditCardNumber: creditCardNumber andExpirationDate: expirationDate andOwnersName: ownersName
 	
-	aCart isEmpty ifTrue: [self signalCheckOutCannotBeExecutedWithEmptyCart.].
-	
-	
+	self assertCanExecuteCheckOutOf: aCart withCreditCardExpirationDate: expirationDate.
 	
 	self calculateTotalPaid: aCart.
 	
@@ -418,6 +456,11 @@ issueBill: aCart
 	aCart booksStored do: [:isbn | finalBill add: isbn->(catalog at: isbn)].
 
 	bill _ finalBill.! !
+
+!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 00:51:14'!
+issuedBill
+	
+	^bill.! !
 
 !Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/11/2021 21:37:49'!
 signalCheckOutCannotBeExecutedWithEmptyCart
