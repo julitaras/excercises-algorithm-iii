@@ -306,6 +306,57 @@ test06
 	self assert: 500 * peso equals: aCashier totalAmountCashed.
 	! !
 
+!CashierTest methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 01:25:57'!
+test07
+	"Largo nombre mayor a 30 caracteres"
+	| aCart cced ccn cco aCashier book1Isbn book2Isbn |
+	
+	aCart _ Cart new.
+	aCashier _ Cashier new.
+	
+	book1Isbn _ 9789877250244.
+	book2Isbn _ 9789585118300.
+	ccn _ 12345.
+	cced _ 022050.
+	cco _ 'Marcela de las nieves como esats jansja fj ahfbajkf dsjhd'.
+	
+	aCart addBook: book1Isbn quantity: 1.
+	aCart addBook: book2Isbn quantity: 2.
+	
+	self 
+        should: [ aCashier checkOutCart: aCart WithCreditCardNumber: ccn andExpirationDate: cced andOwnersName:cco. ]
+        raise: Error
+        asserting: [ :anError |
+		self assert: Cashier checkOutCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharactersErrorMessage equals: anError messageText].
+	
+	
+	! !
+
+!CashierTest methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 01:19:17'!
+_test08
+	"El MP devuelve error"
+	| aCart cced ccn cco aCashier book1Isbn book2Isbn |
+	
+	aCart _ Cart new.
+	aCashier _ Cashier new.
+	
+	book1Isbn _ 9789877250244.
+	book2Isbn _ 9789585118300.
+	ccn _ 12345.
+	cced _ 022050.
+	cco _ 'Marcela'.
+	
+	aCart addBook: book1Isbn quantity: 1.
+	aCart addBook: book2Isbn quantity: 2.
+
+	self 
+        should: [ aCashier checkOutCart: aCart WithCreditCardNumber: ccn andExpirationDate: cced andOwnersName: cco.]
+        raise: Error
+        asserting: [ :anError |
+		self assert: Cashier checkOutCannotBeExecutedDueToMerchantProcessorConnectionFailureErrorMessage equals: anError messageText].
+	
+	! !
+
 
 !classDefinition: #Cart category: 'TusLibros-Ejercicio'!
 Object subclass: #Cart
@@ -403,12 +454,14 @@ Object subclass: #Cashier
 	poolDictionaries: ''
 	category: 'TusLibros-Ejercicio'!
 
-!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 00:57:00'!
-assertCanExecuteCheckOutOf: aCartToCheckOut withCreditCardExpirationDate: expirationDate
+!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 01:27:21'!
+assertCanExecuteCheckOutOf: aCartToCheckOut withCreditCardExpirationDate: expirationDate andOwnersName: ownersName
 	
 	aCartToCheckOut isEmpty ifTrue: [self signalCheckOutCannotBeExecutedWithEmptyCart.].
 	
-	self checkCreditCardExpirationDate: expirationDate.! !
+	self checkCreditCardExpirationDate: expirationDate.
+	
+	self checkCreditCardOwnersName: ownersName.! !
 
 !Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/16/2021 23:26:03'!
 calculateTotalPaid: aCart
@@ -434,12 +487,19 @@ checkCreditCardExpirationDate: expirationDate
 	
 	expirationDate asString < todayMonthAndYear ifTrue: [self signalCheckOutCannotBeExecutedWithExpiredCreditCard.]! !
 
-!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 00:57:24'!
+!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 01:28:39'!
+checkCreditCardOwnersName: ownersName
+
+	ownersName size > 30 ifTrue: [self signalCheckOutCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharacters.].! !
+
+!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 01:29:01'!
 checkOutCart: aCart WithCreditCardNumber: creditCardNumber andExpirationDate: expirationDate andOwnersName: ownersName
 	
-	self assertCanExecuteCheckOutOf: aCart withCreditCardExpirationDate: expirationDate.
+	self assertCanExecuteCheckOutOf: aCart withCreditCardExpirationDate: expirationDate andOwnersName: ownersName.
 	
 	self calculateTotalPaid: aCart.
+	
+	"self processPayment: totalPaid."
 	
 	self issueBill: aCart.
 	
@@ -462,6 +522,22 @@ issuedBill
 	
 	^bill.! !
 
+!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 01:18:18'!
+processPayment: totalToPay
+
+	
+	self signalCheckOutCannotBeExecutedDueToMerchantProcessorConnectionFailure.! !
+
+!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 01:12:37'!
+signalCheckOutCannotBeExecutedDueToMerchantProcessorConnectionFailure
+	
+	self error: self class checkOutCannotBeExecutedDueToMerchantProcessorConnectionFailureErrorMessage.! !
+
+!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 01:25:00'!
+signalCheckOutCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharacters
+	
+	self error: self class checkOutCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharactersErrorMessage.! !
+
 !Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/11/2021 21:37:49'!
 signalCheckOutCannotBeExecutedWithEmptyCart
 	
@@ -483,15 +559,25 @@ totalAmountCashed
 Cashier class
 	instanceVariableNames: ''!
 
-!Cashier class methodsFor: 'as yet unclassified' stamp: 'JT 2/11/2021 21:36:41'!
+!Cashier class methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 01:06:41'!
+checkOutCannotBeExecutedDueToMerchantProcessorConnectionFailureErrorMessage
+
+	^'Check out cannot be executed due to Merchant Processor connection failure'! !
+
+!Cashier class methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 01:24:35'!
+checkOutCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharactersErrorMessage
+
+	^'Check out cannot be executed with credit card owners name longer than thirty characters'! !
+
+!Cashier class methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 01:06:45'!
 checkOutCannotBeExecutedWithEmptyCartErrorMessage
 
-	^'CheckOut cannot be executed with empty cart'! !
+	^'Check out cannot be executed with empty cart'! !
 
-!Cashier class methodsFor: 'as yet unclassified' stamp: 'JT 2/16/2021 23:59:02'!
+!Cashier class methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 01:06:50'!
 checkOutCannotBeExecutedWithExpiredCreditCardErrorMessage
 
-	^'CheckOut cannot be executed with expired credit card'! !
+	^'Check out cannot be executed with expired credit card'! !
 
 
 !classDefinition: #Publisher category: 'TusLibros-Ejercicio'!
