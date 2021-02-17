@@ -165,9 +165,9 @@ should: aBlockThatShouldFail raise: anExceptionType asserting: aVerificationBloc
         		on: anExceptionType 
        		do: aVerificationBlock! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 18:40:26'!
-test01
-	"No se puede hacer checkout del carrito vacio"
+!CashierTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 19:33:11'!
+test01CheckOutCannotBeExecutedWithEmptyCart
+
 	| aCart cced ccn cco aCashier |
 	
 	aCart _ Cart new.
@@ -187,9 +187,9 @@ test01
 
 	! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 18:40:26'!
-test02
-	"Si se puede hacer checkout del carrito con un libro"
+!CashierTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 19:33:18'!
+test02CheckOutWithOneBookCanBeExecuted
+
 	| aCart aBook1Isbn cced ccn cco aCashier |
 	
 	aCart _ Cart new.
@@ -208,9 +208,9 @@ test02
 	
 	! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 18:40:26'!
-test03
-	"Si se puede hacer checkout del carrito con un libro"
+!CashierTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 19:33:23'!
+test03CheckOutWithMultipleBooksCanBeExecuted
+
 	| aCart cced ccn cco aCashier book1Isbn book2Isbn |
 	
 	aCart _ Cart new.
@@ -231,9 +231,9 @@ test03
 	
 	! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 18:40:26'!
-test04
-	"Listar las compras que se realizo"
+!CashierTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 19:15:51'!
+test04CashierCanIssueTheBillAfterCheckOut
+
 	| aCart cced ccn cco aCashier book1Isbn book2Isbn expectedBill |
 	
 	aCart _ Cart new.
@@ -255,9 +255,9 @@ test04
 	
 	! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 18:40:26'!
-test05
-	"Tarjeta expirada"
+!CashierTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 19:33:30'!
+test05CheckOutCannotBeExecutedWithExpiredCreditCard
+
 	| aCart cced ccn cco aCashier book1Isbn book2Isbn |
 	
 	aCart _ Cart new.
@@ -280,35 +280,9 @@ test05
 	
 	! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 18:40:26'!
-test06
-	"Tarjeta no expirada"
-	| aCart cced ccn cco aCashier book1Isbn book2Isbn expectedBill |
+!CashierTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 19:21:20'!
+test06CheckOutCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharacters
 	
-	aCart _ Cart new.
-	aCashier _ Cashier new.
-	
-	book1Isbn _ 9789877250244.
-	book2Isbn _ 9789585118300.
-	ccn _ 12345.
-	cced _ '022050'.
-	cco _ 'Marcela'.
-	
-	aCart addBook: book1Isbn quantity: 1.
-	aCart addBook: book2Isbn quantity: 2.
-
-	aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName:cco.
-	
-	expectedBill _ Dictionary with: 9789877250244->(1000.50*peso) with: 9789585118300->(999.99*peso) with: 9789585118300->(999.99*peso).
-	
-	self assert: expectedBill equals: aCashier issuedBill.
-	self assert: aCart isEmpty.
-	self assert: 3000.48 * peso equals: aCashier transactionAmount.
-	! !
-
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 18:40:26'!
-test07
-	"Largo nombre mayor a 30 caracteres"
 	| aCart cced ccn cco aCashier book1Isbn book2Isbn |
 	
 	aCart _ Cart new.
@@ -332,9 +306,8 @@ test07
 	
 	! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 18:40:26'!
-test08
-	"Dijitos fecha de vencimiento tarjeta de credito distinto de 6"
+!CashierTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 19:22:13'!
+test07CheckOutCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDate
 	
 	| aCart cced ccn cco aCashier book1Isbn book2Isbn |
 	
@@ -357,9 +330,9 @@ test08
 		self assert: Cashier checkOutCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDateErrorMessage equals: anError messageText].
 	! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 19:02:22'!
-test09
-	"Multiples checkouts"
+!CashierTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 19:30:16'!
+test09CashierKnowsTheHistoryOfSalesWhenMultipleCheckOutsAreExecuted
+
 	| cart1 cart2 cced1 cced2 ccn1 ccn2 cco1 cco2 aCashier book1Isbn book2Isbn book3Isbn book4Isbn expectedTotalSales |
 	
 	cart1 _ Cart new.
