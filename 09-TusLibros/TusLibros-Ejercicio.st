@@ -165,7 +165,7 @@ should: aBlockThatShouldFail raise: anExceptionType asserting: aVerificationBloc
         		on: anExceptionType 
        		do: aVerificationBlock! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'JT 2/11/2021 21:38:44'!
+!CashierTest methodsFor: 'as yet unclassified' stamp: 'JT 2/16/2021 22:28:55'!
 test01
 	"No se puede hacer checkout del carrito vacio"
 	| aCart cced ccn cco aCashier |
@@ -181,13 +181,13 @@ test01
         should: [ aCashier checkOutCart: aCart WithCreditCardNumber: ccn andExpirationDate: cced andOwnersName:cco. ]
         raise: Error
         asserting: [ :anError |
-		self assert: anError messageText = Cashier checkOutCannotBeExecutedWithEmptyCartErrorMessage.].
+		self assert: Cashier checkOutCannotBeExecutedWithEmptyCartErrorMessage equals: anError messageText].
 	
 	
 
 	! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'JT 2/12/2021 16:31:18'!
+!CashierTest methodsFor: 'as yet unclassified' stamp: 'JT 2/16/2021 22:28:27'!
 test02
 	"Si se puede hacer checkout del carrito con un libro"
 	| aCart aBook1Isbn cced ccn cco aCashier |
@@ -204,7 +204,79 @@ test02
 	aCashier checkOutCart: aCart WithCreditCardNumber: ccn andExpirationDate: cced andOwnersName: cco.
 	
 	self assert: aCart isEmpty.
-	self assert: aCashier totalAmountCashed equals: 100 * peso.
+	self assert: 100* peso equals: aCashier totalAmountCashed.
+	
+	! !
+
+!CashierTest methodsFor: 'as yet unclassified' stamp: 'JT 2/16/2021 22:28:11'!
+test03
+	"Si se puede hacer checkout del carrito con un libro"
+	| aCart cced ccn cco aCashier book1Isbn book2Isbn |
+	
+	aCart _ Cart new.
+	aCashier _ Cashier new.
+	
+	book1Isbn _ 9789877250244.
+	book2Isbn _ 9789585118300.
+	ccn _ 12345.
+	cced _ 022023.
+	cco _ 'Marcela'.
+	
+	aCart addBook: book1Isbn quantity: 3.
+	aCart addBook: book2Isbn quantity: 2.
+	aCashier checkOutCart: aCart WithCreditCardNumber: ccn andExpirationDate: cced andOwnersName: cco.
+	
+	self assert: aCart isEmpty.
+	self assert: 700 * peso equals: aCashier totalAmountCashed.
+	
+	! !
+
+!CashierTest methodsFor: 'as yet unclassified' stamp: 'JT 2/16/2021 23:31:48'!
+test04
+	"Listar las compras que se realizo"
+	| aCart cced ccn cco aCashier book1Isbn book2Isbn expectedBill |
+	
+	aCart _ Cart new.
+	aCashier _ Cashier new.
+	
+	book1Isbn _ 9789877250244.
+	book2Isbn _ 9789585118300.
+	ccn _ 12345.
+	cced _ 022023.
+	cco _ 'Marcela'.
+	
+	aCart addBook: book1Isbn quantity: 1.
+	aCart addBook: book2Isbn quantity: 2.
+	aCashier checkOutCart: aCart WithCreditCardNumber: ccn andExpirationDate: cced andOwnersName: cco.
+	
+	expectedBill _ Dictionary with: 9789877250244->(100*peso) with: 9789585118300->(200*peso) with: 9789585118300->(200*peso).
+	
+	self assert: expectedBill equals: aCashier bill.
+	
+	! !
+
+!CashierTest methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 00:05:10'!
+_test05
+	"Tarjeta expirada"
+	| aCart cced ccn cco aCashier book1Isbn book2Isbn expectedBill |
+	
+	aCart _ Cart new.
+	aCashier _ Cashier new.
+	
+	book1Isbn _ 9789877250244.
+	book2Isbn _ 9789585118300.
+	ccn _ 12345.
+	cced _ 022023.
+	cco _ 'Marcela'.
+	
+	aCart addBook: book1Isbn quantity: 1.
+	aCart addBook: book2Isbn quantity: 2.
+	
+	self 
+        should: [ aCashier checkOutCart: aCart WithCreditCardNumber: ccn andExpirationDate: cced andOwnersName:cco. ]
+        raise: Error
+        asserting: [ :anError |
+		self assert: Cashier checkOutCannotBeExecutedWithExpiredCreditCardErrorMessage equals: anError messageText].
 	
 	! !
 
@@ -300,27 +372,67 @@ quantityCannotBeLessThanOneErrorMessage
 
 !classDefinition: #Cashier category: 'TusLibros-Ejercicio'!
 Object subclass: #Cashier
-	instanceVariableNames: ''
+	instanceVariableNames: 'totalPaid bill'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros-Ejercicio'!
 
-!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/12/2021 16:30:32'!
+!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/16/2021 23:32:40'!
+bill
+	
+	^bill.! !
+
+!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/16/2021 23:26:03'!
+calculateTotalPaid: aCart
+
+	| catalog total |
+	catalog _ Publisher new catalog.
+	
+	total _ 0.
+	aCart booksStored do: [:isbn | 
+		total _ total + (catalog at: isbn).].
+	
+	totalPaid _ total.! !
+
+!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 00:01:09'!
 checkOutCart: aCart WithCreditCardNumber: creditCardNumber andExpirationDate: expirationDate andOwnersName: ownersName
 	
 	aCart isEmpty ifTrue: [self signalCheckOutCannotBeExecutedWithEmptyCart.].
 	
+	
+	
+	self calculateTotalPaid: aCart.
+	
+	self issueBill: aCart.
+	
 	aCart removeBooks.! !
+
+!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/16/2021 23:56:23'!
+issueBill: aCart
+
+	| catalog finalBill |
+
+	finalBill _ Dictionary new.
+	catalog _ Publisher new catalog.
+	
+	aCart booksStored do: [:isbn | finalBill add: isbn->(catalog at: isbn)].
+
+	bill _ finalBill.! !
 
 !Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/11/2021 21:37:49'!
 signalCheckOutCannotBeExecutedWithEmptyCart
 	
 	self error: self class checkOutCannotBeExecutedWithEmptyCartErrorMessage .! !
 
-!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/12/2021 16:31:00'!
+!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/16/2021 23:59:26'!
+signalCheckOutCannotBeExecutedWithExpiredCreditCard
+	
+	self error: self class checkOutCannotBeExecutedWithExpiredCreditCardErrorMessage.! !
+
+!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/16/2021 22:46:05'!
 totalAmountCashed
 	
-	^(100 * peso).! !
+	^totalPaid.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -332,6 +444,11 @@ Cashier class
 checkOutCannotBeExecutedWithEmptyCartErrorMessage
 
 	^'CheckOut cannot be executed with empty cart'! !
+
+!Cashier class methodsFor: 'as yet unclassified' stamp: 'JT 2/16/2021 23:59:02'!
+checkOutCannotBeExecutedWithExpiredCreditCardErrorMessage
+
+	^'CheckOut cannot be executed with expired credit card'! !
 
 
 !classDefinition: #Publisher category: 'TusLibros-Ejercicio'!
@@ -347,14 +464,13 @@ catalog
 	^catalog.! !
 
 
-!Publisher methodsFor: 'initialization' stamp: 'CZ 2/11/2021 10:50:30'!
+!Publisher methodsFor: 'initialization' stamp: 'JT 2/16/2021 23:25:31'!
 initialize
 
-	catalog _ OrderedCollection with: 9789877250244 with: 9789585118300 with: 9788408081548 with: 9789870711544 with: 9789871534388 with: 9788477511205. 
-	! !
+	catalog _ Dictionary with: 9789877250244->(100*peso) with: 9789585118300->(200*peso) with: 9788408081548->(100*peso) with: 9789870711544->(100*peso) with: 9789871534388->(100*peso) with: 9788477511205->(100*peso).! !
 
 
-!Publisher methodsFor: 'as yet unclassified' stamp: 'JT 2/11/2021 20:59:06'!
+!Publisher methodsFor: 'as yet unclassified' stamp: 'JT 2/16/2021 22:36:53'!
 hasBookInCatalog: bookToVerify
 	
-	^self catalog includes: bookToVerify.! !
+	^self catalog includesKey: bookToVerify.! !
