@@ -364,7 +364,7 @@ test08CashierKnowsTheHistoryOfSalesWhenMultipleCheckOutsAreExecuted
 	self assert: expectedTotalSales equals: aCashier totalSales.
 	! !
 
-!CashierTest methodsFor: 'tests' stamp: 'JT 2/18/2021 00:40:13'!
+!CashierTest methodsFor: 'tests' stamp: 'JT 2/18/2021 00:55:38'!
 test09
 	"El MP devuelve error, amount no mayor a 15 digitos"
 	| aCart cced ccn cco aCashier book1Isbn book2Isbn book3Isbn book4Isbn |
@@ -380,10 +380,10 @@ test09
 	cced _ 022050.
 	cco _ 'Marcela'.
 	
-	aCart addBook: book1Isbn quantity: 900000.
-	aCart addBook: book2Isbn quantity: 900000.
-	aCart addBook: book3Isbn quantity: 900000.
-	aCart addBook: book4Isbn quantity: 900000.
+	aCart addBook: book1Isbn quantity: 9000000.
+	aCart addBook: book2Isbn quantity: 9000000.
+	aCart addBook: book3Isbn quantity: 9000000.
+	aCart addBook: book4Isbn quantity: 9000000.
 
 	self 
         should: [ aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName: cco.]
