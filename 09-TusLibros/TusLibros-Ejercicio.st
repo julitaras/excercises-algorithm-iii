@@ -595,33 +595,18 @@ assertCanExecutePaymentWithCreditCardExpirationDate: expirationDate andOwnersNam
 	self validateTransactionAmount: aTransactionAmount.! !
 
 
-!MerchantProcessor methodsFor: 'validations' stamp: 'CZ 2/18/2021 02:20:28'!
+!MerchantProcessor methodsFor: 'validations' stamp: 'CZ 2/18/2021 10:16:20'!
 validateCreditCardExpirationDate: expirationDate
 
-	|  expirationMonth expirationYear |
+	|  expirationMonth expirationYear expirationDate2 |
 	
 	expirationDate size ~= 6 ifTrue:[self signalPaymentCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDate].
-	"
-	todayDate _ Date today.
-	todayMonth _ todayDate monthIndex asString.
-	todayYear _ todayDate year yearNumber asString.
-	"
-	expirationMonth _ (expirationDate copyFrom: 1 to: 2) asInteger.
+	
+	expirationMonth _ GregorianMonth numbered: (expirationDate copyFrom: 1 to: 2) asInteger.
 	expirationYear _ (expirationDate copyFrom: 3 to: 6) asInteger.
-	"expirationDate2 _ (expirationMonth, expirationYear) lastDate. ""February 28, 2023  - aGregorianDate"
+	expirationDate2 _ (expirationMonth, expirationYear) lastDate.
 	
-	((expirationMonth <= Date today monthIndex asInteger) and: [expirationYear < (Date today) year yearNumber]) ifTrue:[self signalPaymentCannotBeExecutedWithExpiredCreditCard].
-	
-	"todayMonth size = 1 ifTrue:[	todayMonthAndYear _ '0',todayMonth,todayYear.] ifFalse:[	todayMonthAndYear _ todayMonth,todayYear]."
-	
-	"expirationDate < todayMonthAndYear ifTrue: [self signalPaymentCannotBeExecutedWithExpiredCreditCard]."
-		
-	"Una vez que tengo el number
-	hago: 
-	month := GregorianMonth numbered: number.
-	month lastDate.
-	"
-	! !
+	expirationDate2 < FixedGregorianDate today ifTrue:[self signalPaymentCannotBeExecutedWithExpiredCreditCard].! !
 
 !MerchantProcessor methodsFor: 'validations' stamp: 'JT 2/18/2021 00:15:54'!
 validateCreditCardOwnersName: ownersName
