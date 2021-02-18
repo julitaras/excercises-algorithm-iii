@@ -322,31 +322,8 @@ test07PaymentCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharacters
 	
 	! !
 
-!CashierTest methodsFor: 'tests' stamp: 'CZ 2/18/2021 03:41:52'!
-test08PaymentCannotBeExecutedWithTransactionAmountLargerThanTheLimit
-	"El MP devuelve error, amount no mayor a 15 digitos"
-	| aCart aCashier aBookIsbn ccn cced cco |
-	
-	aCart _ Cart new.
-	aCashier _ Cashier new.
-	
-	aBookIsbn _ 9788477511205.
-	ccn _ 5589043461258803.
-	cced _ '022050'.
-	cco _ 'Mary'.
-	
-	aCart addBook: aBookIsbn quantity: 1.
-
-	self 
-       		should: [ aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName: cco.]
-       		raise: Error
-       		asserting: [ :anError |
-			self assert: MerchantProcessor paymentCannotBeExecutedWithTransactionAmountLargerThanTheLimitErrorMessage equals: anError messageText].
-	
-	! !
-
-!CashierTest methodsFor: 'tests' stamp: 'CZ 2/18/2021 03:43:15'!
-test09CashierKnowsTheHistoryOfSalesWhenMultipleCheckOutsAreExecuted
+!CashierTest methodsFor: 'tests' stamp: 'JT 2/18/2021 16:16:06'!
+test08CashierKnowsTheHistoryOfSalesWhenMultipleCheckOutsAreExecuted
 
 	| cart1 cart2 aCashier book1Isbn book2Isbn book3Isbn book4Isbn ccn1 cced1 cco1 ccn2 cced2 cco2 expectedTotalSales |
 	
@@ -509,7 +486,7 @@ calculateTransactionAmount: aCart
 	
 	transactionAmount _ total.! !
 
-!Cashier methodsFor: 'cashier management' stamp: 'JT 2/18/2021 00:20:34'!
+!Cashier methodsFor: 'cashier management' stamp: 'JT 2/18/2021 16:15:39'!
 checkOutCart: aCart withCreditCardNumber: creditCardNumber andExpirationDate: expirationDate andOwnersName: ownersName
 	
 	| aMerchantProcessor |
@@ -520,7 +497,7 @@ checkOutCart: aCart withCreditCardNumber: creditCardNumber andExpirationDate: ex
 	
 	aMerchantProcessor _ MerchantProcessor new.
 	
-	aMerchantProcessor assertCanExecutePaymentWithCreditCardExpirationDate: expirationDate andOwnersName: ownersName withTransactionAmount: self transactionAmount.
+	aMerchantProcessor assertCanExecutePaymentWithCreditCardExpirationDate: expirationDate andOwnersName: ownersName .
 	
 	self issueBill: aCart.
 	
@@ -561,7 +538,7 @@ updateTotalSalesWithCart: aCart andTransactionAmount: aTransactionAmount
 	totalSales add: aCart -> aTransactionAmount.! !
 
 
-!Cashier methodsFor: 'assertions' stamp: 'CZ 2/18/2021 02:40:52'!
+!Cashier methodsFor: 'assertions - private' stamp: 'CZ 2/18/2021 02:40:52'!
 assertCanExecuteCheckOutOf: aCartToCheckOut
 	
 	aCartToCheckOut isEmpty ifTrue: [self signalCheckOutCannotBeExecutedWithEmptyCart].! !
@@ -585,17 +562,16 @@ Object subclass: #MerchantProcessor
 	poolDictionaries: ''
 	category: 'TusLibros-Ejercicio'!
 
-!MerchantProcessor methodsFor: 'assertions' stamp: 'JT 2/18/2021 00:42:05'!
-assertCanExecutePaymentWithCreditCardExpirationDate: expirationDate andOwnersName: ownersName withTransactionAmount: aTransactionAmount
+!MerchantProcessor methodsFor: 'assertions - private' stamp: 'JT 2/18/2021 16:15:39'!
+assertCanExecutePaymentWithCreditCardExpirationDate: expirationDate andOwnersName: ownersName 
 	
 	self validateCreditCardExpirationDate: expirationDate.
 	
 	self validateCreditCardOwnersName: ownersName.
-	
-	self validateTransactionAmount: aTransactionAmount.! !
+	! !
 
 
-!MerchantProcessor methodsFor: 'validations' stamp: 'CZ 2/18/2021 10:16:20'!
+!MerchantProcessor methodsFor: 'validations - private' stamp: 'CZ 2/18/2021 10:16:20'!
 validateCreditCardExpirationDate: expirationDate
 
 	|  expirationMonth expirationYear expirationDate2 |
@@ -608,17 +584,10 @@ validateCreditCardExpirationDate: expirationDate
 	
 	expirationDate2 < FixedGregorianDate today ifTrue:[self signalPaymentCannotBeExecutedWithExpiredCreditCard].! !
 
-!MerchantProcessor methodsFor: 'validations' stamp: 'JT 2/18/2021 00:15:54'!
+!MerchantProcessor methodsFor: 'validations - private' stamp: 'JT 2/18/2021 00:15:54'!
 validateCreditCardOwnersName: ownersName
 
 	ownersName size > 30 ifTrue: [self signalPaymentCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharacters.].! !
-
-!MerchantProcessor methodsFor: 'validations' stamp: 'CZ 2/18/2021 01:24:05'!
-validateTransactionAmount: aTransactionAmount
-
-	(aTransactionAmount asIntegerAmount amount asString size) > 15 ifTrue: [self signalPaymentCannotBeExecutedWithTransactionAmountLargerThanTheLimit].
-	
-	! !
 
 
 !MerchantProcessor methodsFor: 'signal error' stamp: 'JT 2/18/2021 00:08:15'!
@@ -635,11 +604,6 @@ signalPaymentCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDate
 signalPaymentCannotBeExecutedWithExpiredCreditCard
 	
 	self error: self class paymentCannotBeExecutedWithExpiredCreditCardErrorMessage.! !
-
-!MerchantProcessor methodsFor: 'signal error' stamp: 'CZ 2/18/2021 01:32:36'!
-signalPaymentCannotBeExecutedWithTransactionAmountLargerThanTheLimit
-
-	self error: self class paymentCannotBeExecutedWithTransactionAmountLargerThanTheLimitErrorMessage.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -661,11 +625,6 @@ paymentCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDateErrorMessage
 paymentCannotBeExecutedWithExpiredCreditCardErrorMessage
 
 	^'Payment cannot be executed with expired credit card'! !
-
-!MerchantProcessor class methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:11:33'!
-paymentCannotBeExecutedWithTransactionAmountLargerThanTheLimitErrorMessage
-
-	^'Payment cannot be executed with transaction amount larger than the limit'! !
 
 
 !classDefinition: #Publisher category: 'TusLibros-Ejercicio'!
