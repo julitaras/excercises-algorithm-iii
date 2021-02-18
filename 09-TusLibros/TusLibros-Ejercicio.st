@@ -364,26 +364,20 @@ test08CashierKnowsTheHistoryOfSalesWhenMultipleCheckOutsAreExecuted
 	self assert: expectedTotalSales equals: aCashier totalSales.
 	! !
 
-!CashierTest methodsFor: 'tests' stamp: 'JT 2/18/2021 00:55:38'!
+!CashierTest methodsFor: 'tests' stamp: 'CZ 2/18/2021 01:17:24'!
 test09
 	"El MP devuelve error, amount no mayor a 15 digitos"
-	| aCart cced ccn cco aCashier book1Isbn book2Isbn book3Isbn book4Isbn |
+	| aCart cced ccn cco aCashier aBookIsbn |
 	
 	aCart _ Cart new.
 	aCashier _ Cashier new.
 	
-	book1Isbn _ 9789877250244.
-	book2Isbn _ 9788477511205.
-	book3Isbn  _ 9789871534388.
-	book4Isbn _ 9789870711544.
+	aBookIsbn _ 9788477511205.
 	ccn _ 12345.
-	cced _ 022050.
+	cced _ '022050'.
 	cco _ 'Marcela'.
 	
-	aCart addBook: book1Isbn quantity: 9000000.
-	aCart addBook: book2Isbn quantity: 9000000.
-	aCart addBook: book3Isbn quantity: 9000000.
-	aCart addBook: book4Isbn quantity: 9000000.
+	aCart addBook: aBookIsbn quantity: 1.
 
 	self 
         should: [ aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName: cco.]
@@ -612,10 +606,19 @@ signalPaymentCannotBeExecutedWithExpiredCreditCard
 	
 	self error: self class paymentCannotBeExecutedWithExpiredCreditCardErrorMessage.! !
 
-!MerchantProcessor methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:15:23'!
+!MerchantProcessor methodsFor: 'as yet unclassified' stamp: 'CZ 2/18/2021 01:23:22'!
+signalPaymentCannotBeExecutedWithTransactionAmountLargerThanTheLimit
+
+	
+	self error: self class paymentCannotBeExecutedWithTransactionAmountLargerThanTheLimitErrorMessage.! !
+
+!MerchantProcessor methodsFor: 'as yet unclassified' stamp: 'CZ 2/18/2021 01:28:01'!
 validateCreditCardExpirationDate: expirationDate
 
-	| todayDate todayMonth todayYear todayMonthAndYear |
+	| todayDate todayMonth todayYear todayMonthAndYear  |
+	
+	expirationDate size ~= 6 ifTrue:[self signalPaymentCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDate].
+	
 	
 	todayDate _ Date today.
 	todayMonth _ todayDate monthIndex asString.
@@ -623,7 +626,6 @@ validateCreditCardExpirationDate: expirationDate
 	
 	todayMonth size = 1 ifTrue:[	todayMonthAndYear _ '0',todayMonth,todayYear.] ifFalse:[	todayMonthAndYear _ todayMonth,todayYear].
 	
-	expirationDate size ~= 6 ifTrue:[self signalPaymentCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDate].
 	expirationDate < todayMonthAndYear ifTrue: [self signalPaymentCannotBeExecutedWithExpiredCreditCard].
 	! !
 
@@ -632,10 +634,10 @@ validateCreditCardOwnersName: ownersName
 
 	ownersName size > 30 ifTrue: [self signalPaymentCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharacters.].! !
 
-!MerchantProcessor methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:53:41'!
+!MerchantProcessor methodsFor: 'as yet unclassified' stamp: 'CZ 2/18/2021 01:24:05'!
 validateTransactionAmount: aTransactionAmount
 
-	(aTransactionAmount asIntegerAmount amount asString size) > 15 ifTrue: [self signalPaymentCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharacters.].
+	(aTransactionAmount asIntegerAmount amount asString size) > 15 ifTrue: [self signalPaymentCannotBeExecutedWithTransactionAmountLargerThanTheLimit].
 	
 	! !
 
@@ -679,11 +681,10 @@ catalog
 	^catalog.! !
 
 
-!Publisher methodsFor: 'initialization' stamp: 'JT 2/18/2021 00:39:22'!
+!Publisher methodsFor: 'initialization' stamp: 'CZ 2/18/2021 01:12:25'!
 initialize
 
-	catalog _ Dictionary with: 9789877250244->(1000.50*peso) with: 9789585118300->(999.99*peso) with: 9788408081548->(700.75*peso) with: 9789870711544->(1500.80*peso) with: 9789871534388->(9000000.00*peso) with: 9788477511205->(900000.60*peso).
-	"9788477511205->(1750.35*peso)".! !
+	catalog _ Dictionary with: 9789877250244->(1000.50*peso) with: 9789585118300->(999.99*peso) with: 9788408081548->(700.75*peso) with: 9789870711544->(1500.80*peso) with: 9789871534388->(2000.00*peso) with: 9788477511205->(1000000000000000.00*peso).! !
 
 
 !Publisher methodsFor: 'as yet unclassified' stamp: 'JT 2/16/2021 22:36:53'!
