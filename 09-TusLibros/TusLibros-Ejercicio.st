@@ -157,50 +157,42 @@ TestCase subclass: #CashierTest
 	poolDictionaries: ''
 	category: 'TusLibros-Ejercicio'!
 
-!CashierTest methodsFor: 'tests' stamp: 'JT 2/11/2021 21:35:30'!
-should: aBlockThatShouldFail raise: anExceptionType asserting: aVerificationBlock
-
-	[ aBlockThatShouldFail value.
-    	self fail ]
-        		on: anExceptionType 
-       		do: aVerificationBlock! !
-
-!CashierTest methodsFor: 'tests' stamp: 'CZ 2/18/2021 02:22:14'!
+!CashierTest methodsFor: 'tests' stamp: 'CZ 2/18/2021 03:38:59'!
 test01CheckOutCannotBeExecutedWithEmptyCart
 
-	| aCart cced ccn cco aCashier |
+	| aCart aCashier ccn cced cco |
 	
 	aCart _ Cart new.
 	aCashier _ Cashier new.
-
-	ccn _ 12345.
+	
+	ccn _ 5589043461258803.
 	cced _ '012025'.
-	cco _ 'Marcela'.
+	cco _ 'Mary'.
 	
 	self 
-        should: [ aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName:cco. ]
-        raise: Error
-        asserting: [ :anError |
-		self assert: Cashier checkOutCannotBeExecutedWithEmptyCartErrorMessage equals: anError messageText].
+       		should: [ aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName:cco. ]
+       		raise: Error
+       		asserting: [ :anError |
+			self assert: Cashier checkOutCannotBeExecutedWithEmptyCartErrorMessage equals: anError messageText].
 	
 	
 
 	! !
 
-!CashierTest methodsFor: 'tests' stamp: 'CZ 2/17/2021 19:33:18'!
+!CashierTest methodsFor: 'tests' stamp: 'CZ 2/18/2021 03:40:21'!
 test02CheckOutWithOneBookCanBeExecuted
 
-	| aCart aBook1Isbn cced ccn cco aCashier |
+	| aCart aCashier aBookIsbn ccn cced cco |
 	
 	aCart _ Cart new.
 	aCashier _ Cashier new.
 	
-	aBook1Isbn _ 9789877250244.
-	ccn _ 12345.
+	aBookIsbn _ 9789877250244.
+	ccn _ 5589043461258903.
 	cced _ '022023'.
-	cco _ 'Marcela'.
+	cco _ 'Sarah'.
 	
-	aCart addBook: aBook1Isbn quantity: 1.
+	aCart addBook: aBookIsbn quantity: 1.
 	aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName: cco.
 	
 	self assert: aCart isEmpty.
@@ -208,19 +200,19 @@ test02CheckOutWithOneBookCanBeExecuted
 	
 	! !
 
-!CashierTest methodsFor: 'tests' stamp: 'CZ 2/17/2021 19:33:23'!
+!CashierTest methodsFor: 'tests' stamp: 'CZ 2/18/2021 03:40:35'!
 test03CheckOutWithMultipleBooksCanBeExecuted
 
-	| aCart cced ccn cco aCashier book1Isbn book2Isbn |
+	| aCart aCashier book1Isbn book2Isbn ccn cced cco |
 	
 	aCart _ Cart new.
 	aCashier _ Cashier new.
 	
 	book1Isbn _ 9789877250244.
 	book2Isbn _ 9789585118300.
-	ccn _ 12345.
+	ccn _ 5589043471258803.
 	cced _ '022023'.
-	cco _ 'Marcela'.
+	cco _ 'James'.
 	
 	aCart addBook: book1Isbn quantity: 3.
 	aCart addBook: book2Isbn quantity: 2.
@@ -231,19 +223,19 @@ test03CheckOutWithMultipleBooksCanBeExecuted
 	
 	! !
 
-!CashierTest methodsFor: 'tests' stamp: 'CZ 2/17/2021 19:15:51'!
+!CashierTest methodsFor: 'tests' stamp: 'CZ 2/18/2021 03:40:45'!
 test04CashierCanIssueTheBillAfterCheckOut
 
-	| aCart cced ccn cco aCashier book1Isbn book2Isbn expectedBill |
+	| aCart aCashier book1Isbn book2Isbn ccn cced cco expectedBill |
 	
 	aCart _ Cart new.
 	aCashier _ Cashier new.
 	
 	book1Isbn _ 9789877250244.
 	book2Isbn _ 9789585118300.
-	ccn _ 12345.
+	ccn _ 5589043461258803.
 	cced _ '022023'.
-	cco _ 'Marcela'.
+	cco _ 'Mary'.
 	
 	aCart addBook: book1Isbn quantity: 1.
 	aCart addBook: book2Isbn quantity: 2.
@@ -255,108 +247,108 @@ test04CashierCanIssueTheBillAfterCheckOut
 	
 	! !
 
-!CashierTest methodsFor: 'tests' stamp: 'CZ 2/18/2021 02:24:59'!
+!CashierTest methodsFor: 'tests' stamp: 'CZ 2/18/2021 03:41:11'!
 test05PaymentCannotBeExecutedWithExpiredCreditCard
 
-	| aCart cced ccn cco aCashier book1Isbn book2Isbn |
+	| aCart aCashier book1Isbn book2Isbn ccn cced cco |
 	
 	aCart _ Cart new.
 	aCashier _ Cashier new.
 	
 	book1Isbn _ 9789877250244.
 	book2Isbn _ 9789585118300.
-	ccn _ 12345.
+	ccn _ 5589443461258803.
 	cced _ '022000'.
-	cco _ 'Marcela'.
+	cco _ 'Megan'.
 	
 	aCart addBook: book1Isbn quantity: 1.
 	aCart addBook: book2Isbn quantity: 2.
 	
 	self 
-        should: [ aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName:cco. ]
-        raise: Error
-        asserting: [ :anError |
-		self assert: MerchantProcessor paymentCannotBeExecutedWithExpiredCreditCardErrorMessage equals: anError messageText].
+       		should: [ aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName:cco. ]
+       		raise: Error
+       		asserting: [ :anError |
+			self assert: MerchantProcessor paymentCannotBeExecutedWithExpiredCreditCardErrorMessage equals: anError messageText].
 	
 	! !
 
-!CashierTest methodsFor: 'tests' stamp: 'CZ 2/18/2021 02:27:14'!
+!CashierTest methodsFor: 'tests' stamp: 'CZ 2/18/2021 03:41:18'!
 test06PaymentCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDate
 	
-	| aCart cced ccn cco aCashier book1Isbn book2Isbn |
+	| aCart aCashier book1Isbn book2Isbn ccn cced cco |
 	
 	aCart _ Cart new.
 	aCashier _ Cashier new.
 	
 	book1Isbn _ 9789877250244.
 	book2Isbn _ 9789585118300.
-	ccn _ 12345.
+	ccn _ 5589043461258803.
 	cced _ '0220'.
-	cco _ 'Marcela'.
+	cco _ 'Mary'.
 	
 	aCart addBook: book1Isbn quantity: 1.
 	aCart addBook: book2Isbn quantity: 2.
 	
 	self 
-        should: [ aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName:cco. ]
-        raise: Error
-        asserting: [ :anError |
-		self assert: MerchantProcessor paymentCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDateErrorMessage equals: anError messageText].
+       		should: [ aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName:cco. ]
+       		raise: Error
+       		asserting: [ :anError |
+			self assert: MerchantProcessor paymentCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDateErrorMessage equals: anError messageText].
 	! !
 
-!CashierTest methodsFor: 'tests' stamp: 'CZ 2/18/2021 02:27:21'!
+!CashierTest methodsFor: 'tests' stamp: 'CZ 2/18/2021 03:44:45'!
 test07PaymentCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharacters
 	
-	| aCart cced ccn cco aCashier book1Isbn book2Isbn |
+	| aCart aCashier book1Isbn book2Isbn ccn cced cco |
 	
 	aCart _ Cart new.
 	aCashier _ Cashier new.
 	
 	book1Isbn _ 9789877250244.
 	book2Isbn _ 9789585118300.
-	ccn _ 12345.
+	ccn _ 5589043461258803.
 	cced _ '102050'.
-	cco _ 'un nombre cualquiera de la tarjeta de credito'.
+	cco _ 'Particularly long credt card owner''s name'.
 	
 	aCart addBook: book1Isbn quantity: 1.
 	aCart addBook: book2Isbn quantity: 2.
 	
 	self 
-        should: [ aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName:cco. ]
-        raise: Error
-        asserting: [ :anError |
-		self assert: MerchantProcessor paymentCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharactersErrorMessage equals: anError messageText].
+       		should: [ aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName:cco. ]
+        		raise: Error
+        		asserting: [ :anError |
+			self assert: MerchantProcessor paymentCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharactersErrorMessage equals: anError messageText].
 	
 	
 	! !
 
-!CashierTest methodsFor: 'tests' stamp: 'CZ 2/18/2021 02:27:27'!
+!CashierTest methodsFor: 'tests' stamp: 'CZ 2/18/2021 03:41:52'!
 test08PaymentCannotBeExecutedWithTransactionAmountLargerThanTheLimit
 	"El MP devuelve error, amount no mayor a 15 digitos"
-	| aCart cced ccn cco aCashier aBookIsbn |
+	| aCart aCashier aBookIsbn ccn cced cco |
 	
 	aCart _ Cart new.
 	aCashier _ Cashier new.
 	
 	aBookIsbn _ 9788477511205.
-	ccn _ 12345.
+	ccn _ 5589043461258803.
 	cced _ '022050'.
-	cco _ 'Marcela'.
+	cco _ 'Mary'.
 	
 	aCart addBook: aBookIsbn quantity: 1.
 
 	self 
-        should: [ aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName: cco.]
-        raise: Error
-        asserting: [ :anError |
-		self assert: MerchantProcessor paymentCannotBeExecutedWithTransactionAmountLargerThanTheLimitErrorMessage equals: anError messageText].
+       		should: [ aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName: cco.]
+       		raise: Error
+       		asserting: [ :anError |
+			self assert: MerchantProcessor paymentCannotBeExecutedWithTransactionAmountLargerThanTheLimitErrorMessage equals: anError messageText].
 	
 	! !
 
-!CashierTest methodsFor: 'tests' stamp: 'CZ 2/18/2021 02:27:32'!
+!CashierTest methodsFor: 'tests' stamp: 'CZ 2/18/2021 03:43:15'!
 test09CashierKnowsTheHistoryOfSalesWhenMultipleCheckOutsAreExecuted
 
-	| cart1 cart2 cced1 cced2 ccn1 ccn2 cco1 cco2 aCashier book1Isbn book2Isbn book3Isbn book4Isbn expectedTotalSales |
+	| cart1 cart2 aCashier book1Isbn book2Isbn book3Isbn book4Isbn ccn1 cced1 cco1 ccn2 cced2 cco2 expectedTotalSales |
 	
 	cart1 _ Cart new.
 	cart2 _ Cart new.
@@ -367,12 +359,12 @@ test09CashierKnowsTheHistoryOfSalesWhenMultipleCheckOutsAreExecuted
 	book3Isbn  _ 9788408081548.
 	book4Isbn _ 9789870711544.
 	
-	ccn1 _ 12345.
+	ccn1 _ 5589443461258803.
 	cced1 _ '032030'.
-	cco1 _ 'Marcela'.
-	ccn2 _ 67890.
+	cco1 _ 'Megan'.
+	ccn2 _ 4852355390716725.
 	cced2 _ '102025'.
-	cco2 _ 'Pedro'.
+	cco2 _ 'Nathan'.
 	
 	cart1 addBook: book1Isbn quantity: 1.
 	cart1 addBook: book2Isbn quantity: 2.
@@ -387,18 +379,27 @@ test09CashierKnowsTheHistoryOfSalesWhenMultipleCheckOutsAreExecuted
 	self assert: expectedTotalSales equals: aCashier totalSales.
 	! !
 
+
+!CashierTest methodsFor: 'assertions' stamp: 'JT 2/11/2021 21:35:30'!
+should: aBlockThatShouldFail raise: anExceptionType asserting: aVerificationBlock
+
+	[ aBlockThatShouldFail value.
+    	self fail ]
+        		on: anExceptionType 
+       		do: aVerificationBlock! !
+
 
 !classDefinition: #Cart category: 'TusLibros-Ejercicio'!
 Object subclass: #Cart
-	instanceVariableNames: 'books'
+	instanceVariableNames: 'booksStored'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros-Ejercicio'!
 
-!Cart methodsFor: 'initialization' stamp: 'CZ 2/8/2021 21:35:25'!
+!Cart methodsFor: 'initialization' stamp: 'CZ 2/18/2021 03:12:41'!
 initialize
 
-	books _ OrderedCollection new.! !
+	booksStored _ OrderedCollection new.! !
 
 
 !Cart methodsFor: 'signal error' stamp: 'CZ 2/11/2021 10:08:37'!
@@ -442,15 +443,15 @@ addBook: bookIsbn quantity: numberOfCopies
 	numberOfCopies timesRepeat: [self booksStored add: bookIsbn].
 	! !
 
-!Cart methodsFor: 'cart management' stamp: 'JT 2/11/2021 21:29:12'!
+!Cart methodsFor: 'cart management' stamp: 'CZ 2/18/2021 03:12:41'!
 booksStored
 	
-	^books.! !
+	^booksStored.! !
 
-!Cart methodsFor: 'cart management' stamp: 'JT 2/11/2021 21:19:37'!
+!Cart methodsFor: 'cart management' stamp: 'CZ 2/18/2021 03:12:41'!
 removeBooks
 	
-	books removeAll.! !
+	booksStored removeAll.! !
 
 
 !Cart methodsFor: 'assertions' stamp: 'JT 2/11/2021 20:59:31'!
@@ -490,12 +491,13 @@ initialize
 	totalSales _ Dictionary new.! !
 
 
-!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:04:39'!
-assertCanExecuteCheckOutOf: aCartToCheckOut
+!Cashier methodsFor: 'signal error' stamp: 'JT 2/11/2021 21:37:49'!
+signalCheckOutCannotBeExecutedWithEmptyCart
 	
-	aCartToCheckOut isEmpty ifTrue: [self signalCheckOutCannotBeExecutedWithEmptyCart.].! !
+	self error: self class checkOutCannotBeExecutedWithEmptyCartErrorMessage .! !
 
-!Cashier methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 17:38:55'!
+
+!Cashier methodsFor: 'cashier management' stamp: 'CZ 2/17/2021 17:38:55'!
 calculateTransactionAmount: aCart
 
 	| catalog total |
@@ -507,7 +509,7 @@ calculateTransactionAmount: aCart
 	
 	transactionAmount _ total.! !
 
-!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:20:34'!
+!Cashier methodsFor: 'cashier management' stamp: 'JT 2/18/2021 00:20:34'!
 checkOutCart: aCart withCreditCardNumber: creditCardNumber andExpirationDate: expirationDate andOwnersName: ownersName
 	
 	| aMerchantProcessor |
@@ -526,7 +528,7 @@ checkOutCart: aCart withCreditCardNumber: creditCardNumber andExpirationDate: ex
 	
 	aCart removeBooks.! !
 
-!Cashier methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 17:40:47'!
+!Cashier methodsFor: 'cashier management' stamp: 'CZ 2/17/2021 17:40:47'!
 issueBill: aCart
 
 	| catalog finalBill |
@@ -538,30 +540,31 @@ issueBill: aCart
 
 	issuedBill _ finalBill.! !
 
-!Cashier methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 17:40:46'!
+!Cashier methodsFor: 'cashier management' stamp: 'CZ 2/17/2021 17:40:46'!
 issuedBill
 	
 	^issuedBill.! !
 
-!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/11/2021 21:37:49'!
-signalCheckOutCannotBeExecutedWithEmptyCart
-	
-	self error: self class checkOutCannotBeExecutedWithEmptyCartErrorMessage .! !
-
-!Cashier methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 18:57:37'!
+!Cashier methodsFor: 'cashier management' stamp: 'CZ 2/17/2021 18:57:37'!
 totalSales
 
 	^totalSales.! !
 
-!Cashier methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 17:39:57'!
+!Cashier methodsFor: 'cashier management' stamp: 'CZ 2/17/2021 17:39:57'!
 transactionAmount
 	
 	^transactionAmount.! !
 
-!Cashier methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 18:43:13'!
+!Cashier methodsFor: 'cashier management' stamp: 'CZ 2/17/2021 18:43:13'!
 updateTotalSalesWithCart: aCart andTransactionAmount: aTransactionAmount
 
 	totalSales add: aCart -> aTransactionAmount.! !
+
+
+!Cashier methodsFor: 'assertions' stamp: 'CZ 2/18/2021 02:40:52'!
+assertCanExecuteCheckOutOf: aCartToCheckOut
+	
+	aCartToCheckOut isEmpty ifTrue: [self signalCheckOutCannotBeExecutedWithEmptyCart].! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -582,7 +585,7 @@ Object subclass: #MerchantProcessor
 	poolDictionaries: ''
 	category: 'TusLibros-Ejercicio'!
 
-!MerchantProcessor methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:42:05'!
+!MerchantProcessor methodsFor: 'assertions' stamp: 'JT 2/18/2021 00:42:05'!
 assertCanExecutePaymentWithCreditCardExpirationDate: expirationDate andOwnersName: ownersName withTransactionAmount: aTransactionAmount
 	
 	self validateCreditCardExpirationDate: expirationDate.
@@ -591,27 +594,8 @@ assertCanExecutePaymentWithCreditCardExpirationDate: expirationDate andOwnersNam
 	
 	self validateTransactionAmount: aTransactionAmount.! !
 
-!MerchantProcessor methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:08:15'!
-signalPaymentCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharacters
-	
-	self error: self class paymentCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharactersErrorMessage.! !
 
-!MerchantProcessor methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:08:44'!
-signalPaymentCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDate
-	
-	self error: self class paymentCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDateErrorMessage.! !
-
-!MerchantProcessor methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:09:14'!
-signalPaymentCannotBeExecutedWithExpiredCreditCard
-	
-	self error: self class paymentCannotBeExecutedWithExpiredCreditCardErrorMessage.! !
-
-!MerchantProcessor methodsFor: 'as yet unclassified' stamp: 'CZ 2/18/2021 01:32:36'!
-signalPaymentCannotBeExecutedWithTransactionAmountLargerThanTheLimit
-
-	self error: self class paymentCannotBeExecutedWithTransactionAmountLargerThanTheLimitErrorMessage.! !
-
-!MerchantProcessor methodsFor: 'as yet unclassified' stamp: 'CZ 2/18/2021 02:20:28'!
+!MerchantProcessor methodsFor: 'validations' stamp: 'CZ 2/18/2021 02:20:28'!
 validateCreditCardExpirationDate: expirationDate
 
 	|  expirationMonth expirationYear |
@@ -639,17 +623,38 @@ validateCreditCardExpirationDate: expirationDate
 	"
 	! !
 
-!MerchantProcessor methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:15:54'!
+!MerchantProcessor methodsFor: 'validations' stamp: 'JT 2/18/2021 00:15:54'!
 validateCreditCardOwnersName: ownersName
 
 	ownersName size > 30 ifTrue: [self signalPaymentCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharacters.].! !
 
-!MerchantProcessor methodsFor: 'as yet unclassified' stamp: 'CZ 2/18/2021 01:24:05'!
+!MerchantProcessor methodsFor: 'validations' stamp: 'CZ 2/18/2021 01:24:05'!
 validateTransactionAmount: aTransactionAmount
 
 	(aTransactionAmount asIntegerAmount amount asString size) > 15 ifTrue: [self signalPaymentCannotBeExecutedWithTransactionAmountLargerThanTheLimit].
 	
 	! !
+
+
+!MerchantProcessor methodsFor: 'signal error' stamp: 'JT 2/18/2021 00:08:15'!
+signalPaymentCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharacters
+	
+	self error: self class paymentCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharactersErrorMessage.! !
+
+!MerchantProcessor methodsFor: 'signal error' stamp: 'JT 2/18/2021 00:08:44'!
+signalPaymentCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDate
+	
+	self error: self class paymentCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDateErrorMessage.! !
+
+!MerchantProcessor methodsFor: 'signal error' stamp: 'JT 2/18/2021 00:09:14'!
+signalPaymentCannotBeExecutedWithExpiredCreditCard
+	
+	self error: self class paymentCannotBeExecutedWithExpiredCreditCardErrorMessage.! !
+
+!MerchantProcessor methodsFor: 'signal error' stamp: 'CZ 2/18/2021 01:32:36'!
+signalPaymentCannotBeExecutedWithTransactionAmountLargerThanTheLimit
+
+	self error: self class paymentCannotBeExecutedWithTransactionAmountLargerThanTheLimitErrorMessage.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -697,7 +702,7 @@ initialize
 	catalog _ Dictionary with: 9789877250244->(1000.50*peso) with: 9789585118300->(999.99*peso) with: 9788408081548->(700.75*peso) with: 9789870711544->(1500.80*peso) with: 9789871534388->(2000.00*peso) with: 9788477511205->(1000000000000000.00*peso).! !
 
 
-!Publisher methodsFor: 'as yet unclassified' stamp: 'JT 2/16/2021 22:36:53'!
+!Publisher methodsFor: 'testing' stamp: 'JT 2/16/2021 22:36:53'!
 hasBookInCatalog: bookToVerify
 	
 	^self catalog includesKey: bookToVerify.! !
