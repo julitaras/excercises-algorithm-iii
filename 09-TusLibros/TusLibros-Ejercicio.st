@@ -364,28 +364,32 @@ test08CashierKnowsTheHistoryOfSalesWhenMultipleCheckOutsAreExecuted
 	self assert: expectedTotalSales equals: aCashier totalSales.
 	! !
 
-!CashierTest methodsFor: 'tests' stamp: 'JT 2/18/2021 00:14:42'!
-_test10
+!CashierTest methodsFor: 'tests' stamp: 'JT 2/18/2021 00:40:13'!
+test09
 	"El MP devuelve error, amount no mayor a 15 digitos"
-	| aCart cced ccn cco aCashier book1Isbn book2Isbn |
+	| aCart cced ccn cco aCashier book1Isbn book2Isbn book3Isbn book4Isbn |
 	
 	aCart _ Cart new.
 	aCashier _ Cashier new.
 	
 	book1Isbn _ 9789877250244.
-	book2Isbn _ 9789585118300.
+	book2Isbn _ 9788477511205.
+	book3Isbn  _ 9789871534388.
+	book4Isbn _ 9789870711544.
 	ccn _ 12345.
 	cced _ 022050.
 	cco _ 'Marcela'.
 	
-	aCart addBook: book1Isbn quantity: 1.
-	aCart addBook: book2Isbn quantity: 2.
+	aCart addBook: book1Isbn quantity: 900000.
+	aCart addBook: book2Isbn quantity: 900000.
+	aCart addBook: book3Isbn quantity: 900000.
+	aCart addBook: book4Isbn quantity: 900000.
 
 	self 
         should: [ aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName: cco.]
         raise: Error
         asserting: [ :anError |
-		self assert: Cashier checkOutCannotBeExecutedDueToMerchantProcessorConnectionFailureErrorMessage equals: anError messageText].
+		self assert: MerchantProcessor paymentCannotBeExecutedWithTransactionAmountLargerThanTheLimitErrorMessage equals: anError messageText].
 	
 	! !
 
@@ -509,7 +513,7 @@ calculateTransactionAmount: aCart
 	
 	transactionAmount _ total.! !
 
-!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:06:37'!
+!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:20:34'!
 checkOutCart: aCart withCreditCardNumber: creditCardNumber andExpirationDate: expirationDate andOwnersName: ownersName
 	
 	| aMerchantProcessor |
@@ -520,9 +524,7 @@ checkOutCart: aCart withCreditCardNumber: creditCardNumber andExpirationDate: ex
 	
 	aMerchantProcessor _ MerchantProcessor new.
 	
-	aMerchantProcessor assertCanExecutePaymentWithCreditCardExpirationDate: expirationDate andOwnersName: ownersName.
-	
-	"self processPayment: totalPaid."
+	aMerchantProcessor assertCanExecutePaymentWithCreditCardExpirationDate: expirationDate andOwnersName: ownersName withTransactionAmount: self transactionAmount.
 	
 	self issueBill: aCart.
 	
@@ -586,12 +588,14 @@ Object subclass: #MerchantProcessor
 	poolDictionaries: ''
 	category: 'TusLibros-Ejercicio'!
 
-!MerchantProcessor methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:08:00'!
-assertCanExecutePaymentWithCreditCardExpirationDate: expirationDate andOwnersName: ownersName
+!MerchantProcessor methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:42:05'!
+assertCanExecutePaymentWithCreditCardExpirationDate: expirationDate andOwnersName: ownersName withTransactionAmount: aTransactionAmount
 	
 	self validateCreditCardExpirationDate: expirationDate.
 	
-	self validateCreditCardOwnersName: ownersName.! !
+	self validateCreditCardOwnersName: ownersName.
+	
+	self validateTransactionAmount: aTransactionAmount.! !
 
 !MerchantProcessor methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:08:15'!
 signalPaymentCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharacters
@@ -627,6 +631,13 @@ validateCreditCardExpirationDate: expirationDate
 validateCreditCardOwnersName: ownersName
 
 	ownersName size > 30 ifTrue: [self signalPaymentCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharacters.].! !
+
+!MerchantProcessor methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:53:41'!
+validateTransactionAmount: aTransactionAmount
+
+	(aTransactionAmount asIntegerAmount amount asString size) > 15 ifTrue: [self signalPaymentCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharacters.].
+	
+	! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -668,10 +679,11 @@ catalog
 	^catalog.! !
 
 
-!Publisher methodsFor: 'initialization' stamp: 'CZ 2/17/2021 19:00:24'!
+!Publisher methodsFor: 'initialization' stamp: 'JT 2/18/2021 00:39:22'!
 initialize
 
-	catalog _ Dictionary with: 9789877250244->(1000.50*peso) with: 9789585118300->(999.99*peso) with: 9788408081548->(700.75*peso) with: 9789870711544->(1500.80*peso) with: 9789871534388->(2000.00*peso) with: 9788477511205->(1750.35*peso).! !
+	catalog _ Dictionary with: 9789877250244->(1000.50*peso) with: 9789585118300->(999.99*peso) with: 9788408081548->(700.75*peso) with: 9789870711544->(1500.80*peso) with: 9789871534388->(9000000.00*peso) with: 9788477511205->(900000.60*peso).
+	"9788477511205->(1750.35*peso)".! !
 
 
 !Publisher methodsFor: 'as yet unclassified' stamp: 'JT 2/16/2021 22:36:53'!
