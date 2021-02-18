@@ -157,20 +157,21 @@ TestCase subclass: #CashierTest
 	poolDictionaries: ''
 	category: 'TusLibros-Ejercicio'!
 
-!CashierTest methodsFor: 'tests' stamp: 'CZ 2/18/2021 03:38:59'!
+!CashierTest methodsFor: 'tests' stamp: 'JT 2/18/2021 17:09:51'!
 test01CheckOutCannotBeExecutedWithEmptyCart
 
-	| aCart aCashier ccn cced cco |
+	| aCart aCashier ccn cced cco aMerchantProcessorMock |
 	
 	aCart _ Cart new.
 	aCashier _ Cashier new.
+	aMerchantProcessorMock _ MerchantProcessorMock new.
 	
 	ccn _ 5589043461258803.
 	cced _ '012025'.
 	cco _ 'Mary'.
 	
 	self 
-       		should: [ aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName:cco. ]
+       		should: [ aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName:cco through: aMerchantProcessorMock]
        		raise: Error
        		asserting: [ :anError |
 			self assert: Cashier checkOutCannotBeExecutedWithEmptyCartErrorMessage equals: anError messageText].
@@ -179,13 +180,14 @@ test01CheckOutCannotBeExecutedWithEmptyCart
 
 	! !
 
-!CashierTest methodsFor: 'tests' stamp: 'CZ 2/18/2021 03:40:21'!
+!CashierTest methodsFor: 'tests' stamp: 'JT 2/18/2021 17:09:44'!
 test02CheckOutWithOneBookCanBeExecuted
 
-	| aCart aCashier aBookIsbn ccn cced cco |
+	| aCart aCashier aBookIsbn ccn cced cco aMerchantProcessorMock |
 	
 	aCart _ Cart new.
 	aCashier _ Cashier new.
+	aMerchantProcessorMock _ MerchantProcessorMock new.
 	
 	aBookIsbn _ 9789877250244.
 	ccn _ 5589043461258903.
@@ -193,20 +195,21 @@ test02CheckOutWithOneBookCanBeExecuted
 	cco _ 'Sarah'.
 	
 	aCart addBook: aBookIsbn quantity: 1.
-	aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName: cco.
+	aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName: cco through: aMerchantProcessorMock.
 	
 	self assert: aCart isEmpty.
 	self assert: 1000.5*peso equals: aCashier transactionAmount.
 	
 	! !
 
-!CashierTest methodsFor: 'tests' stamp: 'CZ 2/18/2021 03:40:35'!
+!CashierTest methodsFor: 'tests' stamp: 'JT 2/18/2021 17:10:20'!
 test03CheckOutWithMultipleBooksCanBeExecuted
 
-	| aCart aCashier book1Isbn book2Isbn ccn cced cco |
+	| aCart aCashier book1Isbn book2Isbn ccn cced cco aMerchantProcessorMock |
 	
 	aCart _ Cart new.
 	aCashier _ Cashier new.
+	aMerchantProcessorMock _ MerchantProcessorMock new.
 	
 	book1Isbn _ 9789877250244.
 	book2Isbn _ 9789585118300.
@@ -216,20 +219,21 @@ test03CheckOutWithMultipleBooksCanBeExecuted
 	
 	aCart addBook: book1Isbn quantity: 3.
 	aCart addBook: book2Isbn quantity: 2.
-	aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName: cco.
+	aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName: cco through: aMerchantProcessorMock.
 	
 	self assert: aCart isEmpty.
 	self assert: 5001.48*peso equals: aCashier transactionAmount.
 	
 	! !
 
-!CashierTest methodsFor: 'tests' stamp: 'CZ 2/18/2021 03:40:45'!
+!CashierTest methodsFor: 'tests' stamp: 'JT 2/18/2021 17:10:48'!
 test04CashierCanIssueTheBillAfterCheckOut
 
-	| aCart aCashier book1Isbn book2Isbn ccn cced cco expectedBill |
+	| aCart aCashier book1Isbn book2Isbn ccn cced cco expectedBill aMerchantProcessorMock |
 	
 	aCart _ Cart new.
 	aCashier _ Cashier new.
+	aMerchantProcessorMock _ MerchantProcessorMock new.
 	
 	book1Isbn _ 9789877250244.
 	book2Isbn _ 9789585118300.
@@ -239,7 +243,7 @@ test04CashierCanIssueTheBillAfterCheckOut
 	
 	aCart addBook: book1Isbn quantity: 1.
 	aCart addBook: book2Isbn quantity: 2.
-	aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName: cco.
+	aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName: cco through: aMerchantProcessorMock.
 	
 	expectedBill _ Dictionary with: 9789877250244->(1000.5*peso) with: 9789585118300->(999.99*peso) with: 9789585118300->(999.99*peso).
 	
@@ -247,13 +251,14 @@ test04CashierCanIssueTheBillAfterCheckOut
 	
 	! !
 
-!CashierTest methodsFor: 'tests' stamp: 'CZ 2/18/2021 03:41:11'!
+!CashierTest methodsFor: 'tests' stamp: 'JT 2/18/2021 17:11:15'!
 test05PaymentCannotBeExecutedWithExpiredCreditCard
 
-	| aCart aCashier book1Isbn book2Isbn ccn cced cco |
+	| aCart aCashier book1Isbn book2Isbn ccn cced cco aMerchantProcessorMock |
 	
 	aCart _ Cart new.
 	aCashier _ Cashier new.
+	aMerchantProcessorMock _ MerchantProcessorMock new.
 	
 	book1Isbn _ 9789877250244.
 	book2Isbn _ 9789585118300.
@@ -265,20 +270,21 @@ test05PaymentCannotBeExecutedWithExpiredCreditCard
 	aCart addBook: book2Isbn quantity: 2.
 	
 	self 
-       		should: [ aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName:cco. ]
+       		should: [ aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName: cco through: aMerchantProcessorMock. ]
        		raise: Error
        		asserting: [ :anError |
-			self assert: MerchantProcessor paymentCannotBeExecutedWithExpiredCreditCardErrorMessage equals: anError messageText].
+			self assert: MerchantProcessorMock paymentCannotBeExecutedWithExpiredCreditCardErrorMessage equals: anError messageText].
 	
 	! !
 
-!CashierTest methodsFor: 'tests' stamp: 'CZ 2/18/2021 03:41:18'!
+!CashierTest methodsFor: 'tests' stamp: 'JT 2/18/2021 17:11:39'!
 test06PaymentCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDate
 	
-	| aCart aCashier book1Isbn book2Isbn ccn cced cco |
+	| aCart aCashier book1Isbn book2Isbn ccn cced cco aMerchantProcessorMock |
 	
 	aCart _ Cart new.
 	aCashier _ Cashier new.
+	aMerchantProcessorMock _ MerchantProcessorMock new.
 	
 	book1Isbn _ 9789877250244.
 	book2Isbn _ 9789585118300.
@@ -290,20 +296,21 @@ test06PaymentCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDate
 	aCart addBook: book2Isbn quantity: 2.
 	
 	self 
-       		should: [ aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName:cco. ]
+       		should: [ aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName: cco through: aMerchantProcessorMock. ]
        		raise: Error
        		asserting: [ :anError |
-			self assert: MerchantProcessor paymentCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDateErrorMessage equals: anError messageText].
+			self assert: MerchantProcessorMock paymentCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDateErrorMessage equals: anError messageText].
 	! !
 
-!CashierTest methodsFor: 'tests' stamp: 'JT 2/18/2021 16:56:19'!
+!CashierTest methodsFor: 'tests' stamp: 'JT 2/18/2021 17:12:05'!
 test07CashierKnowsTheHistoryOfSalesWhenMultipleCheckOutsAreExecuted
 
-	| cart1 cart2 aCashier book1Isbn book2Isbn book3Isbn book4Isbn ccn1 cced1 cco1 ccn2 cced2 cco2 expectedTotalSales |
+	| cart1 cart2 aCashier book1Isbn book2Isbn book3Isbn book4Isbn ccn1 cced1 cco1 ccn2 cced2 cco2 expectedTotalSales aMerchantProcessorMock |
 	
 	cart1 _ Cart new.
 	cart2 _ Cart new.
 	aCashier _ Cashier new.
+	aMerchantProcessorMock _ MerchantProcessorMock new.
 	
 	book1Isbn _ 9789877250244.
 	book2Isbn _ 9789585118300.
@@ -322,8 +329,8 @@ test07CashierKnowsTheHistoryOfSalesWhenMultipleCheckOutsAreExecuted
 	cart2 addBook: book3Isbn quantity: 2.
 	cart2 addBook: book4Isbn quantity: 1.
 	
-	aCashier checkOutCart: cart1 withCreditCardNumber: ccn1 andExpirationDate: cced1 andOwnersName: cco1.
-	aCashier checkOutCart: cart2 withCreditCardNumber: ccn2 andExpirationDate: cced2 andOwnersName: cco2.
+	aCashier checkOutCart: cart1 withCreditCardNumber: ccn1 andExpirationDate: cced1 andOwnersName: cco1 through: aMerchantProcessorMock.
+	aCashier checkOutCart: cart2 withCreditCardNumber: ccn2 andExpirationDate: cced2 andOwnersName: cco2 through: aMerchantProcessorMock..
 	
 	expectedTotalSales _ Dictionary with: cart1 -> (3000.48*peso) with: cart2 -> (2902.30*peso).
 	
@@ -460,18 +467,14 @@ calculateTransactionAmount: aCart
 	
 	transactionAmount _ total.! !
 
-!Cashier methodsFor: 'cashier management' stamp: 'JT 2/18/2021 16:56:48'!
-checkOutCart: aCart withCreditCardNumber: creditCardNumber andExpirationDate: expirationDate andOwnersName: ownersName
-	
-	| aMerchantProcessor |
+!Cashier methodsFor: 'cashier management' stamp: 'JT 2/18/2021 17:06:33'!
+checkOutCart: aCart withCreditCardNumber: creditCardNumber andExpirationDate: expirationDate andOwnersName: ownersName through: aMerchantProcessorMock
 	
 	self calculateTransactionAmount: aCart. 
 	
 	self assertCanExecuteCheckOutOf: aCart.
 	
-	aMerchantProcessor _ MerchantProcessor new.
-	
-	aMerchantProcessor assertCanExecutePaymentWithCreditCardExpirationDate: expirationDate .
+	aMerchantProcessorMock assertCanExecutePaymentWithCreditCardExpirationDate: expirationDate.
 	
 	self issueBill: aCart.
 	
@@ -529,21 +532,21 @@ checkOutCannotBeExecutedWithEmptyCartErrorMessage
 	^'Check out cannot be executed with empty cart'! !
 
 
-!classDefinition: #MerchantProcessor category: 'TusLibros-Ejercicio'!
-Object subclass: #MerchantProcessor
+!classDefinition: #MerchantProcessorMock category: 'TusLibros-Ejercicio'!
+Object subclass: #MerchantProcessorMock
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros-Ejercicio'!
 
-!MerchantProcessor methodsFor: 'assertions - private' stamp: 'JT 2/18/2021 16:56:48'!
+!MerchantProcessorMock methodsFor: 'assertions - private' stamp: 'JT 2/18/2021 16:56:48'!
 assertCanExecutePaymentWithCreditCardExpirationDate: expirationDate  
 	
 	self validateCreditCardExpirationDate: expirationDate.
 	! !
 
 
-!MerchantProcessor methodsFor: 'validations - private' stamp: 'CZ 2/18/2021 10:16:20'!
+!MerchantProcessorMock methodsFor: 'validations - private' stamp: 'CZ 2/18/2021 10:16:20'!
 validateCreditCardExpirationDate: expirationDate
 
 	|  expirationMonth expirationYear expirationDate2 |
@@ -557,28 +560,28 @@ validateCreditCardExpirationDate: expirationDate
 	expirationDate2 < FixedGregorianDate today ifTrue:[self signalPaymentCannotBeExecutedWithExpiredCreditCard].! !
 
 
-!MerchantProcessor methodsFor: 'signal error' stamp: 'JT 2/18/2021 00:08:44'!
+!MerchantProcessorMock methodsFor: 'signal error' stamp: 'JT 2/18/2021 00:08:44'!
 signalPaymentCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDate
 	
 	self error: self class paymentCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDateErrorMessage.! !
 
-!MerchantProcessor methodsFor: 'signal error' stamp: 'JT 2/18/2021 00:09:14'!
+!MerchantProcessorMock methodsFor: 'signal error' stamp: 'JT 2/18/2021 00:09:14'!
 signalPaymentCannotBeExecutedWithExpiredCreditCard
 	
 	self error: self class paymentCannotBeExecutedWithExpiredCreditCardErrorMessage.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MerchantProcessor class' category: 'TusLibros-Ejercicio'!
-MerchantProcessor class
+!classDefinition: 'MerchantProcessorMock class' category: 'TusLibros-Ejercicio'!
+MerchantProcessorMock class
 	instanceVariableNames: ''!
 
-!MerchantProcessor class methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:10:47'!
+!MerchantProcessorMock class methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:10:47'!
 paymentCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDateErrorMessage
 
 	^'Payment cannot be executed with credit card without a six-digit expiration date'.! !
 
-!MerchantProcessor class methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:11:12'!
+!MerchantProcessorMock class methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:11:12'!
 paymentCannotBeExecutedWithExpiredCreditCardErrorMessage
 
 	^'Payment cannot be executed with expired credit card'! !
