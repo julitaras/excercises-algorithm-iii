@@ -539,17 +539,10 @@ Object subclass: #MerchantProcessorMock
 	poolDictionaries: ''
 	category: 'TusLibros-Ejercicio'!
 
-!MerchantProcessorMock methodsFor: 'assertions - private' stamp: 'JT 2/18/2021 16:56:48'!
+!MerchantProcessorMock methodsFor: 'assertions - private' stamp: 'JT 2/18/2021 17:24:47'!
 assertCanExecutePaymentWithCreditCardExpirationDate: expirationDate  
 	
-	self validateCreditCardExpirationDate: expirationDate.
-	! !
-
-
-!MerchantProcessorMock methodsFor: 'validations - private' stamp: 'CZ 2/18/2021 10:16:20'!
-validateCreditCardExpirationDate: expirationDate
-
-	|  expirationMonth expirationYear expirationDate2 |
+	| expirationMonth expirationYear expirationDate2 |
 	
 	expirationDate size ~= 6 ifTrue:[self signalPaymentCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDate].
 	
@@ -557,7 +550,8 @@ validateCreditCardExpirationDate: expirationDate
 	expirationYear _ (expirationDate copyFrom: 3 to: 6) asInteger.
 	expirationDate2 _ (expirationMonth, expirationYear) lastDate.
 	
-	expirationDate2 < FixedGregorianDate today ifTrue:[self signalPaymentCannotBeExecutedWithExpiredCreditCard].! !
+	expirationDate2 < FixedGregorianDate today ifTrue:[self signalPaymentCannotBeExecutedWithExpiredCreditCard].
+	! !
 
 
 !MerchantProcessorMock methodsFor: 'signal error' stamp: 'JT 2/18/2021 00:08:44'!
