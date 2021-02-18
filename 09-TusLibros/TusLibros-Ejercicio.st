@@ -492,14 +492,10 @@ initialize
 	totalSales _ Dictionary new.! !
 
 
-!Cashier methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 18:00:46'!
-assertCanExecuteCheckOutOf: aCartToCheckOut withCreditCardExpirationDate: expirationDate andOwnersName: ownersName
+!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:04:39'!
+assertCanExecuteCheckOutOf: aCartToCheckOut
 	
-	aCartToCheckOut isEmpty ifTrue: [self signalCheckOutCannotBeExecutedWithEmptyCart.].
-	
-	self checkCreditCardExpirationDate: expirationDate.
-	
-	self checkCreditCardOwnersName: ownersName.! !
+	aCartToCheckOut isEmpty ifTrue: [self signalCheckOutCannotBeExecutedWithEmptyCart.].! !
 
 !Cashier methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 17:38:55'!
 calculateTransactionAmount: aCart
@@ -513,32 +509,18 @@ calculateTransactionAmount: aCart
 	
 	transactionAmount _ total.! !
 
-!Cashier methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 17:20:57'!
-checkCreditCardExpirationDate: expirationDate
-
-	| todayDate todayMonth todayYear todayMonthAndYear |
-	
-	todayDate _ Date today.
-	todayMonth _ todayDate monthIndex asString.
-	todayYear _ todayDate year yearNumber asString.
-	
-	todayMonth size = 1 ifTrue:[	todayMonthAndYear _ '0',todayMonth,todayYear.] ifFalse:[	todayMonthAndYear _ todayMonth,todayYear].
-	
-	expirationDate size ~= 6 ifTrue:[self signalCheckOutCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDate].
-	expirationDate < todayMonthAndYear ifTrue: [self signalCheckOutCannotBeExecutedWithExpiredCreditCard].
-	! !
-
-!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 01:28:39'!
-checkCreditCardOwnersName: ownersName
-
-	ownersName size > 30 ifTrue: [self signalCheckOutCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharacters.].! !
-
-!Cashier methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 18:40:26'!
+!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:06:37'!
 checkOutCart: aCart withCreditCardNumber: creditCardNumber andExpirationDate: expirationDate andOwnersName: ownersName
+	
+	| aMerchantProcessor |
 	
 	self calculateTransactionAmount: aCart. 
 	
-	self assertCanExecuteCheckOutOf: aCart withCreditCardExpirationDate: expirationDate andOwnersName: ownersName.
+	self assertCanExecuteCheckOutOf: aCart.
+	
+	aMerchantProcessor _ MerchantProcessor new.
+	
+	aMerchantProcessor assertCanExecutePaymentWithCreditCardExpirationDate: expirationDate andOwnersName: ownersName.
 	
 	"self processPayment: totalPaid."
 	
@@ -565,35 +547,10 @@ issuedBill
 	
 	^issuedBill.! !
 
-!Cashier methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 18:01:45'!
-processPayment: totalToPay
-	
-	self signalCheckOutCannotBeExecutedDueToMerchantProcessorConnectionFailure.! !
-
-!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 01:12:37'!
-signalCheckOutCannotBeExecutedDueToMerchantProcessorConnectionFailure
-	
-	self error: self class checkOutCannotBeExecutedDueToMerchantProcessorConnectionFailureErrorMessage.! !
-
-!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 01:25:00'!
-signalCheckOutCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharacters
-	
-	self error: self class checkOutCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharactersErrorMessage.! !
-
-!Cashier methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 16:51:57'!
-signalCheckOutCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDate
-	
-	self error: self class checkOutCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDateErrorMessage.! !
-
 !Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/11/2021 21:37:49'!
 signalCheckOutCannotBeExecutedWithEmptyCart
 	
 	self error: self class checkOutCannotBeExecutedWithEmptyCartErrorMessage .! !
-
-!Cashier methodsFor: 'as yet unclassified' stamp: 'JT 2/16/2021 23:59:26'!
-signalCheckOutCannotBeExecutedWithExpiredCreditCard
-	
-	self error: self class checkOutCannotBeExecutedWithExpiredCreditCardErrorMessage.! !
 
 !Cashier methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 18:57:37'!
 totalSales
@@ -616,35 +573,86 @@ updateTotalSalesWithCart: aCart andTransactionAmount: aTransactionAmount
 Cashier class
 	instanceVariableNames: ''!
 
-!Cashier class methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 01:06:41'!
-checkOutCannotBeExecutedDueToMerchantProcessorConnectionFailureErrorMessage
-
-	^'Check out cannot be executed due to Merchant Processor connection failure'! !
-
-!Cashier class methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 01:24:35'!
-checkOutCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharactersErrorMessage
-
-	^'Check out cannot be executed with credit card owners name longer than thirty characters'! !
-
-!Cashier class methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 16:51:27'!
-checkOutCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDateErrorMessage
-
-	^'Check out cannot be executed with credit card without a six-digit expiration date'.! !
-
 !Cashier class methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 01:06:45'!
 checkOutCannotBeExecutedWithEmptyCartErrorMessage
 
 	^'Check out cannot be executed with empty cart'! !
 
-!Cashier class methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 01:06:50'!
-checkOutCannotBeExecutedWithExpiredCreditCardErrorMessage
+
+!classDefinition: #MerchantProcessor category: 'TusLibros-Ejercicio'!
+Object subclass: #MerchantProcessor
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros-Ejercicio'!
 
-	^'Check out cannot be executed with expired credit card'! !
+!MerchantProcessor methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:08:00'!
+assertCanExecutePaymentWithCreditCardExpirationDate: expirationDate andOwnersName: ownersName
+	
+	self validateCreditCardExpirationDate: expirationDate.
+	
+	self validateCreditCardOwnersName: ownersName.! !
 
-!Cashier class methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 17:35:41'!
-checkOutCannotBeExecutedWithTransactionAmountLargerThanTheLimitErrorMessage
+!MerchantProcessor methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:08:15'!
+signalPaymentCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharacters
+	
+	self error: self class paymentCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharactersErrorMessage.! !
 
-	^'Check out cannot be executed with transaction amount larger than the limit'! !
+!MerchantProcessor methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:08:44'!
+signalPaymentCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDate
+	
+	self error: self class paymentCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDateErrorMessage.! !
+
+!MerchantProcessor methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:09:14'!
+signalPaymentCannotBeExecutedWithExpiredCreditCard
+	
+	self error: self class paymentCannotBeExecutedWithExpiredCreditCardErrorMessage.! !
+
+!MerchantProcessor methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:03:51'!
+validateCreditCardExpirationDate: expirationDate
+
+	| todayDate todayMonth todayYear todayMonthAndYear |
+	
+	todayDate _ Date today.
+	todayMonth _ todayDate monthIndex asString.
+	todayYear _ todayDate year yearNumber asString.
+	
+	todayMonth size = 1 ifTrue:[	todayMonthAndYear _ '0',todayMonth,todayYear.] ifFalse:[	todayMonthAndYear _ todayMonth,todayYear].
+	
+	expirationDate size ~= 6 ifTrue:[self signalCheckOutCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDate].
+	expirationDate < todayMonthAndYear ifTrue: [self signalCheckOutCannotBeExecutedWithExpiredCreditCard].
+	! !
+
+!MerchantProcessor methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:04:07'!
+validateCreditCardOwnersName: ownersName
+
+	ownersName size > 30 ifTrue: [self signalCheckOutCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharacters.].! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'MerchantProcessor class' category: 'TusLibros-Ejercicio'!
+MerchantProcessor class
+	instanceVariableNames: ''!
+
+!MerchantProcessor class methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:10:21'!
+paymentCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharactersErrorMessage
+
+	^'Payment cannot be executed with credit card owner''s name longer than thirty characters'! !
+
+!MerchantProcessor class methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:10:47'!
+paymentCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDateErrorMessage
+
+	^'Payment cannot be executed with credit card without a six-digit expiration date'.! !
+
+!MerchantProcessor class methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:11:12'!
+paymentCannotBeExecutedWithExpiredCreditCardErrorMessage
+
+	^'Payment cannot be executed with expired credit card'! !
+
+!MerchantProcessor class methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:11:33'!
+paymentCannotBeExecutedWithTransactionAmountLargerThanTheLimitErrorMessage
+
+	^'Payment cannot be executed with transaction amount larger than the limit'! !
 
 
 !classDefinition: #Publisher category: 'TusLibros-Ejercicio'!
