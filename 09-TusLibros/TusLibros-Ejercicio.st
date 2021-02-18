@@ -157,7 +157,7 @@ TestCase subclass: #CashierTest
 	poolDictionaries: ''
 	category: 'TusLibros-Ejercicio'!
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'JT 2/11/2021 21:35:30'!
+!CashierTest methodsFor: 'tests' stamp: 'JT 2/11/2021 21:35:30'!
 should: aBlockThatShouldFail raise: anExceptionType asserting: aVerificationBlock
 
 	[ aBlockThatShouldFail value.
@@ -165,7 +165,7 @@ should: aBlockThatShouldFail raise: anExceptionType asserting: aVerificationBloc
         		on: anExceptionType 
        		do: aVerificationBlock! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 19:33:11'!
+!CashierTest methodsFor: 'tests' stamp: 'CZ 2/17/2021 19:33:11'!
 test01CheckOutCannotBeExecutedWithEmptyCart
 
 	| aCart cced ccn cco aCashier |
@@ -187,7 +187,7 @@ test01CheckOutCannotBeExecutedWithEmptyCart
 
 	! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 19:33:18'!
+!CashierTest methodsFor: 'tests' stamp: 'CZ 2/17/2021 19:33:18'!
 test02CheckOutWithOneBookCanBeExecuted
 
 	| aCart aBook1Isbn cced ccn cco aCashier |
@@ -208,7 +208,7 @@ test02CheckOutWithOneBookCanBeExecuted
 	
 	! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 19:33:23'!
+!CashierTest methodsFor: 'tests' stamp: 'CZ 2/17/2021 19:33:23'!
 test03CheckOutWithMultipleBooksCanBeExecuted
 
 	| aCart cced ccn cco aCashier book1Isbn book2Isbn |
@@ -231,7 +231,7 @@ test03CheckOutWithMultipleBooksCanBeExecuted
 	
 	! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 19:15:51'!
+!CashierTest methodsFor: 'tests' stamp: 'CZ 2/17/2021 19:15:51'!
 test04CashierCanIssueTheBillAfterCheckOut
 
 	| aCart cced ccn cco aCashier book1Isbn book2Isbn expectedBill |
@@ -255,7 +255,7 @@ test04CashierCanIssueTheBillAfterCheckOut
 	
 	! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 19:33:30'!
+!CashierTest methodsFor: 'tests' stamp: 'JT 2/18/2021 00:13:56'!
 test05CheckOutCannotBeExecutedWithExpiredCreditCard
 
 	| aCart cced ccn cco aCashier book1Isbn book2Isbn |
@@ -276,11 +276,11 @@ test05CheckOutCannotBeExecutedWithExpiredCreditCard
         should: [ aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName:cco. ]
         raise: Error
         asserting: [ :anError |
-		self assert: Cashier checkOutCannotBeExecutedWithExpiredCreditCardErrorMessage equals: anError messageText].
+		self assert: MerchantProcessor paymentCannotBeExecutedWithExpiredCreditCardErrorMessage equals: anError messageText].
 	
 	! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 19:21:20'!
+!CashierTest methodsFor: 'tests' stamp: 'JT 2/18/2021 00:13:45'!
 test06CheckOutCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharacters
 	
 	| aCart cced ccn cco aCashier book1Isbn book2Isbn |
@@ -301,12 +301,12 @@ test06CheckOutCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharacters
         should: [ aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName:cco. ]
         raise: Error
         asserting: [ :anError |
-		self assert: Cashier checkOutCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharactersErrorMessage equals: anError messageText].
+		self assert: MerchantProcessor paymentCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharactersErrorMessage equals: anError messageText].
 	
 	
 	! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 19:22:13'!
+!CashierTest methodsFor: 'tests' stamp: 'JT 2/18/2021 00:13:26'!
 test07CheckOutCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDate
 	
 	| aCart cced ccn cco aCashier book1Isbn book2Isbn |
@@ -327,11 +327,11 @@ test07CheckOutCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDate
         should: [ aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName:cco. ]
         raise: Error
         asserting: [ :anError |
-		self assert: Cashier checkOutCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDateErrorMessage equals: anError messageText].
+		self assert: MerchantProcessor paymentCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDateErrorMessage equals: anError messageText].
 	! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 19:30:16'!
-test09CashierKnowsTheHistoryOfSalesWhenMultipleCheckOutsAreExecuted
+!CashierTest methodsFor: 'tests' stamp: 'JT 2/18/2021 00:13:07'!
+test08CashierKnowsTheHistoryOfSalesWhenMultipleCheckOutsAreExecuted
 
 	| cart1 cart2 cced1 cced2 ccn1 ccn2 cco1 cco2 aCashier book1Isbn book2Isbn book3Isbn book4Isbn expectedTotalSales |
 	
@@ -364,9 +364,9 @@ test09CashierKnowsTheHistoryOfSalesWhenMultipleCheckOutsAreExecuted
 	self assert: expectedTotalSales equals: aCashier totalSales.
 	! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/17/2021 19:02:32'!
+!CashierTest methodsFor: 'tests' stamp: 'JT 2/18/2021 00:14:42'!
 _test10
-	"El MP devuelve error"
+	"El MP devuelve error, amount no mayor a 15 digitos"
 	| aCart cced ccn cco aCashier book1Isbn book2Isbn |
 	
 	aCart _ Cart new.
@@ -608,7 +608,7 @@ signalPaymentCannotBeExecutedWithExpiredCreditCard
 	
 	self error: self class paymentCannotBeExecutedWithExpiredCreditCardErrorMessage.! !
 
-!MerchantProcessor methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:03:51'!
+!MerchantProcessor methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:15:23'!
 validateCreditCardExpirationDate: expirationDate
 
 	| todayDate todayMonth todayYear todayMonthAndYear |
@@ -619,14 +619,14 @@ validateCreditCardExpirationDate: expirationDate
 	
 	todayMonth size = 1 ifTrue:[	todayMonthAndYear _ '0',todayMonth,todayYear.] ifFalse:[	todayMonthAndYear _ todayMonth,todayYear].
 	
-	expirationDate size ~= 6 ifTrue:[self signalCheckOutCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDate].
-	expirationDate < todayMonthAndYear ifTrue: [self signalCheckOutCannotBeExecutedWithExpiredCreditCard].
+	expirationDate size ~= 6 ifTrue:[self signalPaymentCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDate].
+	expirationDate < todayMonthAndYear ifTrue: [self signalPaymentCannotBeExecutedWithExpiredCreditCard].
 	! !
 
-!MerchantProcessor methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:04:07'!
+!MerchantProcessor methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:15:54'!
 validateCreditCardOwnersName: ownersName
 
-	ownersName size > 30 ifTrue: [self signalCheckOutCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharacters.].! !
+	ownersName size > 30 ifTrue: [self signalPaymentCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharacters.].! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
