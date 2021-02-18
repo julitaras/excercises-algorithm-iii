@@ -296,34 +296,8 @@ test06PaymentCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDate
 			self assert: MerchantProcessor paymentCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDateErrorMessage equals: anError messageText].
 	! !
 
-!CashierTest methodsFor: 'tests' stamp: 'CZ 2/18/2021 03:44:45'!
-test07PaymentCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharacters
-	
-	| aCart aCashier book1Isbn book2Isbn ccn cced cco |
-	
-	aCart _ Cart new.
-	aCashier _ Cashier new.
-	
-	book1Isbn _ 9789877250244.
-	book2Isbn _ 9789585118300.
-	ccn _ 5589043461258803.
-	cced _ '102050'.
-	cco _ 'Particularly long credt card owner''s name'.
-	
-	aCart addBook: book1Isbn quantity: 1.
-	aCart addBook: book2Isbn quantity: 2.
-	
-	self 
-       		should: [ aCashier checkOutCart: aCart withCreditCardNumber: ccn andExpirationDate: cced andOwnersName:cco. ]
-        		raise: Error
-        		asserting: [ :anError |
-			self assert: MerchantProcessor paymentCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharactersErrorMessage equals: anError messageText].
-	
-	
-	! !
-
-!CashierTest methodsFor: 'tests' stamp: 'JT 2/18/2021 16:16:06'!
-test08CashierKnowsTheHistoryOfSalesWhenMultipleCheckOutsAreExecuted
+!CashierTest methodsFor: 'tests' stamp: 'JT 2/18/2021 16:56:19'!
+test07CashierKnowsTheHistoryOfSalesWhenMultipleCheckOutsAreExecuted
 
 	| cart1 cart2 aCashier book1Isbn book2Isbn book3Isbn book4Isbn ccn1 cced1 cco1 ccn2 cced2 cco2 expectedTotalSales |
 	
@@ -486,7 +460,7 @@ calculateTransactionAmount: aCart
 	
 	transactionAmount _ total.! !
 
-!Cashier methodsFor: 'cashier management' stamp: 'JT 2/18/2021 16:15:39'!
+!Cashier methodsFor: 'cashier management' stamp: 'JT 2/18/2021 16:56:48'!
 checkOutCart: aCart withCreditCardNumber: creditCardNumber andExpirationDate: expirationDate andOwnersName: ownersName
 	
 	| aMerchantProcessor |
@@ -497,7 +471,7 @@ checkOutCart: aCart withCreditCardNumber: creditCardNumber andExpirationDate: ex
 	
 	aMerchantProcessor _ MerchantProcessor new.
 	
-	aMerchantProcessor assertCanExecutePaymentWithCreditCardExpirationDate: expirationDate andOwnersName: ownersName .
+	aMerchantProcessor assertCanExecutePaymentWithCreditCardExpirationDate: expirationDate .
 	
 	self issueBill: aCart.
 	
@@ -562,12 +536,10 @@ Object subclass: #MerchantProcessor
 	poolDictionaries: ''
 	category: 'TusLibros-Ejercicio'!
 
-!MerchantProcessor methodsFor: 'assertions - private' stamp: 'JT 2/18/2021 16:15:39'!
-assertCanExecutePaymentWithCreditCardExpirationDate: expirationDate andOwnersName: ownersName 
+!MerchantProcessor methodsFor: 'assertions - private' stamp: 'JT 2/18/2021 16:56:48'!
+assertCanExecutePaymentWithCreditCardExpirationDate: expirationDate  
 	
 	self validateCreditCardExpirationDate: expirationDate.
-	
-	self validateCreditCardOwnersName: ownersName.
 	! !
 
 
@@ -584,16 +556,6 @@ validateCreditCardExpirationDate: expirationDate
 	
 	expirationDate2 < FixedGregorianDate today ifTrue:[self signalPaymentCannotBeExecutedWithExpiredCreditCard].! !
 
-!MerchantProcessor methodsFor: 'validations - private' stamp: 'JT 2/18/2021 00:15:54'!
-validateCreditCardOwnersName: ownersName
-
-	ownersName size > 30 ifTrue: [self signalPaymentCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharacters.].! !
-
-
-!MerchantProcessor methodsFor: 'signal error' stamp: 'JT 2/18/2021 00:08:15'!
-signalPaymentCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharacters
-	
-	self error: self class paymentCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharactersErrorMessage.! !
 
 !MerchantProcessor methodsFor: 'signal error' stamp: 'JT 2/18/2021 00:08:44'!
 signalPaymentCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDate
@@ -610,11 +572,6 @@ signalPaymentCannotBeExecutedWithExpiredCreditCard
 !classDefinition: 'MerchantProcessor class' category: 'TusLibros-Ejercicio'!
 MerchantProcessor class
 	instanceVariableNames: ''!
-
-!MerchantProcessor class methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:10:21'!
-paymentCannotBeExecutedWithCreditCardOwnersNameLongerThanThirtyCharactersErrorMessage
-
-	^'Payment cannot be executed with credit card owner''s name longer than thirty characters'! !
 
 !MerchantProcessor class methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 00:10:47'!
 paymentCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDateErrorMessage
