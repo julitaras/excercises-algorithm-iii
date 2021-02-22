@@ -1,689 +1,662 @@
-!classDefinition: #CartTest category: 'TusLibros-Ejercicio'!
+!classDefinition: #CartTest category: 'TusLibros'!
 TestCase subclass: #CartTest
-	instanceVariableNames: ''
+	instanceVariableNames: 'objectsFactory'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'TusLibros-Ejercicio'!
+	category: 'TusLibros'!
 
-!CartTest methodsFor: 'tests' stamp: 'CZ 2/10/2021 23:17:09'!
-test01ACartIsCreatedEmpty
-	
-	| aCart |
-	
-	aCart _ Cart new.
-	
-	self assert: (aCart isEmpty).! !
+!CartTest methodsFor: 'tests' stamp: 'LL 2/16/2021 19:50:24'!
+setUp
 
-!CartTest methodsFor: 'tests' stamp: 'CZ 2/11/2021 13:33:18'!
-test02ABookIsAddedAndTheCartIsNotEmptyAnymore
-	
-	| aCart aBookIsbn |
-	
-	aCart _ Cart new.
-	aBookIsbn _ 9789877250244.
-	
-	aCart addBook: aBookIsbn quantity: 1.
-	
-	self deny: (aCart isEmpty).! !
+	objectsFactory := PublisherTestObjectsFactory new! !
 
-!CartTest methodsFor: 'tests' stamp: 'CZ 2/11/2021 13:33:55'!
-test03MultipleBooksAreAddedAndTheCartIsNotEmptyAnymore
-	
-	| aCart book1Isbn book2Isbn |
-	
-	aCart _ Cart new.
-	book1Isbn _ 9789877250244.
-	book2Isbn _ 9789585118300.
-	
-	aCart addBook: book1Isbn quantity: 1.
-	aCart addBook: book2Isbn quantity: 1.
-	
-	self deny: (aCart isEmpty).! !
+!CartTest methodsFor: 'tests' stamp: 'LL 1/21/2021 20:09:58'!
+test01NewCartIsEmpty
 
-!CartTest methodsFor: 'tests' stamp: 'CZ 2/11/2021 13:34:26'!
-test04MultipleBooksAreAddedAndTheyAreStoredInTheCart
+	| cart |
 	
-	| aCart book1Isbn book2Isbn |
+	cart := self createCart.
 	
-	aCart _ Cart new.
-	book1Isbn _ 9789877250244.
-	book2Isbn _ 9789585118300.
-	
-	aCart addBook: book1Isbn quantity: 1.
-	aCart addBook: book2Isbn quantity: 1.
-	
-	self assert: (aCart hasBook: book1Isbn).
-	self assert: (aCart hasBook: book2Isbn).! !
+	self assert: cart isEmpty.! !
 
-!CartTest methodsFor: 'tests' stamp: 'CZ 2/11/2021 13:34:46'!
-test05ABookThatIsNotAddedIsNotStoredInTheCart
-	
-	| aCart book1Isbn book2Isbn |
-	
-	aCart _ Cart new.
-	book1Isbn _ 9789877250244.
-	book2Isbn _ 9789585118300.
-	
-	aCart addBook: book1Isbn quantity: 1.
-	
-	self assert: (aCart hasBook: book1Isbn).
-	self deny: (aCart hasBook: book2Isbn).! !
+!CartTest methodsFor: 'tests' stamp: 'LL 2/16/2021 19:50:24'!
+test02CanAddABookToACart
 
-!CartTest methodsFor: 'tests' stamp: 'CZ 2/11/2021 13:35:19'!
-test06ABookIsAddedMoreThanOnceAndTheNumberOfCopiesAndSizeOfCartAreCorrect
+	| cart |
+	cart := self createCart.
 	
-	| aCart book1Isbn book2Isbn |
+	cart add: objectsFactory bookFromTheEditorial.
 	
-	aCart _ Cart new.
-	book1Isbn _ 9789877250244.
-	book2Isbn _ 9789585118300.
-	
-	aCart addBook: book1Isbn quantity: 2.
-	aCart addBook: book2Isbn quantity: 1.
-	
-	self assert: (aCart size = 3).
-	self assert: ((aCart numberOfCopiesOf: book1Isbn) = 2).
-	self assert: ((aCart numberOfCopiesOf: book2Isbn) = 1).
-! !
+	self deny: cart isEmpty.! !
 
-!CartTest methodsFor: 'tests' stamp: 'CZ 2/11/2021 13:35:45'!
-test07BookQuantityCannotBeLessThanOne
-	
-	| aCart aBookIsbn |
-	
-	aCart _ Cart new.
-	aBookIsbn _ 9789877250244.
-	
-	self 
-        should: [ aCart addBook: aBookIsbn quantity: 0 ]
-        raise: Error
-        asserting: [ :anError |
-		self assert: anError messageText = Cart quantityCannotBeLessThanOneErrorMessage.
-		self assert: aCart isEmpty].
-	
-	
-! !
+!CartTest methodsFor: 'tests' stamp: 'LL 1/21/2021 21:25:18'!
+test03CannotAddABookNotInCatalog
 
-!CartTest methodsFor: 'tests' stamp: 'CZ 2/11/2021 13:36:08'!
-test08AnInvalidBookIsbnCannotBeAddedToTheCart
-	
-	| aCart aBookIsbn |
-	
-	aCart _ Cart new.
-	aBookIsbn _ 9789721091651.
-	
-	self 
-        should: [ aCart addBook: aBookIsbn quantity: 1 ]
-        raise: Error
-        asserting: [ :anError |
-		self assert: anError messageText = Cart invalidIsbnCannotBeAddedToCartErrorMessage.
-		self assert: aCart isEmpty.
-		self deny: (aCart hasBook: aBookIsbn)].
-	
-	
-! !
+	| cart bookNotInCatalog |
+	cart := self createCart.
+	bookNotInCatalog := 'DEF456'.
 
-!CartTest methodsFor: 'tests' stamp: 'CZ 2/11/2021 13:36:40'!
-test09ACartKnowsItsContent
-	
-	| aCart book1Isbn book2Isbn expectedBooksInCart |
-	
-	aCart _ Cart new.
-	book1Isbn _ 9789877250244.
-	book2Isbn _ 9789585118300.
-	
-	aCart addBook: book1Isbn quantity: 2.
-	aCart addBook: book2Isbn quantity: 1.
-	
-	expectedBooksInCart _ OrderedCollection with: book1Isbn with: book1Isbn with: book2Isbn.
-	
-	self assert: (aCart booksStored = expectedBooksInCart).
+	self assert: cart isEmptyAfter: [ cart add: bookNotInCatalog ] raisesErrorWithMessage: Cart bookNotInCatalogErrorMessage.
 	! !
 
+!CartTest methodsFor: 'tests' stamp: 'LL 2/16/2021 19:50:24'!
+test04CanAddTwoCopiesOfABook
 
-!CartTest methodsFor: 'assertions' stamp: 'CZ 2/11/2021 00:13:25'!
-should: aBlockThatShouldFail raise: anExceptionType asserting: aVerificationBlock
+	| cart |
+	cart := self createCart.
+	
+	cart add: objectsFactory bookFromTheEditorial quantity: 2.
+	
+	self assert: (cart quantityOf: objectsFactory bookFromTheEditorial) equals: 2.! !
 
-	[ aBlockThatShouldFail value.
-    	self fail ]
-        		on: anExceptionType 
-       		do: aVerificationBlock! !
+!CartTest methodsFor: 'tests' stamp: 'LL 2/16/2021 19:50:24'!
+test05CannotAddNonPositiveNumberOfCopiesOfABook
+
+	| cart |
+	cart := self createCart.
+
+	self assert: cart isEmptyAfter: [ cart add: objectsFactory bookFromTheEditorial quantity: -1 ] raisesErrorWithMessage: Cart invalidNumberOfCopiesErrorMessage.! !
+
+!CartTest methodsFor: 'tests' stamp: 'LL 2/16/2021 19:50:24'!
+test06CartRemembersAddedBooks
+
+	| cart |
+	cart := self createCart.
+	
+	cart add: objectsFactory bookFromTheEditorial quantity: 2.
+	cart add: objectsFactory bookFromTheEditorial quantity: 1.
+	
+	self assert: (cart includes: objectsFactory bookFromTheEditorial).
+	self assert: (cart quantityOf: objectsFactory bookFromTheEditorial) equals: 3! !
+
+!CartTest methodsFor: 'tests' stamp: 'LL 1/21/2021 21:26:35'!
+test07CannotAddTwoCopiesOfABookNotInCatalog
+
+	| cart bookNotInCatalog |
+	cart := self createCart.
+	bookNotInCatalog := 'DEF123'.
+	
+	self assert: cart isEmptyAfter: [ cart add: bookNotInCatalog quantity: 2 ] raisesErrorWithMessage: Cart bookNotInCatalogErrorMessage.! !
+
+
+!CartTest methodsFor: 'private' stamp: 'LL 1/21/2021 21:24:13'!
+assert: cart isEmptyAfter: blockExpectedToFail raisesErrorWithMessage: errorMessage
+	
+	self should: blockExpectedToFail raise: Error withExceptionDo: [ :anException |
+		self assert: anException messageText equals: errorMessage.
+		self assert: cart isEmpty.
+	]! !
+
+!CartTest methodsFor: 'private' stamp: 'LL 2/16/2021 19:50:24'!
+createCart
+
+	^ objectsFactory anEmptyCart! !
 
 
-!classDefinition: #CashierTest category: 'TusLibros-Ejercicio'!
+!classDefinition: #CashierTest category: 'TusLibros'!
 TestCase subclass: #CashierTest
+	instanceVariableNames: 'objectsFactory merchantProcessorBehaviour'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros'!
+
+!CashierTest methodsFor: 'tests' stamp: 'LL 2/16/2021 19:50:04'!
+setUp
+
+	objectsFactory := PublisherTestObjectsFactory new.
+	merchantProcessorBehaviour := [ :anAmountToDebit :aCreditCard |  ]! !
+
+!CashierTest methodsFor: 'tests' stamp: 'LL 2/16/2021 19:51:40'!
+test01CannotCheckoutAnEmptyCart
+
+	| cart salesBook cashier |
+	cart := objectsFactory anEmptyCart.
+	salesBook := objectsFactory anEmptySalesBook.
+	cashier := Cashier registeringSalesOn: salesBook.
+	
+	self should: [ self cashier: cashier checkout: cart ]
+		raise: Error - MessageNotUnderstood 
+		withExceptionDo: [ :anException |
+			self assert: anException messageText equals: Cashier cannotCheckoutAnEmptyCart.
+			self assert: salesBook isEmpty
+		]! !
+
+!CashierTest methodsFor: 'tests' stamp: 'LL 2/16/2021 19:50:05'!
+test02TotalIsCalculatedCorrectlyAfterCheckout
+
+	| cart ticket cashier |
+	cart := objectsFactory cartWithABook.
+	cashier := objectsFactory aCashier.
+	
+	ticket := self cashier: cashier checkout: cart.
+	
+	self assert: objectsFactory bookFromTheEditorialPrice equals: ticket value.! !
+
+!CashierTest methodsFor: 'tests' stamp: 'LL 2/16/2021 19:51:50'!
+test03CannotCheckoutIfCardIsExpired
+
+	| cart cashier merchantProcessorWasContacted salesBook |
+	cart := objectsFactory cartWithABook.
+	salesBook := objectsFactory anEmptySalesBook.
+	cashier := Cashier registeringSalesOn: salesBook.
+	
+	merchantProcessorWasContacted := false.
+	self merchantProcessorBehaviour: [ :amountToDebit :aCreditCard |  merchantProcessorWasContacted := true ].
+	
+	self should: [ self cashier: cashier checkout: cart debitingOn: objectsFactory anExpiredCreditCard ]
+		raise: Error - MessageNotUnderstood 
+		withExceptionDo: [ :anException |
+			self assert: anException messageText equals: Cashier cannotCheckoutUsingAnExpiredCard.
+			self deny: merchantProcessorWasContacted.
+			self assert: salesBook isEmpty.
+		]! !
+
+!CashierTest methodsFor: 'tests' stamp: 'LL 2/16/2021 23:04:34'!
+test04CheckoutDebitsCreditCardUsingMerchantProcessor
+
+	| cart ticket cashier debitedAmountFromCreditCard debitedCreditCard creditCard |
+	cart := objectsFactory cartWithABook.
+	cashier := objectsFactory aCashier.
+	creditCard := objectsFactory aValidCreditCard.
+		
+	self merchantProcessorBehaviour: [ :anAmountToDebit :aCreditCard | 
+		debitedAmountFromCreditCard := anAmountToDebit.
+		debitedCreditCard := aCreditCard.
+	].
+	
+	ticket := self cashier: cashier checkout: cart debitingOn: creditCard.
+	
+	self assert: debitedAmountFromCreditCard equals: ticket value.
+	self assert: debitedCreditCard equals: creditCard.! !
+
+!CashierTest methodsFor: 'tests' stamp: 'LL 2/16/2021 19:51:58'!
+test05CheckoutFailsIfMerchantProcessorCantProcessPayment
+
+	| cart cashier salesBook |
+	cart := objectsFactory cartWithABook.
+	salesBook := objectsFactory anEmptySalesBook.
+	cashier := Cashier registeringSalesOn: salesBook.
+	
+	self merchantProcessorBehaviour: [ :anAmountToDebit :aCreditCard | Error new signal ].
+	
+	self should: [ self cashier: cashier checkout: cart ]
+		raise: Error - MessageNotUnderstood 
+		withExceptionDo: [ :exceptionRaised | 
+			self assert: exceptionRaised messageText equals: Cashier couldNotProcessPaymentErrorMessage.
+			self assert: salesBook isEmpty.
+		]! !
+
+!CashierTest methodsFor: 'tests' stamp: 'LL 2/16/2021 19:52:03'!
+test06CheckingOutACartRegistersASale
+
+	| cart cashier ticket salesBook |
+	cart := objectsFactory cartWithABook.
+	salesBook := objectsFactory anEmptySalesBook.
+	cashier := Cashier registeringSalesOn: salesBook.	
+	
+	ticket := self cashier: cashier checkout: cart.
+	
+	self assert: salesBook size equals: 1.
+	self assert: salesBook first equals: ticket.! !
+
+
+!CashierTest methodsFor: 'merchat processor protocol' stamp: 'LL 1/24/2021 18:26:00'!
+debit: anAmountToDebit from: aCreditCard
+
+	^merchantProcessorBehaviour value: anAmountToDebit value: aCreditCard! !
+
+
+!CashierTest methodsFor: 'change mp behaviour' stamp: 'LL 1/24/2021 18:26:00'!
+merchantProcessorBehaviour: newBehaviour
+
+	merchantProcessorBehaviour := newBehaviour! !
+
+
+!CashierTest methodsFor: 'private' stamp: 'LL 2/16/2021 19:50:05'!
+cashier: cashier checkout: cart
+
+	^self cashier: cashier checkout: cart debitingOn: objectsFactory aValidCreditCard! !
+
+!CashierTest methodsFor: 'private' stamp: 'LL 2/16/2021 19:50:04'!
+cashier: cashier checkout: cart debitingOn: aCreditCard
+
+	^cashier checkout: cart payingWith: aCreditCard through: self merchantProcessorForTest on: objectsFactory now.! !
+
+!CashierTest methodsFor: 'private' stamp: 'LL 2/16/2021 18:29:57'!
+merchantProcessorForTest
+	
+	^self! !
+
+
+!classDefinition: #CreditCardTest category: 'TusLibros'!
+TestCase subclass: #CreditCardTest
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'TusLibros-Ejercicio'!
+	category: 'TusLibros'!
 
-!CashierTest methodsFor: 'tests' stamp: 'JT 2/18/2021 18:36:45'!
-test01CheckOutCannotBeExecutedWithEmptyCart
+!CreditCardTest methodsFor: 'tests' stamp: 'LL 1/24/2021 18:15:23'!
+test01CreditCardOwnerNameCannotBeBlank
 
-	| aCart aCashier aMerchantProcessorMock aCreditCard aCatalog |
-	
-	aCart _ Cart new.
-	aCashier _ Cashier new.
-	aCatalog _ Publisher new catalog.
-	aCreditCard _ CreditCard createWithNumber: 5589043461258803 andExpirationDate: '012025' andOwnersName: 'Mary'.
-	aMerchantProcessorMock _ MerchantProcessorMock createWithError: false.
-	
-	self 
-       		should: [ aCashier checkOutCart: aCart withCreditCard: aCreditCard through: aMerchantProcessorMock using: aCatalog.]
-       		raise: Error
-       		asserting: [ :anError |
-			self assert: Cashier checkOutCannotBeExecutedWithEmptyCartErrorMessage equals: anError messageText].
-	
-	
-
-	! !
-
-!CashierTest methodsFor: 'tests' stamp: 'JT 2/18/2021 18:39:03'!
-test02CheckOutWithOneBookCanBeExecuted
-
-	| aCart aCashier aBookIsbn aMerchantProcessorMock aCatalog aCreditCard |
-	
-	aCart _ Cart new.
-	aCashier _ Cashier new.
-	aCatalog _ Publisher new catalog.
-	aCreditCard _ CreditCard createWithNumber: 5589043461258903 andExpirationDate: '022023' andOwnersName: 'Sarah'.
-	aMerchantProcessorMock _ MerchantProcessorMock createWithError: false.
-	
-	aBookIsbn _ 9789877250244.
-	
-	aCart addBook: aBookIsbn quantity: 1.
-	aCashier checkOutCart: aCart withCreditCard: aCreditCard through: aMerchantProcessorMock using: aCatalog.
-	
-	self assert: aCart isEmpty.
-	self assert: 1000.5*peso equals: aCashier transactionAmount.
-	
-	! !
-
-!CashierTest methodsFor: 'tests' stamp: 'JT 2/18/2021 18:42:44'!
-test03CheckOutWithMultipleBooksCanBeExecuted
-
-	| aCart aCashier book1Isbn book2Isbn aMerchantProcessorMock aCatalog aCreditCard |
-	
-	aCart _ Cart new.
-	aCashier _ Cashier new.
-	aCatalog _ Publisher new catalog.
-	aCreditCard _ CreditCard createWithNumber: 5589043471258803 andExpirationDate: '022023' andOwnersName: 'James'.
-	aMerchantProcessorMock _ MerchantProcessorMock createWithError: false.
-	
-	book1Isbn _ 9789877250244.
-	book2Isbn _ 9789585118300.
-	
-	aCart addBook: book1Isbn quantity: 3.
-	aCart addBook: book2Isbn quantity: 2.
-	aCashier checkOutCart: aCart withCreditCard: aCreditCard through: aMerchantProcessorMock using: aCatalog.
-	
-	self assert: aCart isEmpty.
-	self assert: 5001.48*peso equals: aCashier transactionAmount.
-	
-	! !
-
-!CashierTest methodsFor: 'tests' stamp: 'JT 2/18/2021 18:43:55'!
-test04CashierCanIssueTheBillAfterCheckOut
-
-	| aCart aCashier book1Isbn book2Isbn expectedBill aMerchantProcessorMock aCatalog aCreditCard |
-	
-	aCart _ Cart new.
-	aCashier _ Cashier new.
-	aCatalog _ Publisher new catalog.
-	aCreditCard _ CreditCard createWithNumber: 5589043461258803 andExpirationDate: '022023' andOwnersName: 'Mary'.
-	aMerchantProcessorMock _ MerchantProcessorMock createWithError: false.
-	
-	book1Isbn _ 9789877250244.
-	book2Isbn _ 9789585118300.
-	
-	aCart addBook: book1Isbn quantity: 1.
-	aCart addBook: book2Isbn quantity: 2.
-	aCashier checkOutCart: aCart withCreditCard: aCreditCard through: aMerchantProcessorMock using: aCatalog.
-	
-	expectedBill _ Dictionary with: 9789877250244->(1000.5*peso) with: 9789585118300->(999.99*peso) with: 9789585118300->(999.99*peso).
-	
-	self assert: expectedBill equals: aCashier issuedBill.
-	
-	! !
-
-!CashierTest methodsFor: 'tests' stamp: 'JT 2/18/2021 18:55:19'!
-test05PaymentCannotBeExecutedWithExpiredCreditCard
-
-	| aCart aCashier book1Isbn book2Isbn aMerchantProcessorMock aCatalog aCreditCard |
-	
-	aCart _ Cart new.
-	aCashier _ Cashier new.
-	aCatalog _ Publisher new catalog.
-	aCreditCard _ CreditCard createWithNumber: 5589443461258803 andExpirationDate: '022000' andOwnersName: 'Megan'.
-	
-	aMerchantProcessorMock _ MerchantProcessorMock createWithError: false.
-	
-	book1Isbn _ 9789877250244.
-	book2Isbn _ 9789585118300.
-	
-	aCart addBook: book1Isbn quantity: 1.
-	aCart addBook: book2Isbn quantity: 2.
-	
-	self 
-       		should: [ aCashier checkOutCart: aCart withCreditCard: aCreditCard through: aMerchantProcessorMock using: aCatalog. ]
-       		raise: Error
-       		asserting: [ :anError |
-			self assert: Cashier checkOutCannotBeExecutedWithExpiredCreditCardErrorMessage equals: anError messageText].
-	
-	! !
-
-!CashierTest methodsFor: 'tests' stamp: 'JT 2/18/2021 18:55:04'!
-test06PaymentCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDate
-	
-	| aCart aCashier book1Isbn book2Isbn aMerchantProcessorMock aCatalog aCreditCard |
-	
-	aCart _ Cart new.
-	aCashier _ Cashier new.
-	aCatalog _ Publisher new catalog.
-	aCreditCard _ CreditCard createWithNumber: 5589043461258803 andExpirationDate: '0220' andOwnersName: 'Mary'.
-	
-	aMerchantProcessorMock _ MerchantProcessorMock createWithError: false.
-	
-	book1Isbn _ 9789877250244.
-	book2Isbn _ 9789585118300.
-	
-	aCart addBook: book1Isbn quantity: 1.
-	aCart addBook: book2Isbn quantity: 2.
-	
-	self 
-       		should: [ aCashier checkOutCart: aCart withCreditCard: aCreditCard through: aMerchantProcessorMock using: aCatalog. ]
-       		raise: Error
-       		asserting: [ :anError |
-			self assert: Cashier checkOutCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDateErrorMessage equals: anError messageText].
-	! !
-
-!CashierTest methodsFor: 'tests' stamp: 'JT 2/18/2021 18:47:31'!
-test07CashierKnowsTheHistoryOfSalesWhenMultipleCheckOutsAreExecuted
-
-	| cart1 cart2 aCashier book1Isbn book2Isbn book3Isbn book4Isbn expectedTotalSales aMerchantProcessorMock aCatalog creditCard1 creditCard2 |
-	
-	cart1 _ Cart new.
-	cart2 _ Cart new.
-	aCashier _ Cashier new.
-	aCatalog _ Publisher new catalog.
-	creditCard1 _ CreditCard createWithNumber: 5589443461258803 andExpirationDate: '032030' andOwnersName: 'Megan'.
-	creditCard2 _ CreditCard createWithNumber: 4852355390716725 andExpirationDate: '102025' andOwnersName: 'Nathan'.
-	aMerchantProcessorMock _ MerchantProcessorMock createWithError: false.
-	
-	book1Isbn _ 9789877250244.
-	book2Isbn _ 9789585118300.
-	book3Isbn  _ 9788408081548.
-	book4Isbn _ 9789870711544.
-	
-	cart1 addBook: book1Isbn quantity: 1.
-	cart1 addBook: book2Isbn quantity: 2.
-	cart2 addBook: book3Isbn quantity: 2.
-	cart2 addBook: book4Isbn quantity: 1.
-	
-	aCashier checkOutCart: cart1 withCreditCard: creditCard1 through: aMerchantProcessorMock using: aCatalog.
-	aCashier checkOutCart: cart2 withCreditCard: creditCard2 through: aMerchantProcessorMock using: aCatalog.
-	
-	expectedTotalSales _ Dictionary with: cart1 -> (3000.48*peso) with: cart2 -> (2902.30*peso).
-	
-	self assert: expectedTotalSales equals: aCashier totalSales.
-	! !
-
-!CashierTest methodsFor: 'tests' stamp: 'JT 2/18/2021 18:48:46'!
-test08PaymentCannotBeExecutedDueToMerchantProcessorConnectionFailure
-	
-	| aCart aCashier book1Isbn book2Isbn aMerchantProcessorMock aCatalog aCreditCard |
-	
-	aCart _ Cart new.
-	aCashier _ Cashier new.
-	aCashier _ Cashier new.
-	aCatalog _ Publisher new catalog.
-	aCreditCard _ CreditCard createWithNumber: 5589043461258803 andExpirationDate: '022050' andOwnersName: 'Mary'.
-	aMerchantProcessorMock _ MerchantProcessorMock createWithError: true.
-	
-	book1Isbn _ 9789877250244.
-	book2Isbn _ 9789585118300.
-	
-	aCart addBook: book1Isbn quantity: 1.
-	aCart addBook: book2Isbn quantity: 2.
-	
-	self 
-       		should: [  aCashier checkOutCart: aCart withCreditCard: aCreditCard through: aMerchantProcessorMock using: aCatalog. ]
-       		raise: Error
-       		asserting: [ :anError |
-			self assert: MerchantProcessorMock paymentCannotBeExecutedDueToMerchantProcessorConnectionFailureErrorMessage equals: anError messageText.
-			self deny: aCart isEmpty.].
-	! !
-
-
-!CashierTest methodsFor: 'assertions' stamp: 'JT 2/11/2021 21:35:30'!
-should: aBlockThatShouldFail raise: anExceptionType asserting: aVerificationBlock
-
-	[ aBlockThatShouldFail value.
-    	self fail ]
-        		on: anExceptionType 
-       		do: aVerificationBlock! !
+	^self should: [ CreditCard of: '' number: 11111111 expiringOn: (FixedGregorianDate today) monthOfYear ] 
+		raise: Error - MessageNotUnderstood 
+		withExceptionDo: [ :exceptionRaised | 
+			self assert: exceptionRaised messageText equals: CreditCard nameCannotBeBlankErrorMessage.
+		]! !
 
 
-!classDefinition: #Cart category: 'TusLibros-Ejercicio'!
-Object subclass: #Cart
-	instanceVariableNames: 'booksStored'
+!classDefinition: #InterfaceRestTest category: 'TusLibros'!
+TestCase subclass: #InterfaceRestTest
+	instanceVariableNames: 'publisherObjectsFactory'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'TusLibros-Ejercicio'!
+	category: 'TusLibros'!
 
-!Cart methodsFor: 'initialization' stamp: 'CZ 2/18/2021 03:12:41'!
-initialize
+!InterfaceRestTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/22/2021 13:43:53'!
+setUp
 
-	booksStored _ OrderedCollection new.! !
+	publisherObjectsFactory := PublisherTestObjectsFactory new.! !
 
-
-!Cart methodsFor: 'signal error' stamp: 'CZ 2/11/2021 10:08:37'!
-signalInvalidIsbnCannotBeAddedToCart
+!InterfaceRestTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/22/2021 13:44:15'!
+test01
+"No puedo crear un carrito con id de usuario invalido"
 	
-	self error: self class invalidIsbnCannotBeAddedToCartErrorMessage.! !
-
-!Cart methodsFor: 'signal error' stamp: 'CZ 2/11/2021 10:08:46'!
-signalQuantityCannotBeLessThanOne 
+	| interface aClientId aPassword |
 	
-	self error: self class quantityCannotBeLessThanOneErrorMessage.! !
+	aClientId _ '12345'.
+	aPassword _ publisherObjectsFactory aValidClientPassword.
+	interface _ InterfaceRest new.
+	
+	self should: [interface createCartWithClientId: aClientId andPassword: aPassword ]
+		raise: Error
+		withExceptionDo: [ :anException |
+			self assert: anException messageText equals: InterfaceRest cannotCreateACartWithInvalidClientIdErrorMessage.
+		]
 
 
-!Cart methodsFor: 'testing' stamp: 'CZ 2/11/2021 13:31:33'!
-hasBook: bookIsbnToVerify
 
-	^self booksStored includes: 	bookIsbnToVerify.! !
+! !
 
-!Cart methodsFor: 'testing' stamp: 'CZ 2/11/2021 12:03:43'!
+!InterfaceRestTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/22/2021 13:54:07'!
+test02
+"No puedo crear un carrito con contraseña de usuario invalido"
+	
+	| interface aClientId aPassword |
+	
+	aClientId _ publisherObjectsFactory aValidClientId.
+	aPassword _ '56789'.
+	interface _ InterfaceRest new.
+	
+	self should: [interface createCartWithClientId: aClientId andPassword: aPassword ]
+		raise: Error
+		withExceptionDo: [ :anException |
+			self assert: anException messageText equals: InterfaceRest cannotCreateACartWithInvalidClientPasswordErrorMessage.
+		]
+
+
+
+! !
+
+!InterfaceRestTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/22/2021 14:00:26'!
+test03
+"Puedo crear un carrito con id y contraseña de usuario validos"
+	
+	| aCart interface aClientId aPassword booksInCart|
+	
+	aClientId _ publisherObjectsFactory aValidClientId.
+	aPassword _ publisherObjectsFactory aValidClientPassword.
+	interface _ InterfaceRest new.
+	
+	aCart _ interface createCartWithClientId: aClientId andPassword: aPassword.
+	booksInCart _ interface listCart: aCart.
+	
+	self assert: booksInCart isEmpty.
+
+
+! !
+
+
+!classDefinition: #Cart category: 'TusLibros'!
+Object subclass: #Cart
+	instanceVariableNames: 'books bookCatalog'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros'!
+
+!Cart methodsFor: 'initialization' stamp: 'LL 1/25/2021 18:50:24'!
+initializeWithCatalog: aBookCatalog
+	
+	bookCatalog := aBookCatalog.
+	books := Bag new.! !
+
+
+!Cart methodsFor: 'adding' stamp: 'LL 1/21/2021 20:24:07'!
+add: aBook
+	
+	self add: aBook quantity: 1.! !
+
+!Cart methodsFor: 'adding' stamp: 'LL 1/21/2021 20:23:42'!
+add: aBook quantity: numberOfBooksToAdd
+
+	self assertIsInCatalog: aBook.
+	self assertValidNumberOfCopies: numberOfBooksToAdd.
+	
+	books add: aBook withOccurrences: numberOfBooksToAdd.! !
+
+
+!Cart methodsFor: 'accessing' stamp: 'LL 1/20/2021 21:51:06'!
+quantityOf: aBook
+	
+	^books occurrencesOf: aBook! !
+
+!Cart methodsFor: 'accessing' stamp: 'LL 1/24/2021 17:42:15'!
+total
+	
+	^books sum: [ :aBook | bookCatalog at: aBook ].! !
+
+
+!Cart methodsFor: 'testing' stamp: 'LL 1/21/2021 21:39:26'!
+includes: aBook
+
+	^ books includes: aBook! !
+
+!Cart methodsFor: 'testing' stamp: 'LL 1/20/2021 21:33:04'!
 isEmpty
 
-	^self booksStored isEmpty.! !
+	^books isEmpty! !
 
 
-!Cart methodsFor: 'accessing' stamp: 'CZ 2/11/2021 13:32:24'!
-numberOfCopiesOf: bookIsbnToVerify
+!Cart methodsFor: 'private - assertions' stamp: 'LL 1/24/2021 15:49:03'!
+assertIsInCatalog: aBook
 
-	^self booksStored occurrencesOf: bookIsbnToVerify.! !
+	^ (bookCatalog includesKey: aBook) ifFalse: [ self error: self class bookNotInCatalogErrorMessage ]! !
 
-!Cart methodsFor: 'accessing' stamp: 'CZ 2/11/2021 12:04:15'!
-size
+!Cart methodsFor: 'private - assertions' stamp: 'LL 1/21/2021 21:27:21'!
+assertValidNumberOfCopies: numberOfBooksToAdd
 
-	^self booksStored size.! !
-
-
-!Cart methodsFor: 'cart management' stamp: 'CZ 2/11/2021 13:31:42'!
-addBook: bookIsbn quantity: numberOfCopies
-
-	self assertCanAddBook: bookIsbn withNumberOfCopies: numberOfCopies.
-	
-	numberOfCopies timesRepeat: [self booksStored add: bookIsbn].
-	! !
-
-!Cart methodsFor: 'cart management' stamp: 'CZ 2/18/2021 03:12:41'!
-booksStored
-	
-	^booksStored.! !
-
-!Cart methodsFor: 'cart management' stamp: 'CZ 2/18/2021 03:12:41'!
-removeBooks
-	
-	booksStored removeAll.! !
+	^ numberOfBooksToAdd strictlyPositive ifFalse: [ self error: self class invalidNumberOfCopiesErrorMessage ]! !
 
 
-!Cart methodsFor: 'assertions' stamp: 'JT 2/11/2021 20:59:31'!
-assertCanAddBook: bookIsbnToVerify withNumberOfCopies: numberOfCopiesToVerify
+!Cart methodsFor: 'as yet unclassified' stamp: 'CZ 2/22/2021 14:03:17'!
+books
 
-	(numberOfCopiesToVerify < 1) ifTrue: [self signalQuantityCannotBeLessThanOne].
-	
-	(Publisher new hasBookInCatalog: bookIsbnToVerify) ifFalse:[self signalInvalidIsbnCannotBeAddedToCart].  ! !
+	^books copy.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Cart class' category: 'TusLibros-Ejercicio'!
+!classDefinition: 'Cart class' category: 'TusLibros'!
 Cart class
 	instanceVariableNames: ''!
 
-!Cart class methodsFor: 'error messages' stamp: 'CZ 2/11/2021 10:34:39'!
-invalidIsbnCannotBeAddedToCartErrorMessage
+!Cart class methodsFor: 'instance creation' stamp: 'LL 1/25/2021 18:29:34'!
+acceptingItemsOf: aBookCatalog
+ 
+	^self new initializeWithCatalog: aBookCatalog ! !
 
-	^'Invalid ISBN cannot be added to cart'! !
 
-!Cart class methodsFor: 'error messages' stamp: 'CZ 2/11/2021 10:34:46'!
-quantityCannotBeLessThanOneErrorMessage
+!Cart class methodsFor: 'error messages' stamp: 'LL 1/20/2021 21:45:09'!
+bookNotInCatalogErrorMessage
 
-	^'Quantity cannot be less than one'! !
+	^'Cannot add a book that is not from the editorial'! !
+
+!Cart class methodsFor: 'error messages' stamp: 'LL 1/21/2021 21:27:21'!
+invalidNumberOfCopiesErrorMessage
+
+	^'Cannot add zero books'! !
 
 
-!classDefinition: #Cashier category: 'TusLibros-Ejercicio'!
+!classDefinition: #Cashier category: 'TusLibros'!
 Object subclass: #Cashier
-	instanceVariableNames: 'transactionAmount issuedBill totalSales'
+	instanceVariableNames: 'salesBook'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'TusLibros-Ejercicio'!
+	category: 'TusLibros'!
 
-!Cashier methodsFor: 'initialization' stamp: 'CZ 2/17/2021 18:42:27'!
-initialize
+!Cashier methodsFor: 'initialization' stamp: 'LL 1/25/2021 18:49:19'!
+initializeWithSalesBook: aSalesBook
 
-	totalSales _ Dictionary new.! !
+	salesBook := aSalesBook! !
 
 
-!Cashier methodsFor: 'signal error' stamp: 'JT 2/18/2021 18:52:30'!
-signalCheckOutCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDate
+!Cashier methodsFor: 'checkout' stamp: 'LL 1/25/2021 23:10:38'!
+checkout: aCart payingWith: aCreditCard through: aMerchantProcessor on: aCheckoutDateTime  
+
+	| ticket |
+	self assertCanCheckout: aCart using: aCreditCard on: aCheckoutDateTime.
 	
-	self error: self class checkOutCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDateErrorMessage.! !
-
-!Cashier methodsFor: 'signal error' stamp: 'JT 2/11/2021 21:37:49'!
-signalCheckOutCannotBeExecutedWithEmptyCart
+	ticket := aCart total.
 	
-	self error: self class checkOutCannotBeExecutedWithEmptyCartErrorMessage .! !
-
-!Cashier methodsFor: 'signal error' stamp: 'JT 2/18/2021 18:53:02'!
-signalCheckOutCannotBeExecutedWithExpiredCreditCard
+	self debit: ticket value from: aCreditCard using: aMerchantProcessor.
 	
-	self error: self class checkOutCannotBeExecutedWithExpiredCreditCardErrorMessage.! !
+	self registerSale: ticket.
+	
+	^ticket! !
 
 
-!Cashier methodsFor: 'cashier management' stamp: 'JT 2/18/2021 18:17:43'!
-calculateTransactionAmountOf: aCart using: aCatalog
+!Cashier methodsFor: 'assertions' stamp: 'LL 1/25/2021 23:10:22'!
+assertCanCheckout: aCart using: aCreditCard on: aDateTime 
 
-	| total |
-	
-	total _ 0.
-	aCart booksStored do: [:isbn | 
-		total _ total + (aCatalog at: isbn).].
-	
-	transactionAmount _ total.! !
+	self assertContainsBooks: aCart.
+	self assertIsNotExpired: aCreditCard on: aDateTime! !
 
-!Cashier methodsFor: 'cashier management' stamp: 'JT 2/18/2021 18:51:06'!
-checkOutCart: aCart withCreditCard: aCreditCard through: aMerchantProcessorMock using: aCatalog
-	
-	self calculateTransactionAmountOf: aCart using: aCatalog. 
-	
-	self assertCanExecuteCheckOutOf: aCart withCreditCard: aCreditCard .
-	
-	aMerchantProcessorMock assertCanProcessPayment.
-	
-	self issueBill: aCart.
-	
-	self updateTotalSalesWithCart: aCart andTransactionAmount: self transactionAmount.
-	
-	aCart removeBooks.! !
+!Cashier methodsFor: 'assertions' stamp: 'LL 1/24/2021 17:45:42'!
+assertContainsBooks: aCart
 
-!Cashier methodsFor: 'cashier management' stamp: 'CZ 2/17/2021 17:40:47'!
-issueBill: aCart
+	^ aCart isEmpty ifTrue: [	 self error: Cashier cannotCheckoutAnEmptyCart ]! !
 
-	| catalog finalBill |
+!Cashier methodsFor: 'assertions' stamp: 'LL 1/25/2021 23:11:12'!
+assertIsNotExpired: aCreditCard on: aDateTime 
 
-	finalBill _ Dictionary new.
-	catalog _ Publisher new catalog.
-	
-	aCart booksStored do: [:isbn | finalBill add: isbn->(catalog at: isbn)].
-
-	issuedBill _ finalBill.! !
-
-!Cashier methodsFor: 'cashier management' stamp: 'CZ 2/17/2021 17:40:46'!
-issuedBill
-	
-	^issuedBill.! !
-
-!Cashier methodsFor: 'cashier management' stamp: 'CZ 2/17/2021 18:57:37'!
-totalSales
-
-	^totalSales.! !
-
-!Cashier methodsFor: 'cashier management' stamp: 'CZ 2/17/2021 17:39:57'!
-transactionAmount
-	
-	^transactionAmount.! !
-
-!Cashier methodsFor: 'cashier management' stamp: 'CZ 2/17/2021 18:43:13'!
-updateTotalSalesWithCart: aCart andTransactionAmount: aTransactionAmount
-
-	totalSales add: aCart -> aTransactionAmount.! !
+	^ (aCreditCard isExpiredOn: aDateTime) ifTrue: [ self error: Cashier cannotCheckoutUsingAnExpiredCard ]! !
 
 
-!Cashier methodsFor: 'assertions - private' stamp: 'JT 2/18/2021 18:54:39'!
-assertCanExecuteCheckOutOf: aCartToCheckOut withCreditCard: aCreditCard
-	
-	| expirationMonth expirationYear expirationDate2 |
-	
-	aCartToCheckOut isEmpty ifTrue: [self signalCheckOutCannotBeExecutedWithEmptyCart].
-	
-	(aCreditCard expirationDate) size ~= 6 ifTrue:[self signalCheckOutCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDate].
-	
-	expirationMonth _ GregorianMonth numbered: (aCreditCard expirationDate copyFrom: 1 to: 2) asInteger.
-	expirationYear _ (aCreditCard expirationDate copyFrom: 3 to: 6) asInteger.
-	expirationDate2 _ (expirationMonth, expirationYear) lastDate.
-	
-	expirationDate2 < FixedGregorianDate today ifTrue:[self signalCheckOutCannotBeExecutedWithExpiredCreditCard].! !
+!Cashier methodsFor: 'private' stamp: 'LL 1/24/2021 18:23:28'!
+debit: anAmount from: aCreditCard using: aMerchantProcessor
+
+	^ [ aMerchantProcessor debit: anAmount from: aCreditCard ]
+		on: Error - MessageNotUnderstood 
+		do: [ :exceptionRaised |
+			self error: self class couldNotProcessPaymentErrorMessage.
+		]! !
+
+!Cashier methodsFor: 'private' stamp: 'LL 1/25/2021 19:50:24'!
+registerSale: ticket
+
+	^ salesBook add: ticket! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Cashier class' category: 'TusLibros-Ejercicio'!
+!classDefinition: 'Cashier class' category: 'TusLibros'!
 Cashier class
 	instanceVariableNames: ''!
 
-!Cashier class methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 18:53:32'!
-checkOutCannotBeExecutedWithCreditCardWithoutASixDigitExpirationDateErrorMessage
+!Cashier class methodsFor: 'as yet unclassified' stamp: 'LL 1/21/2021 21:50:07'!
+cannotCheckoutAnEmptyCart
+	^'Cannot checkout an empty cart'! !
 
-	^'Check out cannot be executed with credit card without a six-digit expiration date'.! !
+!Cashier class methodsFor: 'as yet unclassified' stamp: 'LL 1/24/2021 16:44:06'!
+cannotCheckoutUsingAnExpiredCard
 
-!Cashier class methodsFor: 'as yet unclassified' stamp: 'JT 2/17/2021 01:06:45'!
-checkOutCannotBeExecutedWithEmptyCartErrorMessage
+	^'Cannot checkout using an expired card'! !
 
-	^'Check out cannot be executed with empty cart'! !
+!Cashier class methodsFor: 'as yet unclassified' stamp: 'LL 1/24/2021 18:13:36'!
+couldNotProcessPaymentErrorMessage
 
-!Cashier class methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 18:54:01'!
-checkOutCannotBeExecutedWithExpiredCreditCardErrorMessage
+	^'Cart was rejected'! !
 
-	^'Check out cannot be executed with expired credit card'! !
+!Cashier class methodsFor: 'as yet unclassified' stamp: 'LL 1/25/2021 18:48:59'!
+registeringSalesOn: aSalesBook
+
+	^ self new initializeWithSalesBook: aSalesBook.! !
 
 
-!classDefinition: #CreditCard category: 'TusLibros-Ejercicio'!
+!classDefinition: #CreditCard category: 'TusLibros'!
 Object subclass: #CreditCard
-	instanceVariableNames: 'ownersName number expirationDate'
+	instanceVariableNames: 'creditCardNumber owner expirationDate'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'TusLibros-Ejercicio'!
+	category: 'TusLibros'!
 
-!CreditCard methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 18:41:47'!
-addNumber: aCreditCardNumber andExpirationDate: aExpirationDate andOwnersName: anOwnersName
+!CreditCard methodsFor: 'initialization' stamp: 'LL 2/16/2021 18:05:42'!
+initializeOf: aPerson number: aCreditCardNumber expiringOn: aMonthOfYear 
 
-	number _ aCreditCardNumber.
-	expirationDate _ aExpirationDate .
-	ownersName _ anOwnersName .
+	owner := aPerson.
+	creditCardNumber := aCreditCardNumber.
+	expirationDate := aMonthOfYear.! !
 
-	! !
 
-!CreditCard methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 18:34:23'!
-expirationDate
+!CreditCard methodsFor: 'testing' stamp: 'LL 2/16/2021 18:05:42'!
+isExpiredOn: aDateTime
 
-	^expirationDate.! !
-
-!CreditCard methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 18:34:13'!
-number
-
-	^number.! !
-
-!CreditCard methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 18:34:37'!
-ownersName
-
-	^ownersName.! !
+	^ aDateTime > (expirationDate lastDate)! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'CreditCard class' category: 'TusLibros-Ejercicio'!
+!classDefinition: 'CreditCard class' category: 'TusLibros'!
 CreditCard class
 	instanceVariableNames: ''!
 
-!CreditCard class methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 18:32:29'!
-createWithNumber: aCreditCardNumber andExpirationDate: aExpirationDate andOwnersName: anOwnersName
+!CreditCard class methodsFor: 'instance creation' stamp: 'LL 1/24/2021 18:15:40'!
+of: nameOfTheOwner number: aCreditCardNumber expiringOn: aMonthOfYear
 
-	^self new addNumber: aCreditCardNumber andExpirationDate: aExpirationDate andOwnersName: anOwnersName.! !
+	nameOfTheOwner isEmpty ifTrue: [ self error: self nameCannotBeBlankErrorMessage ].
+	
+	^self new initializeOf: nameOfTheOwner number: aCreditCardNumber expiringOn: aMonthOfYear ! !
+
+
+!CreditCard class methodsFor: 'as yet unclassified' stamp: 'LL 1/24/2021 18:01:14'!
+nameCannotBeBlankErrorMessage
+
+	^'Name cannot be blank'! !
 
 
-!classDefinition: #MerchantProcessorMock category: 'TusLibros-Ejercicio'!
-Object subclass: #MerchantProcessorMock
-	instanceVariableNames: 'errorOccurred'
+!classDefinition: #InterfaceRest category: 'TusLibros'!
+Object subclass: #InterfaceRest
+	instanceVariableNames: 'clientId clientPassword'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'TusLibros-Ejercicio'!
+	category: 'TusLibros'!
 
-!MerchantProcessorMock methodsFor: 'assertions - private' stamp: 'JT 2/18/2021 18:49:26'!
-assertCanProcessPayment
+!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'CZ 2/22/2021 14:08:51'!
+createCartWithClientId: aClientId andPassword: aPassword
+
+	| aCatalog |
 	
-	errorOccurred ifTrue:[self signalPaymentCannotBeExecutedDueToMerchantProcessorConnectionFailure].! !
-
-
-!MerchantProcessorMock methodsFor: 'initialization' stamp: 'JT 2/18/2021 18:09:29'!
-updateError: boolean
-
-	errorOccurred _ boolean.! !
-
-
-!MerchantProcessorMock methodsFor: 'signal error' stamp: 'JT 2/18/2021 17:52:42'!
-signalPaymentCannotBeExecutedDueToMerchantProcessorConnectionFailure
+	aClientId ~= clientId ifTrue:[self signalCannotCreateACartWithInvalidClientId].
+	aPassword ~= clientPassword  ifTrue:[self signalCannotCreateACartWithInvalidClientPassword].
 	
-	self error: self class paymentCannotBeExecutedDueToMerchantProcessorConnectionFailureErrorMessage.! !
+	aCatalog := Dictionary newFromPairs: {'ABC123'. 1000 * peso}.
+	^Cart acceptingItemsOf: aCatalog.
+
+	! !
+
+!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'CZ 2/22/2021 13:51:28'!
+initialize
+	
+	clientId _ '1234'.
+	clientPassword _ '5678'.! !
+
+!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'CZ 2/22/2021 14:03:31'!
+listCart: aCart
+
+	^aCart books! !
+
+!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'CZ 2/22/2021 13:33:55'!
+signalCannotCreateACartWithInvalidClientId
+
+	^self error: self class cannotCreateACartWithInvalidClientIdErrorMessage.! !
+
+!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'CZ 2/22/2021 13:46:14'!
+signalCannotCreateACartWithInvalidClientPassword
+
+	^self error: self class cannotCreateACartWithInvalidClientPasswordErrorMessage.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MerchantProcessorMock class' category: 'TusLibros-Ejercicio'!
-MerchantProcessorMock class
+!classDefinition: 'InterfaceRest class' category: 'TusLibros'!
+InterfaceRest class
 	instanceVariableNames: ''!
 
-!MerchantProcessorMock class methodsFor: 'error messages' stamp: 'JT 2/18/2021 17:53:17'!
-paymentCannotBeExecutedDueToMerchantProcessorConnectionFailureErrorMessage
-
-	^'Payment cannot be executed due to Merchant Processor connection failure'! !
-
-
-!MerchantProcessorMock class methodsFor: 'as yet unclassified' stamp: 'JT 2/18/2021 18:11:19'!
-createWithError: boolean
+!InterfaceRest class methodsFor: 'as yet unclassified' stamp: 'CZ 2/22/2021 13:32:12'!
+cannotCreateACartWithInvalidClientIdErrorMessage
 	
-	^self new updateError: boolean.
-	! !
+	^'Cannot create a cart with invalid client ID'! !
+
+!InterfaceRest class methodsFor: 'as yet unclassified' stamp: 'CZ 2/22/2021 13:46:00'!
+cannotCreateACartWithInvalidClientPasswordErrorMessage
+	
+	^'Cannot create a cart with invalid client password'! !
 
 
-!classDefinition: #Publisher category: 'TusLibros-Ejercicio'!
-Object subclass: #Publisher
-	instanceVariableNames: 'catalog'
+!classDefinition: #PublisherTestObjectsFactory category: 'TusLibros'!
+Object subclass: #PublisherTestObjectsFactory
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'TusLibros-Ejercicio'!
+	category: 'TusLibros'!
 
-!Publisher methodsFor: 'publisher management' stamp: 'CZ 2/11/2021 10:52:05'!
-catalog
+!PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'LL 2/16/2021 19:41:18'!
+aCashier
+
+	| salesBook |
+	salesBook := OrderedCollection new.
+	^ Cashier registeringSalesOn: salesBook.! !
+
+!PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'CZ 2/22/2021 13:39:30'!
+aValidClientId
+
+	^'1234'! !
+
+!PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'CZ 2/22/2021 13:39:49'!
+aValidClientPassword
+
+	^'5678'! !
+
+!PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'LL 2/16/2021 19:45:08'!
+aValidCreditCard
+
+	| nextMonth |
+	nextMonth := (FixedGregorianDate today next: GregorianMonth oneMonth) monthOfYear.
+	^CreditCard of: 'Juan Perez' number: 11111111 expiringOn: nextMonth.! !
+
+!PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'LL 1/25/2021 18:29:34'!
+anEmptyCart
+
+	| aCatalog |
+	aCatalog := Dictionary newFromPairs: {self bookFromTheEditorial. self bookFromTheEditorialPrice}.
+	^Cart acceptingItemsOf: aCatalog.! !
+
+!PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'LL 2/16/2021 19:51:21'!
+anEmptySalesBook
+
+	^OrderedCollection new.! !
+
+!PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'LL 2/16/2021 19:43:38'!
+anExpiredCreditCard
 	
-	^catalog.! !
+	| lastMonth |
+	lastMonth := (FixedGregorianDate today previous: GregorianMonth oneMonth) monthOfYear.
+	^CreditCard of: 'Juan Perez' number: 11111111 expiringOn: lastMonth.! !
 
+!PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'LL 1/24/2021 15:59:26'!
+bookFromTheEditorial
 
-!Publisher methodsFor: 'initialization' stamp: 'CZ 2/18/2021 01:12:25'!
-initialize
+	^ 'ABC123'! !
 
-	catalog _ Dictionary with: 9789877250244->(1000.50*peso) with: 9789585118300->(999.99*peso) with: 9788408081548->(700.75*peso) with: 9789870711544->(1500.80*peso) with: 9789871534388->(2000.00*peso) with: 9788477511205->(1000000000000000.00*peso).! !
+!PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'LL 1/24/2021 17:11:28'!
+bookFromTheEditorialPrice
 
+	^ 1000 * peso! !
 
-!Publisher methodsFor: 'testing' stamp: 'JT 2/16/2021 22:36:53'!
-hasBookInCatalog: bookToVerify
-	
-	^self catalog includesKey: bookToVerify.! !
+!PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'LL 2/16/2021 19:46:27'!
+cartWithABook
+
+	| cart |
+	cart := self anEmptyCart.
+	cart add: self bookFromTheEditorial.
+	^cart! !
+
+!PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'LL 2/16/2021 19:48:31'!
+now 
+
+	^GregorianDateTime now! !
