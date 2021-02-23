@@ -1,9 +1,9 @@
-!classDefinition: #CartTest category: 'TusLibros'!
+!classDefinition: #CartTest category: 'TusLibros-Ejercicio'!
 TestCase subclass: #CartTest
 	instanceVariableNames: 'objectsFactory'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'TusLibros'!
+	category: 'TusLibros-Ejercicio'!
 
 !CartTest methodsFor: 'tests' stamp: 'LL 2/16/2021 19:50:24'!
 setUp
@@ -93,12 +93,12 @@ createCart
 	^ objectsFactory anEmptyCart! !
 
 
-!classDefinition: #CashierTest category: 'TusLibros'!
+!classDefinition: #CashierTest category: 'TusLibros-Ejercicio'!
 TestCase subclass: #CashierTest
 	instanceVariableNames: 'objectsFactory merchantProcessorBehaviour'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'TusLibros'!
+	category: 'TusLibros-Ejercicio'!
 
 !CashierTest methodsFor: 'tests' stamp: 'LL 2/16/2021 19:50:04'!
 setUp
@@ -228,12 +228,12 @@ merchantProcessorForTest
 	^self! !
 
 
-!classDefinition: #CreditCardTest category: 'TusLibros'!
+!classDefinition: #CreditCardTest category: 'TusLibros-Ejercicio'!
 TestCase subclass: #CreditCardTest
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'TusLibros'!
+	category: 'TusLibros-Ejercicio'!
 
 !CreditCardTest methodsFor: 'tests' stamp: 'LL 1/24/2021 18:15:23'!
 test01CreditCardOwnerNameCannotBeBlank
@@ -245,12 +245,12 @@ test01CreditCardOwnerNameCannotBeBlank
 		]! !
 
 
-!classDefinition: #InterfaceRestTest category: 'TusLibros'!
+!classDefinition: #InterfaceRestTest category: 'TusLibros-Ejercicio'!
 TestCase subclass: #InterfaceRestTest
 	instanceVariableNames: 'publisherObjectsFactory'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'TusLibros'!
+	category: 'TusLibros-Ejercicio'!
 
 !InterfaceRestTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/22/2021 13:43:53'!
 setUp
@@ -315,13 +315,57 @@ test03
 
 ! !
 
+!InterfaceRestTest methodsFor: 'as yet unclassified' stamp: 'JT 2/22/2021 22:10:24'!
+test05
+"puedo agregar un libro al carrito"
+	
+	| aCart interface aClientId aPassword aQuantity |
+	
+	aClientId _ publisherObjectsFactory aValidClientId.
+	aPassword _ publisherObjectsFactory aValidClientPassword.
+	interface _ InterfaceRest new.
+	aQuantity _ 2.
+	"Crear en publisherObjectsFactory un mensaje para crear un carrito valido"
+	
+	aCart _ interface createCartWithClientId: aClientId andPassword: aPassword.
+	interface addToCart: aCart aBook: publisherObjectsFactory bookFromTheEditorial quantity: aQuantity.
+	
+	self deny: aCart isEmpty.
+	
+
+
+! !
+
+!InterfaceRestTest methodsFor: 'as yet unclassified' stamp: 'JT 2/22/2021 22:10:29'!
+_test04
+"No puedo agregar un libro si pasaron 30 minutos desde la ultima operacion (carrito inactivo)"
+	
+	| aCart interface aClientId aPassword aQuantity |
+	
+	aClientId _ publisherObjectsFactory aValidClientId.
+	aPassword _ publisherObjectsFactory aValidClientPassword.
+	interface _ InterfaceRest new.
+	aQuantity _ 2.
+	"Crear en publisherObjectsFactory un mensaje para crear un carrito valido"
+	
+	aCart _ publisherObjectsFactory anExpiredCart.
+	
+	self should: [ interface addToCart: aCart aBook: publisherObjectsFactory bookFromTheEditorial quantity: aQuantity]
+		raise: Error
+		withExceptionDo: [ :anException |
+			self assert: anException messageText equals: InterfaceRest cannotAddABookToCartAfter30MinutesOfLastOperationErrorMessage.
+		]
+
+
+! !
+
 
-!classDefinition: #Cart category: 'TusLibros'!
+!classDefinition: #Cart category: 'TusLibros-Ejercicio'!
 Object subclass: #Cart
 	instanceVariableNames: 'books bookCatalog'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'TusLibros'!
+	category: 'TusLibros-Ejercicio'!
 
 !Cart methodsFor: 'initialization' stamp: 'LL 1/25/2021 18:50:24'!
 initializeWithCatalog: aBookCatalog
@@ -384,7 +428,7 @@ books
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Cart class' category: 'TusLibros'!
+!classDefinition: 'Cart class' category: 'TusLibros-Ejercicio'!
 Cart class
 	instanceVariableNames: ''!
 
@@ -405,12 +449,12 @@ invalidNumberOfCopiesErrorMessage
 	^'Cannot add zero books'! !
 
 
-!classDefinition: #Cashier category: 'TusLibros'!
+!classDefinition: #Cashier category: 'TusLibros-Ejercicio'!
 Object subclass: #Cashier
 	instanceVariableNames: 'salesBook'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'TusLibros'!
+	category: 'TusLibros-Ejercicio'!
 
 !Cashier methodsFor: 'initialization' stamp: 'LL 1/25/2021 18:49:19'!
 initializeWithSalesBook: aSalesBook
@@ -466,7 +510,7 @@ registerSale: ticket
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'Cashier class' category: 'TusLibros'!
+!classDefinition: 'Cashier class' category: 'TusLibros-Ejercicio'!
 Cashier class
 	instanceVariableNames: ''!
 
@@ -490,12 +534,12 @@ registeringSalesOn: aSalesBook
 	^ self new initializeWithSalesBook: aSalesBook.! !
 
 
-!classDefinition: #CreditCard category: 'TusLibros'!
+!classDefinition: #CreditCard category: 'TusLibros-Ejercicio'!
 Object subclass: #CreditCard
 	instanceVariableNames: 'creditCardNumber owner expirationDate'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'TusLibros'!
+	category: 'TusLibros-Ejercicio'!
 
 !CreditCard methodsFor: 'initialization' stamp: 'LL 2/16/2021 18:05:42'!
 initializeOf: aPerson number: aCreditCardNumber expiringOn: aMonthOfYear 
@@ -512,7 +556,7 @@ isExpiredOn: aDateTime
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'CreditCard class' category: 'TusLibros'!
+!classDefinition: 'CreditCard class' category: 'TusLibros-Ejercicio'!
 CreditCard class
 	instanceVariableNames: ''!
 
@@ -530,20 +574,32 @@ nameCannotBeBlankErrorMessage
 	^'Name cannot be blank'! !
 
 
-!classDefinition: #InterfaceRest category: 'TusLibros'!
+!classDefinition: #InterfaceRest category: 'TusLibros-Ejercicio'!
 Object subclass: #InterfaceRest
-	instanceVariableNames: 'clientId clientPassword'
+	instanceVariableNames: 'clientId clientPassword dateTimeOfLastOperation'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'TusLibros'!
+	category: 'TusLibros-Ejercicio'!
 
-!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'CZ 2/22/2021 14:08:51'!
+!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'JT 2/22/2021 21:22:21'!
+addToCart: aCart aBook: aBookIsbn quantity: aQuantity
+	
+	(dateTimeOfLastOperation distanceTo: GregorianDateTime now) > (1800000 * millisecond) ifTrue: [
+		self signalCannotAddABookToCartAfter30MinutesOfLastOperation.].
+	
+	aCart add: aBookIsbn quantity: aQuantity.
+	
+
+	! !
+
+!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'JT 2/22/2021 20:50:22'!
 createCartWithClientId: aClientId andPassword: aPassword
 
 	| aCatalog |
 	
 	aClientId ~= clientId ifTrue:[self signalCannotCreateACartWithInvalidClientId].
 	aPassword ~= clientPassword  ifTrue:[self signalCannotCreateACartWithInvalidClientPassword].
+	dateTimeOfLastOperation _ GregorianDateTime now.
 	
 	aCatalog := Dictionary newFromPairs: {'ABC123'. 1000 * peso}.
 	^Cart acceptingItemsOf: aCatalog.
@@ -561,6 +617,11 @@ listCart: aCart
 
 	^aCart books! !
 
+!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'JT 2/22/2021 21:13:24'!
+signalCannotAddABookToCartAfter30MinutesOfLastOperation
+
+	^self error: self class cannotAddABookToCartAfter30MinutesOfLastOperationErrorMessage.! !
+
 !InterfaceRest methodsFor: 'as yet unclassified' stamp: 'CZ 2/22/2021 13:33:55'!
 signalCannotCreateACartWithInvalidClientId
 
@@ -573,9 +634,14 @@ signalCannotCreateACartWithInvalidClientPassword
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'InterfaceRest class' category: 'TusLibros'!
+!classDefinition: 'InterfaceRest class' category: 'TusLibros-Ejercicio'!
 InterfaceRest class
 	instanceVariableNames: ''!
+
+!InterfaceRest class methodsFor: 'as yet unclassified' stamp: 'JT 2/22/2021 21:13:58'!
+cannotAddABookToCartAfter30MinutesOfLastOperationErrorMessage
+	
+	^'Cannot create a cart after 30 minutes of last operation'! !
 
 !InterfaceRest class methodsFor: 'as yet unclassified' stamp: 'CZ 2/22/2021 13:32:12'!
 cannotCreateACartWithInvalidClientIdErrorMessage
@@ -588,12 +654,12 @@ cannotCreateACartWithInvalidClientPasswordErrorMessage
 	^'Cannot create a cart with invalid client password'! !
 
 
-!classDefinition: #PublisherTestObjectsFactory category: 'TusLibros'!
+!classDefinition: #PublisherTestObjectsFactory category: 'TusLibros-Ejercicio'!
 Object subclass: #PublisherTestObjectsFactory
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'TusLibros'!
+	category: 'TusLibros-Ejercicio'!
 
 !PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'LL 2/16/2021 19:41:18'!
 aCashier
@@ -631,6 +697,14 @@ anEmptySalesBook
 
 	^OrderedCollection new.! !
 
+!PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'JT 2/22/2021 21:31:59'!
+anExpiredCart
+
+	| cart |
+	cart := self anEmptyCart.
+	Delay setDelay: 180000.
+	^cart! !
+
 !PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'LL 2/16/2021 19:43:38'!
 anExpiredCreditCard
 	
@@ -656,7 +730,7 @@ cartWithABook
 	cart add: self bookFromTheEditorial.
 	^cart! !
 
-!PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'LL 2/16/2021 19:48:31'!
+!PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'JT 2/22/2021 20:37:36'!
 now 
 
 	^GregorianDateTime now! !
