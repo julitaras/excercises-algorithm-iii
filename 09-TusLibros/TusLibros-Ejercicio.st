@@ -252,82 +252,78 @@ TestCase subclass: #InterfaceRestTest
 	poolDictionaries: ''
 	category: 'TusLibros-Ejercicio'!
 
-!InterfaceRestTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/22/2021 13:43:53'!
+!InterfaceRestTest methodsFor: 'set up' stamp: 'CZ 2/22/2021 13:43:53'!
 setUp
 
 	publisherObjectsFactory := PublisherTestObjectsFactory new.! !
 
-!InterfaceRestTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/24/2021 23:51:32'!
-test01
-"No puedo agregar un libro a un carrito invalido"
+
+!InterfaceRestTest methodsFor: 'tests' stamp: 'CZ 2/25/2021 18:43:13'!
+test01CannotCreateACartWithInvalidClientId
 	
-	| interface aClientId aPassword |
+	| anInterface aClientId aPassword |
 	
 	aClientId _ '12345'.
 	aPassword _ publisherObjectsFactory aValidClientPassword.
-	interface _ publisherObjectsFactory anInterfaceRest.
+	anInterface _ publisherObjectsFactory anInterfaceRest.
 	
-	self should: [interface createCartWithClientId: aClientId andPassword: aPassword ]
+	self should: [anInterface createCartWithClientId: aClientId andPassword: aPassword ]
 		raise: Error
 		withExceptionDo: [ :anException |
-			self assert: anException messageText equals: InterfaceRest cannotCreateACartWithInvalidClientIdErrorMessage.
+			self assert: anException messageText equals: InterfaceRest cannotExecuteOperationWithInvalidClientsCredentialsErrorMessage.
 		]
 
 
 
 ! !
 
-!InterfaceRestTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/24/2021 20:08:02'!
-test02
-"No puedo crear un carrito con contraseña de usuario invalido"
+!InterfaceRestTest methodsFor: 'tests' stamp: 'CZ 2/25/2021 18:43:30'!
+test02CannotCreateACartWithInvalidClientPassword
 	
-	| interface aClientId aPassword |
+	| anInterface aClientId aPassword |
 	
 	aClientId _ publisherObjectsFactory aValidClientId.
-	aPassword _ '56789'.
-	interface _ publisherObjectsFactory anInterfaceRest.
+	aPassword _ 56789.
+	anInterface _ publisherObjectsFactory anInterfaceRest.
 	
-	self should: [interface createCartWithClientId: aClientId andPassword: aPassword ]
+	self should: [anInterface createCartWithClientId: aClientId andPassword: aPassword ]
 		raise: Error
 		withExceptionDo: [ :anException |
-			self assert: anException messageText equals: InterfaceRest cannotCreateACartWithInvalidClientPasswordErrorMessage.
+			self assert: anException messageText equals: InterfaceRest cannotExecuteOperationWithInvalidClientsCredentialsErrorMessage.
 		]
 
 
 
 ! !
 
-!InterfaceRestTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/24/2021 20:08:10'!
-test03
-"Puedo crear un carrito con id y contraseña de usuario validos"
+!InterfaceRestTest methodsFor: 'tests' stamp: 'CZ 2/25/2021 18:43:39'!
+test03CanCreateACartWithValidClientCredentials
 	
-	| interface aClientId aPassword booksInCart aCartId|
+	| anInterface aClientId aPassword booksInCart aCartId|
 	
 	aClientId _ publisherObjectsFactory aValidClientId.
 	aPassword _ publisherObjectsFactory aValidClientPassword.
-	interface _ publisherObjectsFactory anInterfaceRest.
+	anInterface _ publisherObjectsFactory anInterfaceRest.
 	
-	aCartId _ interface createCartWithClientId: aClientId andPassword: aPassword.
-	booksInCart _ interface listCart: aCartId.
+	aCartId _ anInterface createCartWithClientId: aClientId andPassword: aPassword.
+	booksInCart _ anInterface listCartWithId: aCartId.
 	
 	self assert: booksInCart isEmpty.
 
 
 ! !
 
-!InterfaceRestTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/24/2021 20:27:46'!
-test04
-"Cada carrito tiene id unico"
+!InterfaceRestTest methodsFor: 'tests' stamp: 'CZ 2/25/2021 18:43:55'!
+test04EveryNewCartHasAUniqueCartId
 	
-	| interface aClientId aPassword aCartId1 aCartId2 |
+	| anInterface aClientId aPassword aCartId1 aCartId2 |
 	
 	aClientId _ publisherObjectsFactory aValidClientId.
 	aPassword _ publisherObjectsFactory aValidClientPassword.
-	interface _ publisherObjectsFactory anInterfaceRest.
-	"Crear en publisherObjectsFactory un mensaje para crear un carrito valido"
+	anInterface _ publisherObjectsFactory anInterfaceRest.
 	
-	aCartId1 _ interface createCartWithClientId: aClientId andPassword: aPassword.
-	aCartId2 _ interface createCartWithClientId: aClientId andPassword: aPassword.
+	aCartId1 _ anInterface createCartWithClientId: aClientId andPassword: aPassword.
+	aCartId2 _ anInterface createCartWithClientId: aClientId andPassword: aPassword.
 	
 	self assert: aCartId1 ~= aCartId2.
 	
@@ -335,21 +331,18 @@ test04
 
 ! !
 
-!InterfaceRestTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/24/2021 20:24:39'!
-test05
-"puedo agregar un libro al carrito"
+!InterfaceRestTest methodsFor: 'tests' stamp: 'CZ 2/25/2021 18:44:14'!
+test05CanAddABookToCartWithValidId
 	
-	| interface aClientId aPassword aQuantity aCartId booksInCart|
+	| anInterface aClientId aPassword aCartId booksInCart|
 	
 	aClientId _ publisherObjectsFactory aValidClientId.
 	aPassword _ publisherObjectsFactory aValidClientPassword.
-	interface _ publisherObjectsFactory anInterfaceRest.
-	aQuantity _ 2.
-	"Crear en publisherObjectsFactory un mensaje para crear un carrito valido"
+	anInterface _ publisherObjectsFactory anInterfaceRest.
 	
-	aCartId _ interface createCartWithClientId: aClientId andPassword: aPassword.
-	interface addToCart: aCartId aBook: publisherObjectsFactory bookFromTheEditorial quantity: aQuantity.
-	booksInCart _ interface listCart: aCartId.
+	aCartId _ anInterface createCartWithClientId: aClientId andPassword: aPassword.
+	anInterface addToCart: aCartId aBook: publisherObjectsFactory bookFromTheEditorial quantity: 2.
+	booksInCart _ anInterface listCartWithId: aCartId.
 	
 	self deny: booksInCart isEmpty.
 	
@@ -357,18 +350,17 @@ test05
 
 ! !
 
-!InterfaceRestTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/24/2021 21:23:24'!
-test06
-"No puedo agregar un libro a un carrito invalido"
+!InterfaceRestTest methodsFor: 'tests' stamp: 'CZ 2/25/2021 18:44:47'!
+test06CannotAddABookToCartWithInvalidId
 	
-	| interface |
+	| anInterface |
 	
-	interface _ publisherObjectsFactory anInterfaceRest.
+	anInterface _ publisherObjectsFactory anInterfaceRest.
 	
-	self should: [interface addToCart: 3 aBook: publisherObjectsFactory bookFromTheEditorial quantity: 1]
+	self should: [anInterface addToCart: 3 aBook: publisherObjectsFactory bookFromTheEditorial quantity: 1]
 		raise: Error
 		withExceptionDo: [ :anException |
-			self assert: anException messageText equals: InterfaceRest cannotAddBookToCartWithInvalidIdErrorMessage.
+			self assert: anException messageText equals: InterfaceRest cannotExecuteOperationWithInvalidCartIdErrorMessage.
 		]
 
 
@@ -376,80 +368,209 @@ test06
 
 ! !
 
-!InterfaceRestTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/24/2021 21:30:30'!
-test07
+!InterfaceRestTest methodsFor: 'tests' stamp: 'CZ 2/25/2021 18:45:03'!
+test07ACartKnowsItsContent
 
-	"Un carrito conoce su contenido"
-
-	| interface aClientId aPassword aCartId booksInCart expectedBooksInCart |
+	| anInterface aClientId aPassword aCartId booksInCart expectedBooksInCart |
 
 	aClientId _ publisherObjectsFactory aValidClientId.
  	aPassword _ publisherObjectsFactory aValidClientPassword.
- 	interface _ publisherObjectsFactory anInterfaceRest.
+ 	anInterface _ publisherObjectsFactory anInterfaceRest.
 
-  	aCartId _ interface createCartWithClientId: aClientId andPassword: aPassword.
-	interface addToCart: aCartId aBook: publisherObjectsFactory bookFromTheEditorial quantity: 2.
-	booksInCart _ interface listCart: aCartId.
+  	aCartId _ anInterface createCartWithClientId: aClientId andPassword: aPassword.
+	anInterface addToCart: aCartId aBook: publisherObjectsFactory bookFromTheEditorial quantity: 2.
+	booksInCart _ anInterface listCartWithId: aCartId.
 	expectedBooksInCart _ Bag with: publisherObjectsFactory bookFromTheEditorial with: publisherObjectsFactory bookFromTheEditorial.
 	
 	self assert: expectedBooksInCart equals: booksInCart.! !
 
-!InterfaceRestTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/24/2021 23:36:15'!
-test08
-	"No puedo hacer checkout deun carrito con id invalido"
-	
-	| interface |
+!InterfaceRestTest methodsFor: 'tests' stamp: 'CZ 2/25/2021 18:45:12'!
+test08CannotCheckoutACartWithInvalidId
 
- 	interface _ publisherObjectsFactory anInterfaceRest.
+	| anInterface aClientId aPassword |
 	
-	self should: [ interface checkoutCartWithId: 3 andCreditCardNumber: publisherObjectsFactory aValidCreditCardNumber andExpiratioDate: publisherObjectsFactory aValidCreditCardExpirationDate andOwnersName: publisherObjectsFactory aValidCreditCardOwnersName]
+	aClientId _ publisherObjectsFactory aValidClientId.
+ 	aPassword _ publisherObjectsFactory aValidClientPassword.
+ 	anInterface _ publisherObjectsFactory anInterfaceRest.
+	
+	
+	self should: [ anInterface checkoutCartWithId: 3 andCreditCardNumber: publisherObjectsFactory aValidCreditCardNumber andExpiratioDate: publisherObjectsFactory aValidCreditCardExpirationDate andOwnersName: publisherObjectsFactory aValidCreditCardOwnersName]
 		raise: Error
 		withExceptionDo: [ :anException |
-			self assert: anException messageText equals: InterfaceRest cannotCheckoutCartWithInvalidIdErrorMessage.
+			self assert: anException messageText equals: InterfaceRest cannotExecuteOperationWithInvalidCartIdErrorMessage.
+			self assert: (anInterface listPurchasesOf: aClientId withPassword: aPassword) isEmpty.
 		]
 ! !
 
-!InterfaceRestTest methodsFor: 'as yet unclassified' stamp: 'JT 2/25/2021 12:35:08'!
-test09
-	"Puedo hacer checkout de un carrito con id valido"
+!InterfaceRestTest methodsFor: 'tests' stamp: 'CZ 2/25/2021 18:45:23'!
+test09CanCheckoutACartWithValidId
 	
-	| interface aClientId aPassword aCartId aTicket listPurchasesExpected |
+	| anInterface aClientId aPassword aCartId aTicket |
 
  	aClientId _ publisherObjectsFactory aValidClientId.
  	aPassword _ publisherObjectsFactory aValidClientPassword.
- 	interface _ publisherObjectsFactory anInterfaceRest.
+ 	anInterface _ publisherObjectsFactory anInterfaceRest.
 
-  	aCartId _ interface createCartWithClientId: aClientId andPassword: aPassword.
-	interface addToCart: aCartId aBook: publisherObjectsFactory bookFromTheEditorial quantity: 2.
+  	aCartId _ anInterface createCartWithClientId: aClientId andPassword: aPassword.
+	anInterface addToCart: aCartId aBook: publisherObjectsFactory bookFromTheEditorial quantity: 2.
 	
-	aTicket _ interface checkoutCartWithId: aCartId andCreditCardNumber: publisherObjectsFactory aValidCreditCardNumber andExpiratioDate: publisherObjectsFactory aValidCreditCardExpirationDate andOwnersName: publisherObjectsFactory aValidCreditCardOwnersName.
+	aTicket _ anInterface checkoutCartWithId: aCartId andCreditCardNumber: publisherObjectsFactory aValidCreditCardNumber andExpiratioDate: publisherObjectsFactory aValidCreditCardExpirationDate andOwnersName: publisherObjectsFactory aValidCreditCardOwnersName.
 	
-	listPurchasesExpected _ OrderedCollection with: publisherObjectsFactory bookFromTheEditorial with: publisherObjectsFactory bookFromTheEditorial.
-	
-	self assert: (listPurchasesExpected) equals: (interface listPurchasesOf: aClientId withPassword: aPassword)
+	self assert: (2000*peso) equals: aTicket.
 	
 	! !
 
-!InterfaceRestTest methodsFor: 'as yet unclassified' stamp: 'JT 2/22/2021 22:10:29'!
-_test04
-"No puedo agregar un libro si pasaron 30 minutos desde la ultima operacion (carrito inactivo)"
+!InterfaceRestTest methodsFor: 'tests' stamp: 'CZ 2/25/2021 18:45:32'!
+test10CannotListACartWithInvalidId
 	
-	| aCart interface aClientId aPassword aQuantity |
+	| anInterface |
+	
+ 	anInterface _ publisherObjectsFactory anInterfaceRest.
+	
+	self should: [ anInterface listCartWithId: 5]
+		raise: Error
+		withExceptionDo: [ :anException |
+			self assert: anException messageText equals: InterfaceRest cannotExecuteOperationWithInvalidCartIdErrorMessage.
+		]
+	
+	! !
+
+!InterfaceRestTest methodsFor: 'tests' stamp: 'CZ 2/25/2021 18:45:58'!
+test11CannotListPurchasesOfClientWithInvalidId
+	
+	| anInterface aClientId aPassword |
+	
+	aClientId _ 5678.
+ 	aPassword _ 1234.
+ 	anInterface _ publisherObjectsFactory anInterfaceRest.
+	
+	self should: [ anInterface listPurchasesOf: aClientId withPassword: aPassword]
+		raise: Error
+		withExceptionDo: [ :anException |
+			self assert: anException messageText equals: InterfaceRest cannotExecuteOperationWithInvalidClientsCredentialsErrorMessage.
+		]
+! !
+
+!InterfaceRestTest methodsFor: 'tests' stamp: 'CZ 2/25/2021 18:46:14'!
+test12CannotListPurchasesOfClientWithInvalidPassword
+	
+	| anInterface aClientId aPassword |
+	
+	aClientId _ publisherObjectsFactory aValidClientId.
+ 	aPassword _ 9999.
+ 	anInterface _ publisherObjectsFactory anInterfaceRest.
+
+	
+	self should: [ anInterface listPurchasesOf: aClientId withPassword: aPassword]
+		raise: Error
+		withExceptionDo: [ :anException |
+			self assert: anException messageText equals: InterfaceRest cannotExecuteOperationWithInvalidClientsCredentialsErrorMessage.
+		]
+! !
+
+!InterfaceRestTest methodsFor: 'tests' stamp: 'CZ 2/25/2021 18:46:26'!
+test13CanListPurchasesOfValidClient
+	
+	| anInterface aClientId aPassword aCartId listPurchasesExpected |
+
+ 	aClientId _ publisherObjectsFactory aValidClientId.
+ 	aPassword _ publisherObjectsFactory aValidClientPassword.
+ 	anInterface _ publisherObjectsFactory anInterfaceRest.
+
+  	aCartId _ anInterface createCartWithClientId: aClientId andPassword: aPassword.
+	anInterface addToCart: aCartId aBook: publisherObjectsFactory bookFromTheEditorial quantity: 2.
+	
+	listPurchasesExpected _ OrderedCollection with: publisherObjectsFactory bookFromTheEditorial with: publisherObjectsFactory bookFromTheEditorial.
+	
+	self assert: (listPurchasesExpected) equals: (anInterface listPurchasesOf: aClientId withPassword: aPassword).
+	! !
+
+!InterfaceRestTest methodsFor: 'tests' stamp: 'CZ 2/25/2021 18:42:30'!
+test14CannotAddABookToExpiredCart
+	
+	| anInterface aClientId aPassword aCartId |
 	
 	aClientId _ publisherObjectsFactory aValidClientId.
 	aPassword _ publisherObjectsFactory aValidClientPassword.
-	interface _ InterfaceRest new.
-	aQuantity _ 2.
-	"Crear en publisherObjectsFactory un mensaje para crear un carrito valido"
+	anInterface _ publisherObjectsFactory anInterfaceRest.
 	
-	aCart _ publisherObjectsFactory anExpiredCart.
+	aCartId _ anInterface createCartWithClientId: aClientId andPassword: aPassword.
+	anInterface forwardClockTime: (Duration minutes: 30).
 	
-	self should: [ interface addToCart: aCart aBook: publisherObjectsFactory bookFromTheEditorial quantity: aQuantity]
+	self should: [ anInterface addToCart: aCartId aBook: publisherObjectsFactory bookFromTheEditorial quantity: 2]
 		raise: Error
 		withExceptionDo: [ :anException |
-			self assert: anException messageText equals: InterfaceRest cannotAddABookToCartAfter30MinutesOfLastOperationErrorMessage.
+			self assert: anException messageText equals: InterfaceRest cannotExecuteOperationWithExpiredCartErrorMessage.
 		]
+! !
 
+!InterfaceRestTest methodsFor: 'tests' stamp: 'CZ 2/25/2021 18:42:34'!
+test15CannotCheckoutAnExpiredCart
+	
+	| anInterface aClientId aPassword aCreditCard aCartId |
+	
+	aClientId _ publisherObjectsFactory aValidClientId.
+	aPassword _ publisherObjectsFactory aValidClientPassword.
+	anInterface _ publisherObjectsFactory anInterfaceRest.
+	aCreditCard _ publisherObjectsFactory aValidCreditCard.
+	
+	aCartId _ anInterface createCartWithClientId: aClientId andPassword: aPassword.
+	
+	anInterface addToCart: aCartId aBook: publisherObjectsFactory bookFromTheEditorial quantity: 2.
+	
+	anInterface forwardClockTime: (Duration minutes: 30).
+	
+	self should: [ anInterface checkoutCartWithId: aCartId andCreditCardNumber: aCreditCard creditCardNumber andExpiratioDate: aCreditCard expirationDate andOwnersName: aCreditCard ownersName]
+		raise: Error
+		withExceptionDo: [ :anException |
+			self assert: anException messageText equals: InterfaceRest cannotExecuteOperationWithExpiredCartErrorMessage.
+		]
+! !
+
+!InterfaceRestTest methodsFor: 'tests' stamp: 'CZ 2/25/2021 18:42:39'!
+test16CannotListAnExpiredCart
+	
+	| anInterface aClientId aPassword aCartId |
+	
+	aClientId _ publisherObjectsFactory aValidClientId.
+	aPassword _ publisherObjectsFactory aValidClientPassword.
+	anInterface _ publisherObjectsFactory anInterfaceRest.
+	
+	aCartId _ anInterface createCartWithClientId: aClientId andPassword: aPassword.
+	
+	anInterface forwardClockTime: (Duration minutes: 30).
+	
+	self should: [anInterface listCartWithId: aCartId]
+		raise: Error
+		withExceptionDo: [ :anException |
+			self assert: anException messageText equals: InterfaceRest cannotExecuteOperationWithExpiredCartErrorMessage.
+		]
+! !
+
+!InterfaceRestTest methodsFor: 'tests' stamp: 'CZ 2/25/2021 18:42:44'!
+test17MultipleOperationsCanBeExecutedIfSumOfWaitingSpansIsLargerThanTheExpirationTime
+	
+	| anInterface aClientId aPassword aCartId aCreditCard listPurchasesExpected |
+	
+	aClientId _ publisherObjectsFactory aValidClientId.
+	aPassword _ publisherObjectsFactory aValidClientPassword.
+	anInterface _ publisherObjectsFactory anInterfaceRest.
+	aCreditCard _ publisherObjectsFactory aValidCreditCard.
+	
+	aCartId _ anInterface createCartWithClientId: aClientId andPassword: aPassword.
+	anInterface forwardClockTime: (Duration minutes: 20).
+	
+	anInterface addToCart: aCartId aBook: publisherObjectsFactory bookFromTheEditorial quantity: 2.
+	anInterface forwardClockTime: (Duration minutes: 15).
+	
+	anInterface listCartWithId: aCartId.
+	anInterface forwardClockTime: (Duration minutes: 29).
+	
+	anInterface checkoutCartWithId: aCartId andCreditCardNumber: aCreditCard creditCardNumber andExpiratioDate: aCreditCard expirationDate andOwnersName: aCreditCard ownersName.
+	
+	listPurchasesExpected _ OrderedCollection with: publisherObjectsFactory bookFromTheEditorial with: publisherObjectsFactory bookFromTheEditorial.
+	
+	self assert: (listPurchasesExpected) equals: (anInterface listPurchasesOf: aClientId withPassword: aPassword).
 
 ! !
 
@@ -628,6 +749,30 @@ registeringSalesOn: aSalesBook
 	^ self new initializeWithSalesBook: aSalesBook.! !
 
 
+!classDefinition: #ClockMock category: 'TusLibros-Ejercicio'!
+Object subclass: #ClockMock
+	instanceVariableNames: 'currentTime'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros-Ejercicio'!
+
+!ClockMock methodsFor: 'clock mock management' stamp: 'CZ 2/25/2021 16:46:14'!
+currentTime
+
+	^currentTime copy.! !
+
+!ClockMock methodsFor: 'clock mock management' stamp: 'CZ 2/25/2021 16:16:33'!
+forwardTime: aSpan
+
+	currentTime _ currentTime + aSpan.! !
+
+
+!ClockMock methodsFor: 'initialization' stamp: 'CZ 2/25/2021 16:25:18'!
+initialize
+
+	currentTime _ DateAndTime now.! !
+
+
 !classDefinition: #CreditCard category: 'TusLibros-Ejercicio'!
 Object subclass: #CreditCard
 	instanceVariableNames: 'creditCardNumber owner expirationDate'
@@ -686,123 +831,148 @@ nameCannotBeBlankErrorMessage
 
 !classDefinition: #InterfaceRest category: 'TusLibros-Ejercicio'!
 Object subclass: #InterfaceRest
-	instanceVariableNames: 'clientId clientPassword dateTimeOfLastOperation carts actualCartId catalog cartsIdsClientsIds'
+	instanceVariableNames: 'clientId clientPassword carts actualCartId catalog cartAndClientIds clients clock timesOfLastOperationOnCarts'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros-Ejercicio'!
 
-!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'CZ 2/24/2021 21:09:30'!
+!InterfaceRest methodsFor: 'interface rest management' stamp: 'CZ 2/25/2021 18:38:28'!
 addToCart: aCartId aBook: aBookIsbn quantity: aQuantity
 	
-	"(dateTimeOfLastOperation distanceTo: GregorianDateTime now) > (1800000 * millisecond) ifTrue: [
-		self signalCannotAddABookToCartAfter30MinutesOfLastOperation.]."
 	| aCart |
 		
-	aCart _ carts at: aCartId ifAbsent:[self signalCannotAddBookToCartWithInvalidId].
+	aCart _ self assertExistenceOfCartWithId: aCartId.
+	
+	self validateExpirationTimeOfCartWithId: aCartId.
 
 	aCart add: aBookIsbn quantity: aQuantity.
+	
+	self updateTimeOfLastOperationOnCartWithId: aCartId.
+	
+	
 	
 
 	! !
 
-!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'JT 2/25/2021 01:20:07'!
+!InterfaceRest methodsFor: 'interface rest management' stamp: 'CZ 2/25/2021 18:39:10'!
 checkoutCartWithId: aCartId andCreditCardNumber: aCreditCardNumber andExpiratioDate: anExpirationDate andOwnersName: anOwnersName
 	
 	| aCart aCreditCard aCashier aSalesBook |
 	
-	aCart _ carts at: aCartId ifAbsent:[self signalCannotCheckoutCartWithInvalidId].
+	aCart _ self assertExistenceOfCartWithId: aCartId.
+	
+	self validateExpirationTimeOfCartWithId: aCartId.
+	
 	aCreditCard _ CreditCard new initializeOf: anOwnersName number: aCreditCardNumber expiringOn: anExpirationDate.
 	
 	aSalesBook := OrderedCollection new.
 	aCashier := Cashier registeringSalesOn: aSalesBook.
 	
+	self updateTimeOfLastOperationOnCartWithId: aCartId.
+	
 	^aCashier checkout: aCart payingWith: aCreditCard through: MerchantProcessorMock new on: (GregorianDateTime now).! !
 
-!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'JT 2/25/2021 12:16:51'!
+!InterfaceRest methodsFor: 'interface rest management' stamp: 'CZ 2/25/2021 17:08:55'!
 createCartWithClientId: aClientId andPassword: aPassword
 	
-	aClientId ~= clientId ifTrue:[self signalCannotCreateACartWithInvalidClientId].
-	aPassword ~= clientPassword  ifTrue:[self signalCannotCreateACartWithInvalidClientPassword].
-	dateTimeOfLastOperation _ GregorianDateTime now.
+	(clients includesKey: aClientId) ifFalse:[self signalCannotExecuteOperationWithInvalidClientsCredentials ].
+	(clients at: aClientId) = aPassword ifFalse:[self signalCannotExecuteOperationWithInvalidClientsCredentials].
+
 	
 	actualCartId _ actualCartId + 1.
     	carts at: actualCartId put: (Cart acceptingItemsOf: catalog).
-	cartsIdsClientsIds at: actualCartId put: aClientId. "Id carrito -> Id cliente"
-    
+	cartAndClientIds at: actualCartId put: aClientId. "Id carrito -> Id cliente"
+    	timesOfLastOperationOnCarts at: actualCartId put: clock currentTime.
+
    	^actualCartId.
 
 	! !
 
-!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'JT 2/25/2021 12:14:33'!
-initializeWithCatalog: aCatalog
+!InterfaceRest methodsFor: 'interface rest management' stamp: 'CZ 2/25/2021 17:33:21'!
+forwardClockTime: aSpan
+
+	clock forwardTime: aSpan! !
+
+!InterfaceRest methodsFor: 'interface rest management' stamp: 'CZ 2/25/2021 18:38:50'!
+updateTimeOfLastOperationOnCartWithId: aCartId
+
+	timesOfLastOperationOnCarts at: aCartId put: clock currentTime.! !
+
+
+!InterfaceRest methodsFor: 'testing - private' stamp: 'CZ 2/25/2021 18:36:20'!
+assertExistenceOfCartWithId: aCartId
+
+	^carts at: aCartId ifAbsent:[self signalCannotExecuteOperationWithInvalidCartId].
+! !
+
+!InterfaceRest methodsFor: 'testing - private' stamp: 'CZ 2/25/2021 17:01:09'!
+validateExpirationTimeOfCartWithId: aCartId
+
+	(clock currentTime - (timesOfLastOperationOnCarts at: aCartId)) minutes >= 30 ifTrue:[self signalCannotExecuteOperationWithExpiredCart].! !
+
+
+!InterfaceRest methodsFor: 'initialization' stamp: 'CZ 2/25/2021 16:50:01'!
+initializeWithCatalog: aCatalog andClients: aClientsDictionary usingClock: aClock
 	
-	clientId _ '1234'.
-	clientPassword _ '5678'.
+	clients _ aClientsDictionary.
 	carts _ Dictionary new.
 	actualCartId _ 0.
 	catalog _ 	aCatalog.
-	cartsIdsClientsIds _ Dictionary new.
+	cartAndClientIds _ Dictionary new.
+	clock _ aClock.
+	timesOfLastOperationOnCarts _ Dictionary new.
 	! !
 
-!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'CZ 2/24/2021 21:18:03'!
-listCart: aCartId
+
+!InterfaceRest methodsFor: 'accessing' stamp: 'CZ 2/25/2021 18:39:17'!
+listCartWithId: aCartId
 	
 	| aCart |
 	
-	aCart _ carts at: aCartId ifAbsent: [self signalCannotListACartWithInvalidId].
+	aCart _ self assertExistenceOfCartWithId: aCartId.
+	
+	self validateExpirationTimeOfCartWithId: aCartId.
+	
+	self updateTimeOfLastOperationOnCartWithId: aCartId.
 	
 	^aCart books.! !
 
-!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'JT 2/25/2021 12:45:39'!
+!InterfaceRest methodsFor: 'accessing' stamp: 'CZ 2/25/2021 15:38:08'!
 listPurchasesOf: aClientId withPassword: aPassword
 
-	| cartsIdsBelongsClient list |
+	| cartIdsOfClient listOfBooks |
 	
-	"Buscamos en cartsIdsClientsIds todos los carritos que le corresponden al clientId"
-	 cartsIdsBelongsClient _ cartsIdsClientsIds select: [:c | c = aClientId ].
+	(clients includesKey: aClientId) ifFalse:[self signalCannotExecuteOperationWithInvalidClientsCredentials ].
+	(clients at: aClientId) = aPassword ifFalse:[self signalCannotExecuteOperationWithInvalidClientsCredentials].
 	
-	"Ahora hay que buscar los libros que corresponenden a los carritos y agregarlos a la lista de ventas"
+	cartIdsOfClient _ cartAndClientIds select: [:c | c = aClientId ].
 	
-	list _ OrderedCollection new.
+	listOfBooks _ OrderedCollection new.
 	
-	cartsIdsBelongsClient keysDo: [ :aCartId | (carts at: aCartId) books do: [:aBookIsbn | list add: aBookIsbn]].
+	cartIdsOfClient keysDo: [ :aCartId | (carts at: aCartId) books do: [:aBookIsbn | listOfBooks add: aBookIsbn]].
 	
-	^list.! !
+	^listOfBooks.! !
 
-!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'JT 2/22/2021 21:13:24'!
-signalCannotAddABookToCartAfter30MinutesOfLastOperation
 
-	^self error: self class cannotAddABookToCartAfter30MinutesOfLastOperationErrorMessage.! !
-
-!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'CZ 2/24/2021 20:53:15'!
-signalCannotAddBookToCartWithInvalidId
-
-	^self error: self class cannotAddBookToCartWithInvalidIdErrorMessage.! !
-
-!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'CZ 2/24/2021 20:39:29'!
+!InterfaceRest methodsFor: 'signal errors' stamp: 'CZ 2/24/2021 20:39:29'!
 signalCannotAddToCartABookAbsentInCatalog
 
 	^self error: self class cannotAddToCartABookAbsentInCatalogErrorMessage! !
 
-!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'CZ 2/24/2021 21:51:16'!
-signalCannotCheckoutCartWithInvalidId
+!InterfaceRest methodsFor: 'signal errors' stamp: 'CZ 2/25/2021 17:02:11'!
+signalCannotExecuteOperationWithExpiredCart
+
+	^self error: self class cannotExecuteOperationWithExpiredCartErrorMessage.! !
+
+!InterfaceRest methodsFor: 'signal errors' stamp: 'CZ 2/25/2021 18:26:47'!
+signalCannotExecuteOperationWithInvalidCartId
 	
-	^self error: self class cannotCheckoutCartWithInvalidIdErrorMessage.! !
+	^self error: self class cannotExecuteOperationWithInvalidCartIdErrorMessage.! !
 
-!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'CZ 2/22/2021 13:33:55'!
-signalCannotCreateACartWithInvalidClientId
+!InterfaceRest methodsFor: 'signal errors' stamp: 'CZ 2/25/2021 15:38:31'!
+signalCannotExecuteOperationWithInvalidClientsCredentials
 
-	^self error: self class cannotCreateACartWithInvalidClientIdErrorMessage.! !
-
-!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'CZ 2/22/2021 13:46:14'!
-signalCannotCreateACartWithInvalidClientPassword
-
-	^self error: self class cannotCreateACartWithInvalidClientPasswordErrorMessage.! !
-
-!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'CZ 2/24/2021 21:14:57'!
-signalCannotListACartWithInvalidId
-
-	^self error: self class cannotListACartWithInvalidIdErrorMessage.! !
+	^self error: self class cannotExecuteOperationWithInvalidClientsCredentialsErrorMessage.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -810,45 +980,31 @@ signalCannotListACartWithInvalidId
 InterfaceRest class
 	instanceVariableNames: ''!
 
-!InterfaceRest class methodsFor: 'as yet unclassified' stamp: 'JT 2/22/2021 21:13:58'!
-cannotAddABookToCartAfter30MinutesOfLastOperationErrorMessage
-	
-	^'Cannot create a cart after 30 minutes of last operation'! !
-
-!InterfaceRest class methodsFor: 'as yet unclassified' stamp: 'CZ 2/24/2021 21:02:07'!
-cannotAddBookToCartWithInvalidIdErrorMessage
-
-    ^'Cannot add a book to cart with invalid id'! !
-
-!InterfaceRest class methodsFor: 'as yet unclassified' stamp: 'CZ 2/24/2021 20:40:34'!
+!InterfaceRest class methodsFor: 'error messages' stamp: 'CZ 2/24/2021 20:40:34'!
 cannotAddToCartABookAbsentInCatalogErrorMessage
 
 	^'Cannot add to cart a book absent in catalog'! !
 
-!InterfaceRest class methodsFor: 'as yet unclassified' stamp: 'CZ 2/24/2021 21:52:16'!
-cannotCheckoutCartWithInvalidIdErrorMessage
-
-	^'Cannot checkout cart with invalid id'! !
-
-!InterfaceRest class methodsFor: 'as yet unclassified' stamp: 'CZ 2/22/2021 13:32:12'!
-cannotCreateACartWithInvalidClientIdErrorMessage
+!InterfaceRest class methodsFor: 'error messages' stamp: 'CZ 2/25/2021 17:02:25'!
+cannotExecuteOperationWithExpiredCartErrorMessage
 	
-	^'Cannot create a cart with invalid client ID'! !
+	^'Cannot execute operation with expired cart'! !
 
-!InterfaceRest class methodsFor: 'as yet unclassified' stamp: 'CZ 2/22/2021 13:46:00'!
-cannotCreateACartWithInvalidClientPasswordErrorMessage
-	
-	^'Cannot create a cart with invalid client password'! !
+!InterfaceRest class methodsFor: 'error messages' stamp: 'CZ 2/25/2021 18:27:45'!
+cannotExecuteOperationWithInvalidCartIdErrorMessage
 
-!InterfaceRest class methodsFor: 'as yet unclassified' stamp: 'CZ 2/24/2021 21:16:25'!
-cannotListACartWithInvalidIdErrorMessage
+	^'Cannot execute operation with invalid cart id'! !
 
-	^'Cannot list a cart with invalid id'! !
+!InterfaceRest class methodsFor: 'error messages' stamp: 'CZ 2/25/2021 15:38:47'!
+cannotExecuteOperationWithInvalidClientsCredentialsErrorMessage
 
-!InterfaceRest class methodsFor: 'as yet unclassified' stamp: 'CZ 2/24/2021 20:06:59'!
-createWithCatalog: aCatalog
+	^'Cannot execute operation with invalid clients credentials'.! !
 
-	^self new initializeWithCatalog: aCatalog.! !
+
+!InterfaceRest class methodsFor: 'initialization' stamp: 'CZ 2/25/2021 16:34:54'!
+createWithCatalog: aCatalog andClients: validClients usingClock: aClock
+
+	^self new initializeWithCatalog: aCatalog andClients: validClients usingClock: aClock! !
 
 
 !classDefinition: #MerchantProcessorMock category: 'TusLibros-Ejercicio'!
@@ -858,7 +1014,7 @@ Object subclass: #MerchantProcessorMock
 	poolDictionaries: ''
 	category: 'TusLibros-Ejercicio'!
 
-!MerchantProcessorMock methodsFor: 'as yet unclassified' stamp: 'JT 2/25/2021 01:18:08'!
+!MerchantProcessorMock methodsFor: 'merchant processor management' stamp: 'JT 2/25/2021 01:18:08'!
 debit: anAmount from: aCreditCard
 
 	debitedAmountFromCreditCard := anAmount.
@@ -886,15 +1042,20 @@ aCatalog
 
 	^Dictionary newFromPairs: {self bookFromTheEditorial. self bookFromTheEditorialPrice}.! !
 
-!PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'CZ 2/22/2021 13:39:30'!
+!PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'CZ 2/25/2021 16:26:42'!
+aClock
+
+	^ClockMock new.! !
+
+!PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'CZ 2/25/2021 15:34:07'!
 aValidClientId
 
-	^'1234'! !
+	^1234! !
 
-!PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'CZ 2/22/2021 13:39:49'!
+!PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'CZ 2/25/2021 15:34:15'!
 aValidClientPassword
 
-	^'5678'! !
+	^5678! !
 
 !PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'JT 2/25/2021 00:46:45'!
 aValidCreditCard
@@ -928,14 +1089,6 @@ anEmptySalesBook
 
 	^OrderedCollection new.! !
 
-!PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'JT 2/22/2021 21:31:59'!
-anExpiredCart
-
-	| cart |
-	cart := self anEmptyCart.
-	Delay setDelay: 180000.
-	^cart! !
-
 !PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'LL 2/16/2021 19:43:38'!
 anExpiredCreditCard
 	
@@ -943,10 +1096,10 @@ anExpiredCreditCard
 	lastMonth := (FixedGregorianDate today previous: GregorianMonth oneMonth) monthOfYear.
 	^CreditCard of: 'Juan Perez' number: 11111111 expiringOn: lastMonth.! !
 
-!PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'CZ 2/24/2021 20:06:05'!
+!PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'CZ 2/25/2021 16:36:18'!
 anInterfaceRest
 
-	^InterfaceRest createWithCatalog: self aCatalog.! !
+	^InterfaceRest createWithCatalog: self aCatalog andClients: self clientsIdsAndPasswords usingClock: self aClock ! !
 
 !PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'LL 1/24/2021 15:59:26'!
 bookFromTheEditorial
@@ -965,6 +1118,11 @@ cartWithABook
 	cart := self anEmptyCart.
 	cart add: self bookFromTheEditorial.
 	^cart! !
+
+!PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'CZ 2/25/2021 15:28:46'!
+clientsIdsAndPasswords
+
+	^Dictionary with: 1234->5678 with: 3345->5432 with: 8902->1490 with: 3006->2457.! !
 
 !PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'JT 2/22/2021 20:37:36'!
 now 
