@@ -409,6 +409,27 @@ test08
 		]
 ! !
 
+!InterfaceRestTest methodsFor: 'as yet unclassified' stamp: 'JT 2/25/2021 12:35:08'!
+test09
+	"Puedo hacer checkout de un carrito con id valido"
+	
+	| interface aClientId aPassword aCartId aTicket listPurchasesExpected |
+
+ 	aClientId _ publisherObjectsFactory aValidClientId.
+ 	aPassword _ publisherObjectsFactory aValidClientPassword.
+ 	interface _ publisherObjectsFactory anInterfaceRest.
+
+  	aCartId _ interface createCartWithClientId: aClientId andPassword: aPassword.
+	interface addToCart: aCartId aBook: publisherObjectsFactory bookFromTheEditorial quantity: 2.
+	
+	aTicket _ interface checkoutCartWithId: aCartId andCreditCardNumber: publisherObjectsFactory aValidCreditCardNumber andExpiratioDate: publisherObjectsFactory aValidCreditCardExpirationDate andOwnersName: publisherObjectsFactory aValidCreditCardOwnersName.
+	
+	listPurchasesExpected _ OrderedCollection with: publisherObjectsFactory bookFromTheEditorial with: publisherObjectsFactory bookFromTheEditorial.
+	
+	self assert: (listPurchasesExpected) equals: (interface listPurchasesOf: aClientId withPassword: aPassword)
+	
+	! !
+
 !InterfaceRestTest methodsFor: 'as yet unclassified' stamp: 'JT 2/22/2021 22:10:29'!
 _test04
 "No puedo agregar un libro si pasaron 30 minutos desde la ultima operacion (carrito inactivo)"
@@ -431,26 +452,6 @@ _test04
 
 
 ! !
-
-!InterfaceRestTest methodsFor: 'as yet unclassified' stamp: 'JT 2/25/2021 01:57:06'!
-_test09
-	"Puedo hacer checkout de un carrito con id valido"
-	
-	| interface aClientId aPassword aCartId aTicket listPurchasesExpected |
-
- 	aClientId _ publisherObjectsFactory aValidClientId.
- 	aPassword _ publisherObjectsFactory aValidClientPassword.
- 	interface _ publisherObjectsFactory anInterfaceRest.
-
-  	aCartId _ interface createCartWithClientId: aClientId andPassword: aPassword.
-	interface addToCart: aCartId aBook: publisherObjectsFactory bookFromTheEditorial quantity: 2.
-	
-	aTicket _ interface checkoutCartWithId: aCartId andCreditCardNumber: publisherObjectsFactory aValidCreditCardNumber andExpiratioDate: publisherObjectsFactory aValidCreditCardExpirationDate andOwnersName: publisherObjectsFactory aValidCreditCardOwnersName.
-	
-	
-	self assert: (listPurchasesExpected) equals: (interface listPurchasesOf: aClientId withPassword: aPassword)
-	
-	! !
 
 
 !classDefinition: #Cart category: 'TusLibros-Ejercicio'!
@@ -685,7 +686,7 @@ nameCannotBeBlankErrorMessage
 
 !classDefinition: #InterfaceRest category: 'TusLibros-Ejercicio'!
 Object subclass: #InterfaceRest
-	instanceVariableNames: 'clientId clientPassword dateTimeOfLastOperation carts actualCartId catalog'
+	instanceVariableNames: 'clientId clientPassword dateTimeOfLastOperation carts actualCartId catalog cartsIdsClientsIds'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros-Ejercicio'!
@@ -717,7 +718,7 @@ checkoutCartWithId: aCartId andCreditCardNumber: aCreditCardNumber andExpiratioD
 	
 	^aCashier checkout: aCart payingWith: aCreditCard through: MerchantProcessorMock new on: (GregorianDateTime now).! !
 
-!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'CZ 2/24/2021 20:21:10'!
+!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'JT 2/25/2021 12:16:51'!
 createCartWithClientId: aClientId andPassword: aPassword
 	
 	aClientId ~= clientId ifTrue:[self signalCannotCreateACartWithInvalidClientId].
@@ -726,12 +727,13 @@ createCartWithClientId: aClientId andPassword: aPassword
 	
 	actualCartId _ actualCartId + 1.
     	carts at: actualCartId put: (Cart acceptingItemsOf: catalog).
+	cartsIdsClientsIds at: actualCartId put: aClientId. "Id carrito -> Id cliente"
     
    	^actualCartId.
 
 	! !
 
-!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'CZ 2/24/2021 19:54:30'!
+!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'JT 2/25/2021 12:14:33'!
 initializeWithCatalog: aCatalog
 	
 	clientId _ '1234'.
@@ -739,6 +741,7 @@ initializeWithCatalog: aCatalog
 	carts _ Dictionary new.
 	actualCartId _ 0.
 	catalog _ 	aCatalog.
+	cartsIdsClientsIds _ Dictionary new.
 	! !
 
 !InterfaceRest methodsFor: 'as yet unclassified' stamp: 'CZ 2/24/2021 21:18:03'!
@@ -750,8 +753,21 @@ listCart: aCartId
 	
 	^aCart books.! !
 
-!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'JT 2/25/2021 01:31:33'!
-listPurchasesOf: aClientId withPassword: aPassword! !
+!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'JT 2/25/2021 12:45:39'!
+listPurchasesOf: aClientId withPassword: aPassword
+
+	| cartsIdsBelongsClient list |
+	
+	"Buscamos en cartsIdsClientsIds todos los carritos que le corresponden al clientId"
+	 cartsIdsBelongsClient _ cartsIdsClientsIds select: [:c | c = aClientId ].
+	
+	"Ahora hay que buscar los libros que corresponenden a los carritos y agregarlos a la lista de ventas"
+	
+	list _ OrderedCollection new.
+	
+	cartsIdsBelongsClient keysDo: [ :aCartId | (carts at: aCartId) books do: [:aBookIsbn | list add: aBookIsbn]].
+	
+	^list.! !
 
 !InterfaceRest methodsFor: 'as yet unclassified' stamp: 'JT 2/22/2021 21:13:24'!
 signalCannotAddABookToCartAfter30MinutesOfLastOperation
