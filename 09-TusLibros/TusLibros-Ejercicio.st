@@ -169,7 +169,7 @@ test04CheckoutDebitsCreditCardUsingMerchantProcessor
 	self assert: debitedAmountFromCreditCard equals: ticket value.
 	self assert: debitedCreditCard equals: creditCard.! !
 
-!CashierTest methodsFor: 'tests' stamp: 'CZ 2/24/2021 21:14:00'!
+!CashierTest methodsFor: 'tests' stamp: 'JT 2/25/2021 02:07:34'!
 test05CheckoutFailsIfMerchantProcessorCantProcessPayment
 
 	| cart cashier salesBook |
@@ -177,7 +177,7 @@ test05CheckoutFailsIfMerchantProcessorCantProcessPayment
 	salesBook := objectsFactory anEmptySalesBook.
 	cashier := Cashier registeringSalesOn: salesBook.
 	
-	self merchantProcessorBehaviour: [ :anAmountToDebit :aCreditCard | Error new signalCannotListACartWithInvalidId ].
+	self merchantProcessorBehaviour: [ :anAmountToDebit :aCreditCard | Error new signal ].
 	
 	self should: [ self cashier: cashier checkout: cart ]
 		raise: Error - MessageNotUnderstood 
@@ -409,26 +409,6 @@ test08
 		]
 ! !
 
-!InterfaceRestTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/24/2021 23:38:14'!
-test09
-	"Puedo hacer checkout de un carrito con id valido"
-	
-	| interface aClientId aPassword aCartId booksInCart |
-
- 	aClientId _ publisherObjectsFactory aValidClientId.
- 	aPassword _ publisherObjectsFactory aValidClientPassword.
- 	interface _ publisherObjectsFactory anInterfaceRest.
-
-  	aCartId _ interface createCartWithClientId: aClientId andPassword: aPassword.
-	interface addToCart: aCartId aBook: publisherObjectsFactory bookFromTheEditorial quantity: 2.
-	
-	interface checkoutCartWithId: aCartId andCreditCardNumber: publisherObjectsFactory aValidCreditCardNumber andExpiratioDate: publisherObjectsFactory aValidCreditCardExpirationDate andOwnersName: publisherObjectsFactory aValidCreditCardOwnersName.
-	
-	booksInCart _ interface listCart: aCartId.
-	
-	self assert: booksInCart isEmpty.
-	! !
-
 !InterfaceRestTest methodsFor: 'as yet unclassified' stamp: 'JT 2/22/2021 22:10:29'!
 _test04
 "No puedo agregar un libro si pasaron 30 minutos desde la ultima operacion (carrito inactivo)"
@@ -452,26 +432,25 @@ _test04
 
 ! !
 
-!InterfaceRestTest methodsFor: 'as yet unclassified' stamp: 'CZ 2/24/2021 20:23:47'!
-_test05
-"no puedo agregar un libro al carrito"
+!InterfaceRestTest methodsFor: 'as yet unclassified' stamp: 'JT 2/25/2021 01:57:06'!
+_test09
+	"Puedo hacer checkout de un carrito con id valido"
 	
-	| aCart interface aClientId aPassword aQuantity |
-	
-	aClientId _ publisherObjectsFactory aValidClientId.
-	aPassword _ publisherObjectsFactory aValidClientPassword.
-	interface _ InterfaceRest new.
-	aQuantity _ 2.
-	"Crear en publisherObjectsFactory un mensaje para crear un carrito valido"
-	
-	aCart _ interface createCartWithClientId: aClientId andPassword: aPassword.
-	interface addToCart: aCart aBook: publisherObjectsFactory bookFromTheEditorial quantity: aQuantity.
-	
-	self deny: aCart isEmpty.
-	
+	| interface aClientId aPassword aCartId aTicket listPurchasesExpected |
 
+ 	aClientId _ publisherObjectsFactory aValidClientId.
+ 	aPassword _ publisherObjectsFactory aValidClientPassword.
+ 	interface _ publisherObjectsFactory anInterfaceRest.
 
-! !
+  	aCartId _ interface createCartWithClientId: aClientId andPassword: aPassword.
+	interface addToCart: aCartId aBook: publisherObjectsFactory bookFromTheEditorial quantity: 2.
+	
+	aTicket _ interface checkoutCartWithId: aCartId andCreditCardNumber: publisherObjectsFactory aValidCreditCardNumber andExpiratioDate: publisherObjectsFactory aValidCreditCardExpirationDate andOwnersName: publisherObjectsFactory aValidCreditCardOwnersName.
+	
+	
+	self assert: (listPurchasesExpected) equals: (interface listPurchasesOf: aClientId withPassword: aPassword)
+	
+	! !
 
 
 !classDefinition: #Cart category: 'TusLibros-Ejercicio'!
@@ -706,7 +685,7 @@ nameCannotBeBlankErrorMessage
 
 !classDefinition: #InterfaceRest category: 'TusLibros-Ejercicio'!
 Object subclass: #InterfaceRest
-	instanceVariableNames: 'clientId clientPassword dateTimeOfLastOperation carts cartId actualCartId catalog'
+	instanceVariableNames: 'clientId clientPassword dateTimeOfLastOperation carts actualCartId catalog'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros-Ejercicio'!
@@ -725,14 +704,18 @@ addToCart: aCartId aBook: aBookIsbn quantity: aQuantity
 
 	! !
 
-!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'CZ 2/25/2021 00:38:08'!
+!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'JT 2/25/2021 01:20:07'!
 checkoutCartWithId: aCartId andCreditCardNumber: aCreditCardNumber andExpiratioDate: anExpirationDate andOwnersName: anOwnersName
 	
-	| aCart aCreditCard |
+	| aCart aCreditCard aCashier aSalesBook |
+	
 	aCart _ carts at: aCartId ifAbsent:[self signalCannotCheckoutCartWithInvalidId].
 	aCreditCard _ CreditCard new initializeOf: anOwnersName number: aCreditCardNumber expiringOn: anExpirationDate.
 	
-	Cashier new checkout: aCart payingWith: aCreditCard through: MerchantProcessorMock new on: anExpirationDate.! !
+	aSalesBook := OrderedCollection new.
+	aCashier := Cashier registeringSalesOn: aSalesBook.
+	
+	^aCashier checkout: aCart payingWith: aCreditCard through: MerchantProcessorMock new on: (GregorianDateTime now).! !
 
 !InterfaceRest methodsFor: 'as yet unclassified' stamp: 'CZ 2/24/2021 20:21:10'!
 createCartWithClientId: aClientId andPassword: aPassword
@@ -746,15 +729,6 @@ createCartWithClientId: aClientId andPassword: aPassword
     
    	^actualCartId.
 
-	! !
-
-!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'CZ 2/24/2021 19:48:57'!
-initialize
-	
-	clientId _ '1234'.
-	clientPassword _ '5678'.
-	carts _ Dictionary new.
-	actualCartId _ 0.
 	! !
 
 !InterfaceRest methodsFor: 'as yet unclassified' stamp: 'CZ 2/24/2021 19:54:30'!
@@ -775,6 +749,9 @@ listCart: aCartId
 	aCart _ carts at: aCartId ifAbsent: [self signalCannotListACartWithInvalidId].
 	
 	^aCart books.! !
+
+!InterfaceRest methodsFor: 'as yet unclassified' stamp: 'JT 2/25/2021 01:31:33'!
+listPurchasesOf: aClientId withPassword: aPassword! !
 
 !InterfaceRest methodsFor: 'as yet unclassified' stamp: 'JT 2/22/2021 21:13:24'!
 signalCannotAddABookToCartAfter30MinutesOfLastOperation
@@ -860,10 +837,18 @@ createWithCatalog: aCatalog
 
 !classDefinition: #MerchantProcessorMock category: 'TusLibros-Ejercicio'!
 Object subclass: #MerchantProcessorMock
-	instanceVariableNames: 'clientId clientPassword dateTimeOfLastOperation carts cartId actualCartId catalog'
+	instanceVariableNames: 'clientId clientPassword dateTimeOfLastOperation carts cartId actualCartId catalog debitedAmountFromCreditCard debitedCreditCard'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros-Ejercicio'!
+
+!MerchantProcessorMock methodsFor: 'as yet unclassified' stamp: 'JT 2/25/2021 01:18:08'!
+debit: anAmount from: aCreditCard
+
+	debitedAmountFromCreditCard := anAmount.
+	debitedCreditCard := aCreditCard.
+	
+! !
 
 
 !classDefinition: #PublisherTestObjectsFactory category: 'TusLibros-Ejercicio'!
@@ -895,14 +880,14 @@ aValidClientPassword
 
 	^'5678'! !
 
-!PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'LL 2/16/2021 19:45:08'!
+!PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'JT 2/25/2021 00:46:45'!
 aValidCreditCard
 
 	| nextMonth |
 	nextMonth := (FixedGregorianDate today next: GregorianMonth oneMonth) monthOfYear.
 	^CreditCard of: 'Juan Perez' number: 11111111 expiringOn: nextMonth.! !
 
-!PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'CZ 2/24/2021 23:34:15'!
+!PublisherTestObjectsFactory methodsFor: 'as yet unclassified' stamp: 'JT 2/25/2021 00:48:29'!
 aValidCreditCardExpirationDate
 
 	^(FixedGregorianDate today next: GregorianMonth oneMonth) monthOfYear.! !
